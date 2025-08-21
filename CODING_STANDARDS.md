@@ -1,20 +1,23 @@
 ## java doc
-1. public 메서드에는 전부 사용
-2. get, set과 같은 간단한 것은 제외
+1. 모든 public 메서드/클래스/인터페이스/enum에 Javadoc 작성
+2. 단순 getter/setter(또는 Lombok이 생성한 메서드)는 제외
+3. 태그 사용: `@param`, `@return`, `@throws` 필수. 외부에 공개되는 API는 `@since`, `@deprecated` 권장
+4. 예외 흐름, 스레드-세이프티, 부작용(side effects), 시간/타임존 의존성도 문서화
 
 ---
 ## Test 코드
 
 1. 단위 테스트 
-- Service와 utill만 테스트 진행
+- Service/Util 위주로 작성하되, 도메인 모델과 리포지토리 슬라이스(@DataJpaTest)도 포함
+- 컨트롤러는 @WebMvcTest 또는 RestAssured로 API 계약 테스트(성공/실패 케이스, 예외 매핑)
 1. 통합 테스트
-- docker를 사용해서 DB와 redis 생성
+- Testcontainers로 DB/Redis 컨테이너 기동(로컬 Docker 의존 최소화, CI 호환성 ↑)
 
 ---
-
 ## DTO 규칙
 
-1. 항상 recode를 사용
+1. 항상 record를 사용 (DTO에 한정). JPA Entity에는 record 사용 금지
+2. record 사용을 전제로 최소 JDK 17 이상 사용 확인 필요
 
 ```java
 @Schema(description = "회원 정보 응답 DTO")
@@ -47,9 +50,13 @@ public record MemberInfoResponse(
 
 		return new MemberInfoResponse(name, phoneNumber, Role.MEMBER, memberDetailInfo);
 	}
+
+	// ...
+}
 ```
 ---
 ## 테이블 명
+단수가 아닌 복수로 사용
 ```java
 
 @Table(name = "orders")
@@ -75,8 +82,18 @@ public class Order extends BaseTimeEntity {
 
 1. DTO나 Entity 안에 정적 팩토리 메서드 사용 (서비스단에 코드 수를 줄이기 위해)
 
+- 시간 의존 로직은 `Clock` 주입 또는 파라미터로 받는다.
+- 결제수단 등 민감정보는 저장 금지 또는 KMS/암호화/토큰화 정책을 따른다.
+
 ```java
-public static Order createNewOrder(Member member, Store store, String orderNumber, Long totalPrice,  OrderCreateRequest request) {
+public static Order createNewOrder(
+        Member member,
+        Store store,
+        String orderNumber,
+        Long totalPrice,
+        OrderCreateRequest request,
+        LocalDateTime expectedPickupTime
+) {
         return Order.builder()
                 .member(member)
                 .store(store)
@@ -85,11 +102,10 @@ public static Order createNewOrder(Member member, Store store, String orderNumbe
                 .status(OrderStatus.PLACED)
                 .pickupType(request.pickupType())
                 .requestMemo(request.requestMemo())
-                .expectedPickupTime(java.time.LocalDateTime.now().plusMinutes(10))
-                .cardNumber(request.cardNumber())
+                .expectedPickupTime(expectedPickupTime)
+                // cardNumber 저장 시 암호화/토큰화 정책을 사전에 정의하고 적용
                 .build();
-    }
-
+}
 ```
 ---
 ## Versioning
