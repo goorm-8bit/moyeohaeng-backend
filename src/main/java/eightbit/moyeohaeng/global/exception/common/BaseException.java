@@ -31,4 +31,13 @@ public abstract class BaseException extends RuntimeException {
 		}
 		return errorCode.getMessage(args);
 	}
+
+	@Override
+	public String getMessage() {
+		return getLogMessage();
+	}
+
+	public Object[] getArgs() {
+		return (args == null ? EMPTY_ARGS : Arrays.copyOf(args, args.length));
+	}
 }
