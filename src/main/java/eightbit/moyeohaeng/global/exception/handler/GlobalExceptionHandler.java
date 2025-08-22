@@ -1,11 +1,16 @@
 package eightbit.moyeohaeng.global.exception.handler;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+
+import java.util.stream.Collectors;
 
 import eightbit.moyeohaeng.global.exception.common.BaseException;
 import eightbit.moyeohaeng.global.exception.common.ErrorCode;
@@ -21,7 +26,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(BaseException.class)
 	public ResponseEntity<ErrorResponse> handleBaseException(BaseException e) {
-		return getErrorResponse(e, e.getErrorCode());
+		return getErrorResponse(e, e.getErrorCode(), e.getArgs());
 	}
 
 	@ExceptionHandler(RuntimeException.class)
@@ -50,6 +55,28 @@ public class GlobalExceptionHandler {
 		return getErrorResponse(e, GlobalErrorCode.METHOD_NOT_ALLOWED);
 	}
 
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+		GlobalLogger.error(e.toString());
+
+		return ResponseEntity
+			.status(HttpStatus.BAD_REQUEST)
+			.body(ErrorResponse.of(GlobalErrorCode.INVALID_INPUT));
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+		GlobalLogger.error(e.toString());
+
+		String errorMessage = e.getBindingResult().getAllErrors().stream()
+			.map(error -> error.getDefaultMessage())
+			.collect(Collectors.joining(", "));
+
+		return ResponseEntity
+			.status(HttpStatus.BAD_REQUEST)
+			.body(ErrorResponse.of(GlobalErrorCode.INVALID_INPUT, errorMessage));
+	}
+
 	private static ResponseEntity<ErrorResponse> getErrorResponse(Exception e, GlobalErrorCode errorCode) {
 		GlobalLogger.error(e.toString());
 
@@ -58,12 +85,12 @@ public class GlobalExceptionHandler {
 			.body(ErrorResponse.of(errorCode));
 	}
 
-	private static ResponseEntity<ErrorResponse> getErrorResponse(Exception e, ErrorCode errorCode) {
+	private static ResponseEntity<ErrorResponse> getErrorResponse(Exception e, ErrorCode errorCode, Object... args) {
 		GlobalLogger.error(e.toString());
 
 		return ResponseEntity
 			.status(errorCode.getStatus())
-			.body(ErrorResponse.of(errorCode, e.getMessage()));
+			.body(ErrorResponse.of(errorCode, errorCode.getMessage(args)));
 	}
 
 }
