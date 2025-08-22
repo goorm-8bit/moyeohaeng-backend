@@ -9,6 +9,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * 테스트에서 Jackson ObjectMapper 설정을 그대로 활용하여 JSON 직렬화/역직렬화를 돕는 유틸리티입니다.
+ * 테스트 컨텍스트(@Import)로 주입하여 사용합니다.
+ */
 public class JsonUtils {
 
 	@Autowired
