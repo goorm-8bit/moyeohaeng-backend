@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.global.domain;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -19,6 +20,7 @@ import lombok.Getter;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+@SQLRestriction("deleted_at IS NULL")
 public abstract class BaseEntity {
 
 	@CreatedDate
@@ -28,4 +30,6 @@ public abstract class BaseEntity {
 	@LastModifiedDate
 	@Column(nullable = false)
 	private LocalDateTime modifiedAt;
+
+	private LocalDateTime deletedAt;
 }
