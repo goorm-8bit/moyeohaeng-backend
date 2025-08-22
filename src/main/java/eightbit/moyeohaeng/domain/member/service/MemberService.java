@@ -19,43 +19,34 @@ public class MemberService {
 
 	@Transactional
 	public Member create(MemberDto.RegisterRequest request) {
-
 		Member newMember = request.toEntity();
+
 		return memberRepository.save(newMember);
 	}
 
 	@Transactional
-	public MemberDto.Info update(Long memberId, MemberDto.UpdateRequest request) {
+	public void update(Long memberId, MemberDto.UpdateRequest request) {
+		Member member = findById(memberId);
+		member.update(request);
+	}
+
+	public Member findById(Long memberId) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-		// member.update(request.name(), request.profileImage());
-
-		Member updatedMember = member.copy(request);
-
-		memberRepository.save(updatedMember);
-
-		return MemberDto.Info.from(updatedMember);
+		return member;
 	}
 
-	public MemberDto.Info findById(Long memberId) {
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-
-		return MemberDto.Info.from(member);
-	}
-
-	public MemberDto.Info findByEmail(String email) {
+	public Member findByEmail(String email) {
 		Member member = memberRepository.findByEmail(email)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-		return MemberDto.Info.from(member);
+		return member;
 	}
 
 	@Transactional
 	public void delete(Long memberId) {
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+		Member member = findById(memberId);
 
 		memberRepository.delete(member);
 	}

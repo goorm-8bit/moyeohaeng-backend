@@ -45,21 +45,15 @@ public class Member extends BaseEntity {
 	private String profileImage;
 
 	public void update(MemberDto.UpdateRequest request) {
-		name = request.name() == null ? "" : request.name();
-		profileImage = request.profileImage() == null ? "" : request.profileImage();
-		password = request.password() == null ? "" : request.password();
-
-	}
-
-	public Member copy(MemberDto.UpdateRequest request) {
-		Member member = new Member();
-		member.id = id;
-		member.email = email;
-		member.password = password;
-		member.name = name;
-		member.profileImage = profileImage;
-
-		return member;
+		if (request.name() != null) {
+			this.name = request.name();
+		}
+		if (request.profileImage() != null) {
+			this.profileImage = request.profileImage();
+		}
+		if (request.password() != null) {
+			this.password = request.password();
+		}
 	}
 
 }
