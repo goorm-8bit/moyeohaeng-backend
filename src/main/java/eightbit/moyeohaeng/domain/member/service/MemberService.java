@@ -5,6 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import eightbit.moyeohaeng.domain.member.dto.MemberDto;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
+import eightbit.moyeohaeng.domain.member.exception.MemberErrorCode;
+import eightbit.moyeohaeng.domain.member.exception.MemberException;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,7 @@ public class MemberService {
 	@Transactional
 	public MemberDto.Info update(Long memberId, MemberDto.UpdateRequest request) {
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다.")); // TODO: Custom Exception으로 변경
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
 		// member.update(request.name(), request.profileImage());
 
@@ -38,14 +40,14 @@ public class MemberService {
 
 	public MemberDto.Info findById(Long memberId) {
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다.")); // TODO: Custom Exception으로 변경
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
 		return MemberDto.Info.from(member);
 	}
 
 	public MemberDto.Info findByEmail(String email) {
 		Member member = memberRepository.findByEmail(email)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다.")); // TODO: Custom Exception으로 변경
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
 		return MemberDto.Info.from(member);
 	}
@@ -53,7 +55,7 @@ public class MemberService {
 	@Transactional
 	public void delete(Long memberId) {
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다.")); // TODO: Custom Exception으로 변경
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
 		memberRepository.delete(member);
 	}
