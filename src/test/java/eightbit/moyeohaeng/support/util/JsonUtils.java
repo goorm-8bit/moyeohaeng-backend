@@ -40,6 +40,9 @@ public class JsonUtils {
 	public <T> T fromJson(MvcResult mvcResult, Class<T> clazz) {
 		try {
 			String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+			if (responseBody.isBlank()) {
+				throw new IllegalStateException("응답 본문이 비어 있어 역직렬화할 수 없습니다.");
+			}
 			return objectMapper.readValue(responseBody, clazz);
 		} catch (IOException e) {
 			throw new RuntimeException("JSON 역직렬화에 실패했습니다.", e);
