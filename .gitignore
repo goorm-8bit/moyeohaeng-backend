@@ -1,3 +1,13 @@
+### Custom ###
+.cursor/
+.cursor/*
+.cursor/**
+docs/
+docs/*
+docs/**
+
+### Default ###
+
 HELP.md
 .gradle
 build/
