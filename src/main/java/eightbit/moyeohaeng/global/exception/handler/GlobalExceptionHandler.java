@@ -12,6 +12,10 @@ import eightbit.moyeohaeng.global.exception.common.ErrorCode;
 import eightbit.moyeohaeng.global.exception.common.ErrorResponse;
 import eightbit.moyeohaeng.global.utils.GlobalLogger;
 
+/**
+ * 전역 예외 처리를 위한 베이스 예외.
+ * <p>메시지는 {@link ErrorCode}와 선택적 포맷 인자(args)를 기반으로 생성됩니다.</p>
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
