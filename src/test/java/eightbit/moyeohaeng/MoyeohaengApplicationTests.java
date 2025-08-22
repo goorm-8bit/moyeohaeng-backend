@@ -1,9 +1,10 @@
 package eightbit.moyeohaeng;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+import eightbit.moyeohaeng.support.annotation.IntegrationTest;
+
+@IntegrationTest
 class MoyeohaengApplicationTests {
 
 	@Test
