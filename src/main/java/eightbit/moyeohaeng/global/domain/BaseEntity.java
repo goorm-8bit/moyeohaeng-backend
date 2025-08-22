@@ -11,6 +11,11 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 
+/**
+ * 모든 JPA 엔티티가 상속하는 공통 베이스 클래스.
+ * 생성/수정 시각을 Spring Data JPA Auditing으로 자동 관리합니다.
+ */
+
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
