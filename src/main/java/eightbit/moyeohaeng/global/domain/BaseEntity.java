@@ -34,9 +34,13 @@ public abstract class BaseEntity {
 	private LocalDateTime deletedAt;
 
 	public void softDelete() {
-		this.deletedAt = LocalDateTime.now();
+		if (this.deletedAt == null) {
+			this.deletedAt = LocalDateTime.now();
+		}
+	}
 
+	public boolean isDeleted() {
+		return this.deletedAt != null;
 	}
 }
 
-// TODO BaseEnity에 softDelete() 추가, 서비스 레이어에도 softDelete() 추가,
