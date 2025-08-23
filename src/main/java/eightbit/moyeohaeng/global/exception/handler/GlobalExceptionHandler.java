@@ -29,6 +29,15 @@ public class GlobalExceptionHandler {
 		return getErrorResponse(e, e.getErrorCode(), e.getArgs());
 	}
 
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+		GlobalLogger.error(e.toString());
+
+		return ResponseEntity
+			.status(HttpStatus.BAD_REQUEST)
+			.body(ErrorResponse.of(GlobalErrorCode.INVALID_INPUT, e.getMessage()));
+	}
+
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
 		return getErrorResponse(e, GlobalErrorCode.INTERNAL_SERVER_ERROR);
