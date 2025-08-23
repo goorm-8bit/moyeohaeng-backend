@@ -51,4 +51,12 @@ public class MemberService {
 
 		memberRepository.delete(member);
 	}
+
+	@Transactional
+	public void softDelete(Long memberId) {
+		Member member = findById(memberId);
+		member.softDelete();
+
+		memberRepository.save(member);
+	}
 }
