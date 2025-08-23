@@ -3,7 +3,8 @@ package eightbit.moyeohaeng.domain.member.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import eightbit.moyeohaeng.domain.member.dto.MemberDto;
+import eightbit.moyeohaeng.domain.member.dto.request.MemberRegisterRequest;
+import eightbit.moyeohaeng.domain.member.dto.request.MemberUpdateRequest;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.exception.MemberErrorCode;
 import eightbit.moyeohaeng.domain.member.exception.MemberException;
@@ -18,16 +19,16 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public Member create(MemberDto.RegisterRequest request) {
+	public Member create(MemberRegisterRequest request) {
 		Member newMember = request.toEntity();
 
 		return memberRepository.save(newMember);
 	}
 
 	@Transactional
-	public void update(Long memberId, MemberDto.UpdateRequest request) {
+	public void update(Long memberId, MemberUpdateRequest request) {
 		Member member = findById(memberId);
-		member.update(request);
+		member.update(request.name(), request.profileImage(), request.password());
 	}
 
 	public Member findById(Long memberId) {

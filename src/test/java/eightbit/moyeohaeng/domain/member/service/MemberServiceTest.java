@@ -13,7 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import eightbit.moyeohaeng.domain.member.dto.MemberDto;
+import eightbit.moyeohaeng.domain.member.dto.request.MemberRegisterRequest;
+import eightbit.moyeohaeng.domain.member.dto.request.MemberUpdateRequest;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.exception.MemberErrorCode;
 import eightbit.moyeohaeng.domain.member.exception.MemberException;
@@ -32,7 +33,7 @@ class MemberServiceTest {
 	@Test
 	void create() {
 		// given
-		MemberDto.RegisterRequest request = new MemberDto.RegisterRequest("test@test.com", "password", "nickname");
+		MemberRegisterRequest request = new MemberRegisterRequest("test@test.com", "password", "nickname");
 		Member member = request.toEntity();
 		given(memberRepository.save(any(Member.class))).willReturn(member);
 
@@ -54,7 +55,7 @@ class MemberServiceTest {
 			.name("oldNickname")
 			.password("password")
 			.build();
-		MemberDto.UpdateRequest request = new MemberDto.UpdateRequest("newNickname", "newProfileImg", "newPassword");
+		MemberUpdateRequest request = new MemberUpdateRequest("newNickname", "newProfileImg", "newPassword");
 
 		given(memberRepository.findById(memberId)).willReturn(Optional.of(existingMember));
 
@@ -71,7 +72,7 @@ class MemberServiceTest {
 	void update_fail_memberNotFound() {
 		// given
 		Long memberId = 1L;
-		MemberDto.UpdateRequest request = new MemberDto.UpdateRequest("newNickname", "newProfileImg", "newPassword");
+		MemberUpdateRequest request = new MemberUpdateRequest("newNickname", "newProfileImg", "newPassword");
 		given(memberRepository.findById(memberId)).willReturn(Optional.empty());
 
 		// when & then

@@ -2,7 +2,6 @@ package eightbit.moyeohaeng.domain.member.entity.member;
 
 import org.hibernate.annotations.SQLDelete;
 
-import eightbit.moyeohaeng.domain.member.dto.MemberDto;
 import eightbit.moyeohaeng.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,15 +43,15 @@ public class Member extends BaseEntity {
 	@Column
 	private String profileImage;
 
-	public void update(MemberDto.UpdateRequest request) {
-		if (request.name() != null) {
-			this.name = request.name();
+	public void update(String name, String profileImage, String password) {
+		if (name != null) {
+			this.name = name;
 		}
-		if (request.profileImage() != null) {
-			this.profileImage = request.profileImage();
+		if (profileImage != null) {
+			this.profileImage = profileImage;
 		}
-		if (request.password() != null) {
-			this.password = request.password();
+		if (password != null) {
+			this.password = password;
 		}
 	}
 
