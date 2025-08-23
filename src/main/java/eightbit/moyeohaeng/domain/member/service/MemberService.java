@@ -46,17 +46,14 @@ public class MemberService {
 	}
 
 	@Transactional
-	public void delete(Long memberId) {
+	public boolean delete(Long memberId) {
 		Member member = findById(memberId);
 
+		if (member.isDeleted()) {
+			return false;
+		}
 		memberRepository.delete(member);
-	}
 
-	@Transactional
-	public void softDelete(Long memberId) {
-		Member member = findById(memberId);
-		member.softDelete();
-
-		memberRepository.save(member);
+		return true;
 	}
 }
