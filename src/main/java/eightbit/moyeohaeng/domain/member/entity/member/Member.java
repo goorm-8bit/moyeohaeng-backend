@@ -32,10 +32,10 @@ public class Member extends BaseEntity {
 	private String email;
 
 	//TODO auth 개발 후 response와 log에 출력되지 않게 하기
-	@Column(nullable = false)
+	@Column(nullable = false, length = 255)
 	private String password;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 10)
 	private String name;
 
 	@Column
