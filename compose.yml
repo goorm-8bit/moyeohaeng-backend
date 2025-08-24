@@ -2,7 +2,7 @@ services:
   mysql:
     image: 'mysql:8.0.42'
     ports:
-      - '3306'
+      - '3306:3306'
     environment:
       - 'MYSQL_DATABASE=database'
       - 'MYSQL_PASSWORD=password'

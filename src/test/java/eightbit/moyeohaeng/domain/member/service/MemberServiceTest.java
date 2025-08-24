@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import eightbit.moyeohaeng.domain.member.dto.request.MemberRegisterRequest;
 import eightbit.moyeohaeng.domain.member.dto.request.MemberUpdateRequest;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.exception.MemberErrorCode;
@@ -30,21 +29,6 @@ class MemberServiceTest {
 	@Mock
 	private MemberRepository memberRepository;
 
-	@DisplayName("회원 생성 테스트")
-	@Test
-	void create() {
-		// given
-		MemberRegisterRequest request = new MemberRegisterRequest("test@test.com", "password", "nickname");
-		Member member = request.toEntity();
-		given(memberRepository.save(any(Member.class))).willReturn(member);
-
-		// when
-		Member newMember = memberService.create(request);
-
-		// then
-		assertThat(newMember.getEmail()).isEqualTo(request.email());
-		assertThat(newMember.getName()).isEqualTo(request.name());
-	}
 
 	@DisplayName("회원 정보 수정 테스트 - 성공")
 	@Test

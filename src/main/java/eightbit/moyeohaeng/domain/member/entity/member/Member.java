@@ -2,6 +2,8 @@ package eightbit.moyeohaeng.domain.member.entity.member;
 
 import org.hibernate.annotations.SQLDelete;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import eightbit.moyeohaeng.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,10 +34,11 @@ public class Member extends BaseEntity {
 	private String email;
 
 	//TODO auth 개발 후 response와 log에 출력되지 않게 하기
-	@Column(nullable = false)
+	@JsonIgnore
+	@Column(nullable = false, length = 255)
 	private String password;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 10)
 	private String name;
 
 	@Column
