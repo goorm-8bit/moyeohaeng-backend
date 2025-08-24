@@ -19,7 +19,7 @@ public class AuthController {
 
 	private final AuthService authService;
 
-	@PostMapping("/register")
+	@PostMapping("/signup")
 	public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
 		authService.signUp(signUpRequest);
 
