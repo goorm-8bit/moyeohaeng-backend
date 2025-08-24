@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import eightbit.moyeohaeng.domain.auth.dto.SignUpRequest;
+import eightbit.moyeohaeng.domain.auth.dto.request.SignUpRequest;
 import eightbit.moyeohaeng.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
