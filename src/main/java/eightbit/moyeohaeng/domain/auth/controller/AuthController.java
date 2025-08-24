@@ -12,7 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("v1/auth")
+@RequestMapping("/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -21,6 +21,7 @@ public class AuthController {
 	@PostMapping("/register")
 	public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
 		authService.signUp(signUpRequest);
+
 		return ResponseEntity.ok().build();
 	}
 
