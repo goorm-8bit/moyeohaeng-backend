@@ -3,6 +3,8 @@ package eightbit.moyeohaeng.global.team.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,12 +37,15 @@ public interface TeamApi {
 				name = "testParameter",
 				in = ParameterIn.PATH,
 				required = true,
-				description = "테스트용 경로 변수"
+				description = "테스트용 경로 변수",
+				example = "hello"
 			)
 		}
 	)
 	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "응답에 대한 설명"),
+		@ApiResponse(responseCode = "200", description = "응답에 대한 설명",
+		             content = @Content(mediaType = "application/json",
+		                                schema = @Schema(implementation = String.class))),
 		@ApiResponse(responseCode = "404", description = "응답에 대한 설명")
 	})
 	// @RequestBody(description = "", required = true)
