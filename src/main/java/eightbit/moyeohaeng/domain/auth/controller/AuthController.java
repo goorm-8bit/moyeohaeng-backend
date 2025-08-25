@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import eightbit.moyeohaeng.domain.auth.dto.SignUpRequest;
+import eightbit.moyeohaeng.domain.auth.dto.request.LoginRequest;
+import eightbit.moyeohaeng.domain.auth.dto.request.SignUpRequest;
+import eightbit.moyeohaeng.domain.auth.dto.response.TokenResponse;
 import eightbit.moyeohaeng.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,12 @@ public class AuthController {
 		authService.signUp(signUpRequest);
 
 		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+		TokenResponse tokenResponse = authService.login(loginRequest);
+		return ResponseEntity.ok(tokenResponse);
 	}
 
 }
