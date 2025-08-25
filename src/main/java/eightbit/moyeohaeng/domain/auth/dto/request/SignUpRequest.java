@@ -21,4 +21,8 @@ public record SignUpRequest(
 	@Pattern(regexp = "^[a-zA-Z가-힣]{2,10}$", message = "이름은 한글 또는 영어만 사용 가능하며, 특수문자와 공백은 사용할 수 없습니다.")
 	String name
 ) {
+
+	public static SignUpRequest of(String email, String password, String name) {
+		return new SignUpRequest(email, password, name);
+	}
 }
