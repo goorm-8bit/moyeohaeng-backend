@@ -12,6 +12,7 @@ public enum AuthErrorCode implements ErrorCode {
 
 	DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다.", "A1001"),
 	LOGIN_FAIL(HttpStatus.BAD_REQUEST, "이메일과 비밀번호가 일치하지 않습니다.", "A1002"),
+	INVALID_CREDENTIALS(HttpStatus.BAD_REQUEST, "존재하지 않는 이메일 입니다.", "A1003"),
 	// JWT 관련
 	TOKEN_NOT_FOUND_IN_DB(HttpStatus.NOT_FOUND, "토큰이 존재하지 않습니다.", "A1101"),
 	UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다.", "A1102"),

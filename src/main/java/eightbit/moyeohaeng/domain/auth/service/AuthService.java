@@ -13,7 +13,9 @@ import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -40,10 +42,14 @@ public class AuthService {
 
 	public TokenResponse login(LoginRequest loginRequest) {
 		Member member = memberRepository.findByEmail(loginRequest.email())
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+			.orElseThrow(() -> {
+				log.error("존재하지 않는 이메일로 로그인 시도: {}", loginRequest.email());
+				return new AuthException(AuthErrorCode.LOGIN_FAIL);
+			});
 
 		if (!passwordEncoder.matches(loginRequest.password(), member.getPassword())) {
-			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+			log.error("비밀번호 불일치로 로그인 실패: {}", loginRequest.email());
+			throw new AuthException(AuthErrorCode.LOGIN_FAIL);
 		}
 
 		String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(member.getId()));
