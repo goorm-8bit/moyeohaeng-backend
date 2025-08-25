@@ -19,7 +19,7 @@ public class SwaggerConfig {
 	private Info apiInfo() {
 		return new Info()
 			.title("moyeohaeng")
-			.description("moyeohaeng 의 Swagger API 명세서")
+			.description("moyeohaeng의 Swagger API 명세서")
 			.version("v1.0.0");
 	}
 	
