@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.domain.auth.exception;
+package eightbit.moyeohaeng.domain.auth.common.success;
 
 import org.springframework.http.HttpStatus;
 
