@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.global.success.handler;
+package eightbit.moyeohaeng.global.handler;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;

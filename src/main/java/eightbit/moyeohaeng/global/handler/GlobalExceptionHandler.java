@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.global.exception.handler;
+package eightbit.moyeohaeng.global.handler;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import eightbit.moyeohaeng.global.exception.common.BaseException;
 import eightbit.moyeohaeng.global.exception.common.ErrorCode;
 import eightbit.moyeohaeng.global.exception.common.ErrorResponse;
+import eightbit.moyeohaeng.global.exception.handler.GlobalErrorCode;
 import eightbit.moyeohaeng.global.utils.GlobalLogger;
 
 /**
