@@ -1,10 +1,10 @@
-package eightbit.moyeohaeng.domain.project.plan.dto.response;
+package eightbit.moyeohaeng.domain.project.placeblock.dto.response;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import eightbit.moyeohaeng.domain.project.plan.entity.PlaceBlock;
-import eightbit.moyeohaeng.domain.project.plan.entity.PlaceBlockType;
+import eightbit.moyeohaeng.domain.project.placeblock.entity.PlaceBlock;
+import eightbit.moyeohaeng.domain.project.placeblock.entity.PlaceBlockType;
 import lombok.Builder;
 
 /**
