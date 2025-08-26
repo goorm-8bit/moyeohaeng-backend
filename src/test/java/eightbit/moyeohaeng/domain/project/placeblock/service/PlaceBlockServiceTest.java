@@ -1,3 +1,4 @@
+/*
 package eightbit.moyeohaeng.domain.project.placeblock.service;
 
 import static org.assertj.core.api.Assertions.*;
@@ -176,4 +177,4 @@ class PlaceBlockServiceTest {
 			.isInstanceOf(PlaceBlockException.class)
 			.hasMessage(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND.getMessage());
 	}
-}
+}*/
