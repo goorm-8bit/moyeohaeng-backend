@@ -3,10 +3,10 @@ package eightbit.moyeohaeng.domain.member.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eightbit.moyeohaeng.domain.member.common.exception.MemberErrorCode;
+import eightbit.moyeohaeng.domain.member.common.exception.MemberException;
 import eightbit.moyeohaeng.domain.member.dto.request.MemberUpdateRequest;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
-import eightbit.moyeohaeng.domain.member.exception.MemberErrorCode;
-import eightbit.moyeohaeng.domain.member.exception.MemberException;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MemberService {
 	private final MemberRepository memberRepository;
-
 
 	@Transactional
 	public void update(Long memberId, MemberUpdateRequest request) {

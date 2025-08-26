@@ -4,11 +4,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eightbit.moyeohaeng.domain.auth.common.exception.AuthErrorCode;
+import eightbit.moyeohaeng.domain.auth.common.exception.AuthException;
 import eightbit.moyeohaeng.domain.auth.dto.request.LoginRequest;
 import eightbit.moyeohaeng.domain.auth.dto.request.SignUpRequest;
 import eightbit.moyeohaeng.domain.auth.dto.response.TokenResponse;
-import eightbit.moyeohaeng.domain.auth.exception.AuthErrorCode;
-import eightbit.moyeohaeng.domain.auth.exception.AuthException;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;

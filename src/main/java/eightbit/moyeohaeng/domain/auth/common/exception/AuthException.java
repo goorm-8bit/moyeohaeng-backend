@@ -1,6 +1,6 @@
-package eightbit.moyeohaeng.domain.auth.exception;
+package eightbit.moyeohaeng.domain.auth.common.exception;
 
-import eightbit.moyeohaeng.global.exception.common.BaseException;
+import eightbit.moyeohaeng.global.exception.BaseException;
 
 public class AuthException extends BaseException {
 	public AuthException(AuthErrorCode errorCode) {

@@ -1,8 +1,6 @@
 package eightbit.moyeohaeng.domain.member.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.util.Optional;
@@ -14,10 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import eightbit.moyeohaeng.domain.member.common.exception.MemberErrorCode;
+import eightbit.moyeohaeng.domain.member.common.exception.MemberException;
 import eightbit.moyeohaeng.domain.member.dto.request.MemberUpdateRequest;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
-import eightbit.moyeohaeng.domain.member.exception.MemberErrorCode;
-import eightbit.moyeohaeng.domain.member.exception.MemberException;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,7 +26,6 @@ class MemberServiceTest {
 
 	@Mock
 	private MemberRepository memberRepository;
-
 
 	@DisplayName("회원 정보 수정 테스트 - 성공")
 	@Test

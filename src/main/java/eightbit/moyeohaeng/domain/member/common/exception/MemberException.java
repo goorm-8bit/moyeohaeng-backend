@@ -1,6 +1,6 @@
-package eightbit.moyeohaeng.domain.member.exception;
+package eightbit.moyeohaeng.domain.member.common.exception;
 
-import eightbit.moyeohaeng.global.exception.common.BaseException;
+import eightbit.moyeohaeng.global.exception.BaseException;
 
 public class MemberException extends BaseException {
 

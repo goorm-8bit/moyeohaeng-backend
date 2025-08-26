@@ -6,6 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import eightbit.moyeohaeng.global.exception.BaseException;
+import eightbit.moyeohaeng.global.exception.ErrorCode;
+
 class BaseExceptionTest {
 
 	// 테스트용 ErrorCode 구현
