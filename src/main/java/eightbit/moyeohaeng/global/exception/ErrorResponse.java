@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.global.exception.common;
+package eightbit.moyeohaeng.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

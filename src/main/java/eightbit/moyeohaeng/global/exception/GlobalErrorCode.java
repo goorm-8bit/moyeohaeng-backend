@@ -1,8 +1,7 @@
-package eightbit.moyeohaeng.global.exception.handler;
+package eightbit.moyeohaeng.global.exception;
 
 import org.springframework.http.HttpStatus;
 
-import eightbit.moyeohaeng.global.exception.common.ErrorCode;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

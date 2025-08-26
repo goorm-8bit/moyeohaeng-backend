@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.global.exception.common;
+package eightbit.moyeohaeng.global.exception;
 
 import java.util.Arrays;
 import java.util.Objects;
