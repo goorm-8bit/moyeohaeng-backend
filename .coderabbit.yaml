@@ -3,13 +3,13 @@ language: "ko-KR"
 tone_instructions: "한국어로 친근하고 건설적인 피드백을 제공해주세요."
 
 reviews:
-  # assertive를 concise로 변경하여 간결한 리뷰를 요청
-  profile: "concise" 
+  # 간결한 톤은 profile: "chill" + tone_instructions로 유도합니다.
+  profile: "chill"
   high_level_summary: true
   auto_review:
     enabled: true
     drafts: false
-    ignore_title_keywords: ["wip", "draft"]
+    ignore_title_keywords: [ "wip", "draft" ]
 
   # path_instructions 섹션을 삭제하거나 중요한 내용만 남겨 불필요한 리뷰를 줄임
   # 이 예시에서는 삭제함
@@ -34,8 +34,6 @@ reviews:
       enabled: false
     checkstyle:
       enabled: false
-    spotbugs:
-      enabled: true
     gitleaks:
       enabled: true
     semgrep:
