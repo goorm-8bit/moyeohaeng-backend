@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: moyeohaeng
+  datasource:
+    url: ${SPRING_MYSQL_URL}
+    username: ${SPRING_MYSQL_USERNAME}
+    password: ${SPRING_MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+    open-in-view: false
+    show-sql: false
+
+jwt:
+  secret:
+    key: ${SPRING_JWT_SECRET_KEY}
+  access-token:
+    expire-length: 3600000 # 1시간
+  refresh-token:
+    expire-length: 604800000 # 7일
+
+cors:
+  allowed-origins: https://moyeohaeng.online,https://dev.moyeohaeng.online
+  allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
+  allowed-headers: Content-type,Authorization
+
+management:
+  server:
+    port: 9090
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+    tags:
+      application: ${spring.application.name}
+
+server:
+  port: 8080
