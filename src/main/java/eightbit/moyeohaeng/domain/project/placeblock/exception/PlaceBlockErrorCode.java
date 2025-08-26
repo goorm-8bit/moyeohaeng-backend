@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.domain.project.plan.exception;
+package eightbit.moyeohaeng.domain.project.placeblock.exception;
 
 import org.springframework.http.HttpStatus;
 
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 public enum PlaceBlockErrorCode implements ErrorCode {
 	PLACE_BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "장소 블록을 찾을 수 없습니다.", "PB1001"),
 	FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다.", "PB1002"),
-	LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "프로젝트의 장소 블록 최대 개수를 초과했습니다.(max=100)", "PB1003");
+	LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "프로젝트의 장소 블록 최대 개수를 초과했습니다.(max=%d)", "PB1003");
 
 	private final HttpStatus status;
 	private final String message;

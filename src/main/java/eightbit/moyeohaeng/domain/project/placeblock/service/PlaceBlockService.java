@@ -1,18 +1,18 @@
-package eightbit.moyeohaeng.domain.project.plan.service;
+package eightbit.moyeohaeng.domain.project.placeblock.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import eightbit.moyeohaeng.domain.project.plan.dto.request.PlaceBlockCreateRequest;
-import eightbit.moyeohaeng.domain.project.plan.dto.request.PlaceBlockUpdateRequest;
-import eightbit.moyeohaeng.domain.project.plan.dto.response.PlaceBlockPageResponse;
-import eightbit.moyeohaeng.domain.project.plan.dto.response.PlaceBlockResponse;
-import eightbit.moyeohaeng.domain.project.plan.entity.PlaceBlock;
-import eightbit.moyeohaeng.domain.project.plan.exception.PlaceBlockErrorCode;
-import eightbit.moyeohaeng.domain.project.plan.exception.PlaceBlockException;
-import eightbit.moyeohaeng.domain.project.plan.repository.PlaceBlockRepository;
+import eightbit.moyeohaeng.domain.project.placeblock.dto.request.PlaceBlockCreateRequest;
+import eightbit.moyeohaeng.domain.project.placeblock.dto.request.PlaceBlockUpdateRequest;
+import eightbit.moyeohaeng.domain.project.placeblock.dto.response.PlaceBlockResponse;
+import eightbit.moyeohaeng.domain.project.placeblock.entity.PlaceBlock;
+import eightbit.moyeohaeng.domain.project.placeblock.exception.PlaceBlockErrorCode;
+import eightbit.moyeohaeng.domain.project.placeblock.exception.PlaceBlockException;
+import eightbit.moyeohaeng.domain.project.placeblock.repository.PlaceBlockRepository;
+import eightbit.moyeohaeng.global.dto.PageResponse;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -31,14 +31,23 @@ public class PlaceBlockService {
 	/**
 	 * 새로운 장소 블록을 생성합니다.
 	 * 최대 개수(100개) 제한과 사용자 권한을 검사합니다.
+	 * 새로운 장소 블록을 생성합니다.
+	 * 최대 개수 제한과 사용자 권한을 검사합니다.
+	 *
+	 * @param projectId 프로젝트 ID
+	 * @param userId    요청 사용자 ID
+	 * @param userRole  요청 사용자 역할(OWNER/EDITOR/VIEWER)
+	 * @param req       생성 요청 DTO
+	 * @return 생성된 장소 블록 응답 DTO
+	 * @throws PlaceBlockException 권한 부족(FORBIDDEN) 또는 개수 제한 초과(LIMIT_EXCEEDED) 시
 	 */
 	@Transactional
 	public PlaceBlockResponse create(Long projectId, Long userId, String userRole, PlaceBlockCreateRequest req) {
 		if (!canEdit(userRole))
 			throw new PlaceBlockException(PlaceBlockErrorCode.FORBIDDEN);
 
-		if (repository.countByProjectId(projectId) >= MAX_PER_PROJECT) {
-			throw new PlaceBlockException(PlaceBlockErrorCode.LIMIT_EXCEEDED);
+		if (repository.countByProjectIdWithLock(projectId) >= MAX_PER_PROJECT) {
+			throw new PlaceBlockException(PlaceBlockErrorCode.LIMIT_EXCEEDED, MAX_PER_PROJECT);
 		}
 
 		PlaceBlock saved = repository.save(req.toEntity(projectId));
@@ -55,9 +64,9 @@ public class PlaceBlockService {
 	/**
 	 * 주어진 프로젝트 내의 모든 장소 블록을 페이지로 조회합니다.
 	 */
-	public PlaceBlockPageResponse list(Long projectId, Pageable pageable) {
+	public PageResponse<PlaceBlockResponse> getPages(Long projectId, Pageable pageable) {
 		Page<PlaceBlock> page = repository.findByProjectId(projectId, pageable);
-		return PlaceBlockPageResponse.from(page);
+		return PageResponse.from(page, PlaceBlockResponse::from);
 	}
 
 	/**
@@ -72,34 +81,7 @@ public class PlaceBlockService {
 
 		PlaceBlock pb = getOrThrow(projectId, placeBlockId);
 
-		if (req.name() != null)
-			pb.setName(req.name());
-		if (req.address() != null)
-			pb.setAddress(req.address());
-		if (req.latitude() != null)
-			pb.setLatitude(req.latitude());
-		if (req.longitude() != null)
-			pb.setLongitude(req.longitude());
-		if (req.memo() != null)
-			pb.setMemo(req.memo());
-		if (req.date() != null)
-			pb.setDate(req.date());
-		if (req.time() != null)
-			pb.setTime(req.time());
-		if (req.reviewLink() != null)
-			pb.setReviewLink(req.reviewLink());
-		if (req.detailLink() != null)
-			pb.setDetailLink(req.detailLink());
-		if (req.category() != null)
-			pb.setCategory(req.category());
-		if (req.color() != null)
-			pb.setColor(req.color());
-		if (req.author() != null)
-			pb.setAuthor(req.author());
-		if (req.type() != null)
-			pb.setType(req.type());
-
-		repository.save(pb);
+		pb.apply(req);
 
 		return PlaceBlockResponse.from(pb);
 	}
