@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.domain.member.exception;
+package eightbit.moyeohaeng.domain.member.common.exception;
 
 import eightbit.moyeohaeng.global.exception.BaseException;
 
