@@ -28,9 +28,12 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/v1/auth/register", "/v1/auth/login").permitAll()
-				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**" ).permitAll()
-				.anyRequest().authenticated())
+				.requestMatchers("/v1/auth/**")
+				.permitAll()
+				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**")
+				.permitAll()
+				.anyRequest()
+				.authenticated())
 			.build();
 	}
 
