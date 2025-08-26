@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import eightbit.moyeohaeng.domain.auth.common.success.AuthSuccessCode;
 import eightbit.moyeohaeng.domain.auth.dto.request.LoginRequest;
 import eightbit.moyeohaeng.domain.auth.dto.request.SignUpRequest;
 import eightbit.moyeohaeng.domain.auth.dto.response.TokenResponse;
-import eightbit.moyeohaeng.domain.auth.exception.AuthSuccessCode;
 import eightbit.moyeohaeng.domain.auth.service.AuthService;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
