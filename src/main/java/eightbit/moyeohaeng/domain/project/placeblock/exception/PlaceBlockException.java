@@ -1,6 +1,6 @@
 package eightbit.moyeohaeng.domain.project.placeblock.exception;
 
-import eightbit.moyeohaeng.global.exception.common.BaseException;
+import eightbit.moyeohaeng.global.exception.BaseException;
 
 /**
  * PlaceBlock 도메인 전용 예외.
