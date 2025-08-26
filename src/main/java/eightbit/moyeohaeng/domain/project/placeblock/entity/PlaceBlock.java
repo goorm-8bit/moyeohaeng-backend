@@ -1,11 +1,13 @@
-package eightbit.moyeohaeng.domain.project.plan.entity;
+package eightbit.moyeohaeng.domain.project.placeblock.entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
+import eightbit.moyeohaeng.domain.project.placeblock.dto.request.PlaceBlockUpdateRequest;
 import eightbit.moyeohaeng.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,7 +36,6 @@ import lombok.Setter;
  * Soft delete 대상으로, 좌표 및 메타정보(메모/링크/일정/색상 등)을 포함한다.
  */
 @Getter
-@Setter
 @Entity
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -48,15 +49,18 @@ import lombok.Setter;
 )
 @Check(constraints = "latitude BETWEEN -90 AND 90 AND longitude BETWEEN -180 AND 180")
 @SQLDelete(sql = "UPDATE place_blocks SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class PlaceBlock extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@EqualsAndHashCode.Include
+	@Setter(AccessLevel.NONE)
 	private Long id;
 
 	@NotNull
 	@Column(name = "project_id", nullable = false)
+	@Setter(AccessLevel.NONE)
 	private Long projectId;
 
 	@NotBlank
@@ -109,6 +113,7 @@ public class PlaceBlock extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 20)
+	@NotNull
 	private PlaceBlockType type;
 
 	/**
@@ -124,5 +129,34 @@ public class PlaceBlock extends BaseEntity {
 			.latitude(latitude).longitude(longitude)
 			.author(author).type(type)
 			.build();
+	}
+
+	public void apply(PlaceBlockUpdateRequest req) {
+		if (req.name() != null)
+			this.name = req.name();
+		if (req.address() != null)
+			this.address = req.address();
+		if (req.latitude() != null)
+			this.latitude = req.latitude();
+		if (req.longitude() != null)
+			this.longitude = req.longitude();
+		if (req.memo() != null)
+			this.memo = req.memo();
+		if (req.date() != null)
+			this.date = req.date();
+		if (req.time() != null)
+			this.time = req.time();
+		if (req.reviewLink() != null)
+			this.reviewLink = req.reviewLink();
+		if (req.detailLink() != null)
+			this.detailLink = req.detailLink();
+		if (req.category() != null)
+			this.category = req.category();
+		if (req.color() != null)
+			this.color = req.color();
+		if (req.author() != null)
+			this.author = req.author();
+		if (req.type() != null)
+			this.type = req.type();
 	}
 }
