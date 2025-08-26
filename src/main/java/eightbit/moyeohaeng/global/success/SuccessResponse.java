@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.global.success.common;
+package eightbit.moyeohaeng.global.success;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
