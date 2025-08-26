@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.global.success.common;
+package eightbit.moyeohaeng.global.success;
 
 import org.springframework.http.HttpStatus;
 

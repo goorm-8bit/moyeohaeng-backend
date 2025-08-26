@@ -6,6 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import eightbit.moyeohaeng.global.success.CommonSuccessCode;
+import eightbit.moyeohaeng.global.success.SuccessCode;
+import eightbit.moyeohaeng.global.success.SuccessResponse;
+
 class BaseSuccessResponseTest {
 
 	@Test
