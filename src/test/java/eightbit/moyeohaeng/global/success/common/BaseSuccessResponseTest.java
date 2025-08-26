@@ -69,9 +69,9 @@ class BaseSuccessResponseTest {
 		SuccessResponse<String> response = SuccessResponse.of(successCode, testData);
 
 		// then
-		assertThat(response.getStatus()).isNotNull();
-		assertThat(response.getMessage()).isNotNull();
-		assertThat(response.getData()).isNotNull();
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.getMessage()).isEqualTo(successCode.getMessage());
+		assertThat(response.getData()).isEqualTo(testData);
 	}
 
 	// 테스트용 커스텀 SuccessCode 구현체
