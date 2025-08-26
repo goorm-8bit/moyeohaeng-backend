@@ -58,4 +58,9 @@ public class AuthService {
 		return new TokenResponse(accessToken, refreshToken);
 	}
 
+	public String reissueToken(String refreshToken) {
+		return jwtTokenProvider.reissueAccessToken(refreshToken);
+
+	}
+
 }

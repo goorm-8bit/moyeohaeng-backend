@@ -1,16 +1,26 @@
 package eightbit.moyeohaeng.domain.auth.controller;
 
+import java.util.HashMap;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import eightbit.moyeohaeng.domain.auth.common.exception.AuthErrorCode;
+import eightbit.moyeohaeng.domain.auth.common.exception.AuthException;
 import eightbit.moyeohaeng.domain.auth.common.success.AuthSuccessCode;
 import eightbit.moyeohaeng.domain.auth.dto.request.LoginRequest;
 import eightbit.moyeohaeng.domain.auth.dto.request.SignUpRequest;
 import eightbit.moyeohaeng.domain.auth.dto.response.TokenResponse;
 import eightbit.moyeohaeng.domain.auth.service.AuthService;
+import eightbit.moyeohaeng.domain.auth.utils.CookieGenerator;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -49,12 +59,46 @@ public class AuthController {
 	 * 데이터를 포함한 성공 응답 예시
 	 *
 	 * @param loginRequest 로그인 요청 정보
-	 * @return 토큰 정보를 포함한 성공 응답 (200 OK)
+	 * @return accessToken은 body, refreshToken은 http only 포함한 성공 응답 (200 OK)
 	 */
 	@PostMapping("/login")
-	public SuccessResponse<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+	public ResponseEntity<SuccessResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
 		TokenResponse tokenResponse = authService.login(loginRequest);
-		return SuccessResponse.of(AuthSuccessCode.LOGIN_SUCCESS, tokenResponse); // 로그인 성공 (200) 응답
+		ResponseCookie responseCookie = CookieGenerator.createRefreshTokenCookie(tokenResponse.refreshToken());
+
+		HashMap<String, Object> response = new HashMap<>();
+		response.put("accessToken", tokenResponse.accessToken());
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+			.body(SuccessResponse.of(AuthSuccessCode.LOGIN_SUCCESS, tokenResponse));
+	}
+
+	@PostMapping("/refresh")
+	public ResponseEntity<SuccessResponse> reissueAccessToken(HttpServletRequest request) {
+		// HTTP-only 쿠키에서 리프레시 토큰 추출
+		String refreshToken = null;
+		Cookie[] cookies = request.getCookies();
+
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if ("refreshToken".equals(cookie.getName())) {
+					refreshToken = cookie.getValue();
+					break;
+				}
+			}
+		}
+
+		if (refreshToken == null) {
+			throw new AuthException(AuthErrorCode.REFRESH_TOKEN_NOT_FOUND);
+		}
+
+		// 액세스 토큰 재발급
+		String accessToken = authService.reissueToken(refreshToken);
+
+		HashMap<String, Object> response = new HashMap<>();
+		response.put("accessToken", accessToken);
+		return ResponseEntity.ok().body(SuccessResponse.of(AuthSuccessCode.TOKEN_REFRESH_SUCCESS, response));
 	}
 
 }
