@@ -2,7 +2,7 @@ package eightbit.moyeohaeng.domain.member.exception;
 
 import org.springframework.http.HttpStatus;
 
-import eightbit.moyeohaeng.global.exception.common.ErrorCode;
+import eightbit.moyeohaeng.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
