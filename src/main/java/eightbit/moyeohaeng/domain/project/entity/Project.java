@@ -38,7 +38,7 @@ public class Project extends BaseEntity {
 	private Long teamId;
 
 	@NotBlank
-	@Column(name = "title", nullable = false)
+	@Column(name = "title", nullable = false, length = 50)
 	private String title;
 
 	@Column(name = "external_id", nullable = false, length = 36, unique = true)
@@ -48,7 +48,7 @@ public class Project extends BaseEntity {
 	@Column(name = "project_access", nullable = false)
 	private ProjectAccess projectAccess;
 
-	@Column(name = "location")
+	@Column(name = "location", length = 50)
 	private String location;
 
 	@Column(name = "start_date", nullable = true)
