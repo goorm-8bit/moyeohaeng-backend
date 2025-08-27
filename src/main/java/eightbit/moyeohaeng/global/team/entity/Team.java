@@ -29,15 +29,15 @@ import org.hibernate.annotations.SQLDelete;
 public class Team extends BaseEntity {
 
 	@Id
-	@Column(name = "team_id")
+//	@Column(name = "team_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "team_name")
+	@Column(name = "team_name", nullable = false, length = 100)
 	private String name;
 	
 	@Builder.Default
-	@OneToMany(mappedBy = "", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<TeamMember> teamMembers = new ArrayList<>();
 	
 }
