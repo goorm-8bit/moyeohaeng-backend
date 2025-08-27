@@ -108,6 +108,7 @@ public class PlaceBlock extends BaseEntity {
 		return PlaceBlock.builder()
 			.projectId(projectId).name(name)
 			.latitude(latitude).longitude(longitude)
+			.author(author)
 			.build();
 	}
 
