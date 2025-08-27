@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
 import eightbit.moyeohaeng.global.success.CommonSuccessCode;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
+import eightbit.moyeohaeng.global.utils.GlobalLogger;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -78,7 +79,9 @@ public class GlobalSuccessResponseHandler implements ResponseBodyAdvice<Object> 
 					SuccessResponse.of(mapHttpStatusToSuccessCode(effectiveStatus), body)
 				);
 			} catch (JsonProcessingException e) {
-				return body;
+				// JSON 변환 실패 시 로깅하고 에러 응답 반환
+				GlobalLogger.error("[응답 직렬화 실패] Failed to serialize String response: " + e.getMessage());
+				throw new RuntimeException("응답 직렬화 실패", e);
 			}
 		}
 
