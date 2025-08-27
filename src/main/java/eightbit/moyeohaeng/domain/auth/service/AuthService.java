@@ -12,6 +12,8 @@ import eightbit.moyeohaeng.domain.auth.dto.request.SignUpRequest;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,12 +57,17 @@ public class AuthService {
 		String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(member.getId()));
 		String refreshToken = jwtTokenProvider.createRefreshToken(String.valueOf(member.getId()));
 
-		return new TokenResult(accessToken, refreshToken);
+		return TokenResult.of(accessToken, refreshToken);
 	}
 
 	public String reissueToken(String refreshToken) {
-		return jwtTokenProvider.reissueAccessToken(refreshToken);
-
+		try {
+			return jwtTokenProvider.reissueAccessToken(refreshToken);
+		} catch (ExpiredJwtException e) {
+			throw new AuthException(AuthErrorCode.REFRESH_TOKEN_EXPIRED);
+		} catch (JwtException e) {
+			throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+		}
 	}
 
 }
