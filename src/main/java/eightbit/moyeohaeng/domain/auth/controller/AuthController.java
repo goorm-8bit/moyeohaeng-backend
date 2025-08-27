@@ -39,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController implements AuthApi {
 
 	private final AuthService authService;
+	private final CookieGenerator cookieGenerator;
 
 	/**
 	 * 회원 가입 API
@@ -63,7 +64,7 @@ public class AuthController implements AuthApi {
 	@PostMapping("/login")
 	public ResponseEntity<SuccessResponse<String>> login(@Valid @RequestBody LoginRequest loginRequest) {
 		TokenResult tokenResult = authService.login(loginRequest);
-		ResponseCookie responseCookie = CookieGenerator.createRefreshTokenCookie(tokenResult.refreshToken());
+		ResponseCookie responseCookie = cookieGenerator.createRefreshTokenCookie(tokenResult.refreshToken());
 
 		return ResponseEntity.ok()
 			.header(HttpHeaders.SET_COOKIE, responseCookie.toString())
