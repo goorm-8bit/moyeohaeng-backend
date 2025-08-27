@@ -5,7 +5,6 @@ import java.util.Objects;
 import org.hibernate.validator.constraints.URL;
 
 import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
-import eightbit.moyeohaeng.domain.project.entity.PlaceBlockType;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
@@ -50,10 +49,8 @@ public record PlaceBlockCreateRequest(
 
 	@Email
 	@Size(max = 120)
-	String author,
+	String author
 
-	@NotNull
-	PlaceBlockType type
 ) {
 	/**
 	 * DTO를 PlaceBlock 엔티티로 변환합니다.
@@ -74,7 +71,6 @@ public record PlaceBlockCreateRequest(
 			.category(category)
 			.color(color)
 			.author(author)
-			.type(type)
 			.build();
 	}
 }

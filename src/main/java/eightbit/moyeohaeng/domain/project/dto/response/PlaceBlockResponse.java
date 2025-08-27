@@ -1,7 +1,6 @@
 package eightbit.moyeohaeng.domain.project.dto.response;
 
 import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
-import eightbit.moyeohaeng.domain.project.entity.PlaceBlockType;
 import lombok.Builder;
 
 /**
@@ -20,8 +19,7 @@ public record PlaceBlockResponse(
 	String detailLink,
 	String category,
 	String color,
-	String author,
-	PlaceBlockType type
+	String author
 ) {
 	public static PlaceBlockResponse from(PlaceBlock e) {
 		return PlaceBlockResponse.builder()
@@ -36,7 +34,6 @@ public record PlaceBlockResponse(
 			.category(e.getCategory())
 			.color(e.getColor())
 			.author(e.getAuthor())
-			.type(e.getType())
 			.build();
 	}
 }

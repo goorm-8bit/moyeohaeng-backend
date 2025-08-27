@@ -5,7 +5,6 @@ import java.time.LocalTime;
 
 import org.hibernate.validator.constraints.URL;
 
-import eightbit.moyeohaeng.domain.project.entity.PlaceBlockType;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
@@ -54,8 +53,6 @@ public record PlaceBlockUpdateRequest(
 
 	@Email
 	@Size(max = 120)
-	String author,
-
-	PlaceBlockType type
+	String author
 ) {
 }
