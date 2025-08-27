@@ -30,9 +30,9 @@ public class PlaceGroup extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, length = 50)
+	@Column(name = "name", nullable = false, length = 50)
 	private String name;
 
-	@Column(length = 20)
+	@Column(name = "color", length = 20)
 	private String color;
 }

@@ -1,6 +1,5 @@
 package eightbit.moyeohaeng.domain.project.entity;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 import org.hibernate.annotations.Check;
@@ -43,7 +42,7 @@ public class TimeBlock extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 10)
-	private DayOfWeek day;
+	private Integer day;
 
 	@Column(name = "start_time", nullable = false)
 	private LocalTime startTime;
@@ -51,7 +50,7 @@ public class TimeBlock extends BaseEntity {
 	@Column(name = "end_time", nullable = false)
 	private LocalTime endTime;
 
-	@Column(length = 255)
+	@Column(name = "memo", length = 50)
 	private String memo;
 
 	@Column(name = "place_block_id", nullable = false)
