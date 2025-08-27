@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.domain.project.placeblock.entity;
+package eightbit.moyeohaeng.domain.project.entity;
 
 /**
  * 장소 블록의 유형을 정의합니다.

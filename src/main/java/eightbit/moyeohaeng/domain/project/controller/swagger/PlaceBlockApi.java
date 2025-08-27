@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.domain.project.placeblock.controller.swagger;
+package eightbit.moyeohaeng.domain.project.controller.swagger;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import eightbit.moyeohaeng.domain.project.placeblock.dto.request.PlaceBlockCreateRequest;
-import eightbit.moyeohaeng.domain.project.placeblock.dto.request.PlaceBlockUpdateRequest;
-import eightbit.moyeohaeng.domain.project.placeblock.dto.response.PlaceBlockResponse;
+import eightbit.moyeohaeng.domain.project.dto.request.PlaceBlockCreateRequest;
+import eightbit.moyeohaeng.domain.project.dto.request.PlaceBlockUpdateRequest;
+import eightbit.moyeohaeng.domain.project.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.global.dto.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.domain.project.placeblock.controller;
+package eightbit.moyeohaeng.domain.project.controller;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import eightbit.moyeohaeng.domain.project.placeblock.controller.swagger.PlaceBlockApi;
-import eightbit.moyeohaeng.domain.project.placeblock.dto.request.PlaceBlockCreateRequest;
-import eightbit.moyeohaeng.domain.project.placeblock.dto.request.PlaceBlockUpdateRequest;
-import eightbit.moyeohaeng.domain.project.placeblock.dto.response.PlaceBlockResponse;
-import eightbit.moyeohaeng.domain.project.placeblock.service.PlaceBlockService;
+import eightbit.moyeohaeng.domain.project.controller.swagger.PlaceBlockApi;
+import eightbit.moyeohaeng.domain.project.dto.request.PlaceBlockCreateRequest;
+import eightbit.moyeohaeng.domain.project.dto.request.PlaceBlockUpdateRequest;
+import eightbit.moyeohaeng.domain.project.dto.response.PlaceBlockResponse;
+import eightbit.moyeohaeng.domain.project.service.PlaceBlockService;
 import eightbit.moyeohaeng.global.dto.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

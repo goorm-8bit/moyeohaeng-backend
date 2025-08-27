@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.domain.project.placeblock.dto.request;
+package eightbit.moyeohaeng.domain.project.dto.request;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -6,8 +6,8 @@ import java.util.Objects;
 
 import org.hibernate.validator.constraints.URL;
 
-import eightbit.moyeohaeng.domain.project.placeblock.entity.PlaceBlock;
-import eightbit.moyeohaeng.domain.project.placeblock.entity.PlaceBlockType;
+import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
+import eightbit.moyeohaeng.domain.project.entity.PlaceBlockType;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;

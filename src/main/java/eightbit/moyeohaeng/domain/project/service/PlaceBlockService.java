@@ -1,17 +1,17 @@
-package eightbit.moyeohaeng.domain.project.placeblock.service;
+package eightbit.moyeohaeng.domain.project.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import eightbit.moyeohaeng.domain.project.placeblock.dto.request.PlaceBlockCreateRequest;
-import eightbit.moyeohaeng.domain.project.placeblock.dto.request.PlaceBlockUpdateRequest;
-import eightbit.moyeohaeng.domain.project.placeblock.dto.response.PlaceBlockResponse;
-import eightbit.moyeohaeng.domain.project.placeblock.entity.PlaceBlock;
-import eightbit.moyeohaeng.domain.project.placeblock.exception.PlaceBlockErrorCode;
-import eightbit.moyeohaeng.domain.project.placeblock.exception.PlaceBlockException;
-import eightbit.moyeohaeng.domain.project.placeblock.repository.PlaceBlockRepository;
+import eightbit.moyeohaeng.domain.project.dto.request.PlaceBlockCreateRequest;
+import eightbit.moyeohaeng.domain.project.dto.request.PlaceBlockUpdateRequest;
+import eightbit.moyeohaeng.domain.project.dto.response.PlaceBlockResponse;
+import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
+import eightbit.moyeohaeng.domain.project.exception.PlaceBlockErrorCode;
+import eightbit.moyeohaeng.domain.project.exception.PlaceBlockException;
+import eightbit.moyeohaeng.domain.project.repository.PlaceBlockRepository;
 import eightbit.moyeohaeng.global.dto.PageResponse;
 import lombok.RequiredArgsConstructor;
 
