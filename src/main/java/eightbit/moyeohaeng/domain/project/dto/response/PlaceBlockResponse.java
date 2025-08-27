@@ -1,8 +1,5 @@
 package eightbit.moyeohaeng.domain.project.dto.response;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
 import eightbit.moyeohaeng.domain.project.entity.PlaceBlockType;
 import lombok.Builder;
@@ -20,9 +17,6 @@ public record PlaceBlockResponse(
 	Double latitude,
 	Double longitude,
 	String memo,
-	LocalDate date,
-	LocalTime time,
-	String reviewLink,
 	String detailLink,
 	String category,
 	String color,
@@ -38,9 +32,6 @@ public record PlaceBlockResponse(
 			.latitude(e.getLatitude())
 			.longitude(e.getLongitude())
 			.memo(e.getMemo())
-			.date(e.getDate())
-			.time(e.getTime())
-			.reviewLink(e.getReviewLink())
 			.detailLink(e.getDetailLink())
 			.category(e.getCategory())
 			.color(e.getColor())

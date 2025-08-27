@@ -1,7 +1,5 @@
 package eightbit.moyeohaeng.domain.project.dto.request;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Objects;
 
 import org.hibernate.validator.constraints.URL;
@@ -40,14 +38,6 @@ public record PlaceBlockCreateRequest(
 	@Size(max = 2000)
 	String memo,
 
-	LocalDate date,
-
-	LocalTime time,
-
-	@URL
-	@Size(max = 255)
-	String reviewLink,
-
 	@URL
 	@Size(max = 255)
 	String detailLink,
@@ -80,9 +70,6 @@ public record PlaceBlockCreateRequest(
 			.latitude(latitude)
 			.longitude(longitude)
 			.memo(memo)
-			.date(date)
-			.time(time)
-			.reviewLink(reviewLink)
 			.detailLink(detailLink)
 			.category(category)
 			.color(color)
