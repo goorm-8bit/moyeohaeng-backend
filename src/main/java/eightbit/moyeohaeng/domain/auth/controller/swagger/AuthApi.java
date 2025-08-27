@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.CookieValue;
 import jakarta.validation.Valid;
 
 @Tag(name = "인증 API", description = "회원가입, 로그인, 토큰 갱신 등 인증 관련 API")
@@ -78,6 +78,6 @@ public interface AuthApi {
 		)
 	})
 	SuccessResponse<String> refreshAccessToken(
-		HttpServletRequest request
+		@CookieValue(name = "refreshToken", required = false) String refreshToken
 	);
 }

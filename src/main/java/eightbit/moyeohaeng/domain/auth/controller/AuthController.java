@@ -3,6 +3,7 @@ package eightbit.moyeohaeng.domain.auth.controller;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,6 @@ import eightbit.moyeohaeng.domain.auth.dto.request.SignUpRequest;
 import eightbit.moyeohaeng.domain.auth.service.AuthService;
 import eightbit.moyeohaeng.domain.auth.utils.CookieGenerator;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -72,27 +71,13 @@ public class AuthController implements AuthApi {
 	}
 
 	@PostMapping("/refresh")
-	public SuccessResponse<String> refreshAccessToken(HttpServletRequest request) {
-		// HTTP-only 쿠키에서 리프레시 토큰 추출
-		String refreshToken = null;
-		Cookie[] cookies = request.getCookies();
-
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if ("refreshToken".equals(cookie.getName())) {
-					refreshToken = cookie.getValue();
-					break;
-				}
-			}
-		}
-
-		if (refreshToken == null) {
+	public SuccessResponse<String> refreshAccessToken(
+		@CookieValue(name = "refreshToken", required = false) String refreshToken
+	) {
+		if (refreshToken == null || refreshToken.isBlank()) {
 			throw new AuthException(AuthErrorCode.REFRESH_TOKEN_NOT_FOUND);
 		}
-
-		// 액세스 토큰 재발급
 		String accessToken = authService.reissueToken(refreshToken);
-
 		return SuccessResponse.of(AuthSuccessCode.TOKEN_REFRESH_SUCCESS, accessToken);
 	}
 
