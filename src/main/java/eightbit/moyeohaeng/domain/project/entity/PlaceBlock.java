@@ -1,13 +1,10 @@
-package eightbit.moyeohaeng.domain.project.placeblock.entity;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
+package eightbit.moyeohaeng.domain.project.entity;
 
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import eightbit.moyeohaeng.domain.project.placeblock.dto.request.PlaceBlockUpdateRequest;
+import eightbit.moyeohaeng.domain.project.dto.request.PlaceBlockUpdateRequest;
 import eightbit.moyeohaeng.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -88,13 +85,6 @@ public class PlaceBlock extends BaseEntity {
 	@Column(length = 2000)
 	private String memo;
 
-	private LocalDate date;
-	private LocalTime time;
-
-	@Size(max = 255)
-	@Column(length = 255)
-	private String reviewLink;
-
 	@Size(max = 255)
 	@Column(length = 255)
 	private String detailLink;
@@ -142,12 +132,6 @@ public class PlaceBlock extends BaseEntity {
 			this.longitude = req.longitude();
 		if (req.memo() != null)
 			this.memo = req.memo();
-		if (req.date() != null)
-			this.date = req.date();
-		if (req.time() != null)
-			this.time = req.time();
-		if (req.reviewLink() != null)
-			this.reviewLink = req.reviewLink();
 		if (req.detailLink() != null)
 			this.detailLink = req.detailLink();
 		if (req.category() != null)
