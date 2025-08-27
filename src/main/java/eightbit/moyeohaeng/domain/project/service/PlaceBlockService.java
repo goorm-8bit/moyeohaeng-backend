@@ -81,7 +81,11 @@ public class PlaceBlockService {
 
 		PlaceBlock pb = getOrThrow(projectId, placeBlockId);
 
-		pb.apply(req);
+		pb.update(
+			req.name(), req.address(), req.latitude(), req.longitude(),
+			req.memo(), req.detailLink(), req.category(), req.color(),
+			req.author()
+		);
 
 		return PlaceBlockResponse.from(pb);
 	}

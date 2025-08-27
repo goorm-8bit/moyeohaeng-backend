@@ -4,12 +4,9 @@ import org.hibernate.annotations.Check;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import eightbit.moyeohaeng.domain.project.dto.request.PlaceBlockUpdateRequest;
 import eightbit.moyeohaeng.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -62,85 +59,79 @@ public class PlaceBlock extends BaseEntity {
 
 	@NotBlank
 	@Size(max = 100)
-	@Column(nullable = false, length = 100)
+	@Column(name = "name", nullable = false, length = 100)
 	private String name;
 
 	@Size(max = 255)
-	@Column(length = 255)
+	@Column(name = "address", length = 255)
 	private String address;
 
 	@NotNull
 	@DecimalMin("-90.0")
 	@DecimalMax("90.0")
-	@Column(nullable = false)
+	@Column(name = "latitude", nullable = false)
 	private Double latitude;
 
 	@NotNull
 	@DecimalMin("-180.0")
 	@DecimalMax("180.0")
-	@Column(nullable = false)
+	@Column(name = "longitude", nullable = false)
 	private Double longitude;
 
-	@Size(max = 2000)
-	@Column(length = 2000)
+	@Size(max = 50)
+	@Column(name = "memo", length = 50)
 	private String memo;
 
 	@Size(max = 255)
-	@Column(length = 255)
+	@Column(name = "detail_link", length = 250)
 	private String detailLink;
 
-	@Size(max = 50)
-	@Column(length = 50)
+	@Size(max = 30)
+	@Column(name = "category", length = 30)
 	private String category;
 
 	@Size(max = 20)
-	@Column(length = 20)
+	@Column(name = "color", length = 20)
 	private String color;
 
 	@Size(max = 120)
-	@Column(length = 120)
+	@Column(name = "author", length = 120)
 	private String author;
-
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, length = 20)
-	@NotNull
-	private PlaceBlockType type;
 
 	/**
 	 * 특정 프로젝트에 새로운 PlaceBlock 엔티티를 생성하는 정적 팩토리 메서드.
 	 * 필수 정보(이름, 좌표 등)와 함께 블록의 타입(PIN, PLACE_BLOCK)을 지정합니다.
 	 */
 	public static PlaceBlock of(
-		Long projectId, String name, Double latitude, Double longitude,
-		String author, PlaceBlockType type
+		Long projectId, String name, Double latitude, Double longitude, String author
 	) {
 		return PlaceBlock.builder()
 			.projectId(projectId).name(name)
 			.latitude(latitude).longitude(longitude)
-			.author(author).type(type)
 			.build();
 	}
 
-	public void apply(PlaceBlockUpdateRequest req) {
-		if (req.name() != null)
-			this.name = req.name();
-		if (req.address() != null)
-			this.address = req.address();
-		if (req.latitude() != null)
-			this.latitude = req.latitude();
-		if (req.longitude() != null)
-			this.longitude = req.longitude();
-		if (req.memo() != null)
-			this.memo = req.memo();
-		if (req.detailLink() != null)
-			this.detailLink = req.detailLink();
-		if (req.category() != null)
-			this.category = req.category();
-		if (req.color() != null)
-			this.color = req.color();
-		if (req.author() != null)
-			this.author = req.author();
-		if (req.type() != null)
-			this.type = req.type();
+	public void update(
+		String name, String address, Double latitude, Double longitude,
+		String memo, String detailLink, String category, String color, String author) {
+
+		if (name != null)
+			this.name = name;
+		if (address != null)
+			this.address = address;
+		if (latitude != null)
+			this.latitude = latitude;
+		if (longitude != null)
+			this.longitude = longitude;
+		if (memo != null)
+			this.memo = memo;
+		if (detailLink != null)
+			this.detailLink = detailLink;
+		if (category != null)
+			this.category = category;
+		if (color != null)
+			this.color = color;
+		if (author != null)
+			this.author = author;
 	}
 }
