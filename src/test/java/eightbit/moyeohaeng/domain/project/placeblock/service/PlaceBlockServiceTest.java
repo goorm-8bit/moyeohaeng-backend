@@ -17,7 +17,6 @@ import eightbit.moyeohaeng.domain.project.placeblock.dto.request.PlaceBlockCreat
 import eightbit.moyeohaeng.domain.project.placeblock.dto.request.PlaceBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.project.placeblock.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.domain.project.placeblock.entity.PlaceBlock;
-import eightbit.moyeohaeng.domain.project.placeblock.entity.PlaceBlockType;
 import eightbit.moyeohaeng.domain.project.placeblock.exception.PlaceBlockErrorCode;
 import eightbit.moyeohaeng.domain.project.placeblock.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.project.placeblock.repository.PlaceBlockRepository;
@@ -37,8 +36,7 @@ class PlaceBlockServiceTest {
 	private final String VIEWER_ROLE = "VIEWER";
 	private final String EDITOR_ROLE = "EDITOR";
 	private final PlaceBlockCreateRequest CREATE_REQUEST = new PlaceBlockCreateRequest(
-		"테스트 블록", null, 37.0, 127.0, null, null, null, null, null, null, null, "test@test.com",
-		PlaceBlockType.PLACE_BLOCK
+		"테스트 블록", null, 37.0, 127.0, null, null, null, null, null, null, "test@test.com"
 	);
 
 	@DisplayName("생성_성공_유효한_요청")
@@ -46,7 +44,7 @@ class PlaceBlockServiceTest {
 	void create_success_with_valid_request() {
 		// given
 		PlaceBlock placeBlock = PlaceBlock.of(PROJECT_ID, CREATE_REQUEST.name(), CREATE_REQUEST.latitude(),
-			CREATE_REQUEST.longitude(), CREATE_REQUEST.author(), CREATE_REQUEST.type());
+			CREATE_REQUEST.longitude(), CREATE_REQUEST.author());
 		given(repository.countByProjectId(PROJECT_ID)).willReturn(50L);
 		given(repository.save(any(PlaceBlock.class))).willReturn(placeBlock);
 
@@ -77,9 +75,9 @@ class PlaceBlockServiceTest {
 	void update_success_with_owner_role() {
 		// given
 		Long placeBlockId = 1L;
-		PlaceBlock existingBlock = PlaceBlock.of(PROJECT_ID, "기존 블록", 37.0, 127.0, "author", PlaceBlockType.PIN);
+		PlaceBlock existingBlock = PlaceBlock.of(PROJECT_ID, "기존 블록", 37.0, 127.0, "author");
 		PlaceBlockUpdateRequest request = new PlaceBlockUpdateRequest("새로운 이름", null, null, null, null, null, null,
-			null, null, null, null, null, null);
+			null, null);
 
 		given(repository.findByIdAndProjectId(placeBlockId, PROJECT_ID)).willReturn(Optional.of(existingBlock));
 
@@ -95,9 +93,9 @@ class PlaceBlockServiceTest {
 	void update_success_with_editor_role() {
 		// given
 		Long placeBlockId = 1L;
-		PlaceBlock existingBlock = PlaceBlock.of(PROJECT_ID, "기존 블록", 37.0, 127.0, "author", PlaceBlockType.PIN);
+		PlaceBlock existingBlock = PlaceBlock.of(PROJECT_ID, "기존 블록", 37.0, 127.0, "author");
 		PlaceBlockUpdateRequest request = new PlaceBlockUpdateRequest("새로운 이름", null, null, null, null, null, null,
-			null, null, null, null, null, null);
+			null, null);
 
 		given(repository.findByIdAndProjectId(placeBlockId, PROJECT_ID)).willReturn(Optional.of(existingBlock));
 
@@ -114,7 +112,7 @@ class PlaceBlockServiceTest {
 		// given
 		Long placeBlockId = 1L;
 		PlaceBlockUpdateRequest request = new PlaceBlockUpdateRequest("새 이름", null, null, null, null, null, null, null,
-			null, null, null, null, null);
+			null);
 
 		// when & then
 		assertThatThrownBy(() -> service.update(PROJECT_ID, placeBlockId, USER_ID, VIEWER_ROLE, request))
@@ -127,7 +125,7 @@ class PlaceBlockServiceTest {
 	void delete_success() {
 		// given
 		Long placeBlockId = 1L;
-		PlaceBlock placeBlock = PlaceBlock.of(PROJECT_ID, "테스트", 37.0, 127.0, "test", PlaceBlockType.PIN);
+		PlaceBlock placeBlock = PlaceBlock.of(PROJECT_ID, "테스트", 37.0, 127.0, "test");
 		given(repository.findByIdAndProjectId(placeBlockId, PROJECT_ID)).willReturn(Optional.of(placeBlock));
 
 		// when
@@ -154,7 +152,7 @@ class PlaceBlockServiceTest {
 	void get_success() {
 		// given
 		Long placeBlockId = 1L;
-		PlaceBlock placeBlock = PlaceBlock.of(PROJECT_ID, "테스트", 37.0, 127.0, "test", PlaceBlockType.PIN);
+		PlaceBlock placeBlock = PlaceBlock.of(PROJECT_ID, "테스트", 37.0, 127.0, "test");
 		given(repository.findByIdAndProjectId(placeBlockId, PROJECT_ID)).willReturn(Optional.of(placeBlock));
 
 		// when
