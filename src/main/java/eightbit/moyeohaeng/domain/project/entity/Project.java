@@ -34,25 +34,27 @@ public class Project extends BaseEntity {
 	private Long id;
 
 	// TODO: Replace with actual relationship once Team entity is created
+	@Column(name = "team_id")
 	private Long teamId;
 
 	@NotBlank
-	@Column(nullable = false)
+	@Column(name = "title", nullable = false)
 	private String title;
 
-	@Column(nullable = false, length = 36, unique = true)
+	@Column(name = "external_id", nullable = false, length = 36, unique = true)
 	private String externalId;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(name = "project_access", nullable = false)
 	private ProjectAccess projectAccess;
 
+	@Column(name = "location")
 	private String location;
 
-	@Column(nullable = true)
+	@Column(name = "start_date", nullable = true)
 	private LocalDate startDate;
 
-	@Column(nullable = true)
+	@Column(name = "end_date", nullable = true)
 	private LocalDate endDate;
 
 }
