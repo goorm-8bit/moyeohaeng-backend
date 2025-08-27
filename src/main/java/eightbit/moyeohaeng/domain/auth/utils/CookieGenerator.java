@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CookieGenerator {
 
+	private static final String REFRESH_COOKIE = "refreshToken";
 	private final Environment env;
 
 	/**
@@ -24,12 +25,9 @@ public class CookieGenerator {
 	 * @return RefreshToken이 담긴 쿠키
 	 */
 	public ResponseCookie createRefreshTokenCookie(String refreshToken) {
-		// 활성 프로필 확인 (local이면 secure=false, 그 외에는 true)
-		String[] activeProfiles = env.getActiveProfiles();
-		boolean isLocalProfile = Arrays.stream(activeProfiles)
-				.anyMatch(profile -> "local".equals(profile));
+		boolean isLocalProfile = bIsLocalProfile();
 
-		return ResponseCookie.from("refreshToken", refreshToken)
+		return ResponseCookie.from(REFRESH_COOKIE, refreshToken)
 			.httpOnly(true)
 			.path("/")
 			.secure(!isLocalProfile) // local 프로필이 아닌 경우에만 secure=true
@@ -43,17 +41,24 @@ public class CookieGenerator {
 	 * @return 만료 시간이 0으로 변경된 쿠키
 	 */
 	public ResponseCookie destroyRefreshTokenCookie() {
-		// 활성 프로필 확인 (local이면 secure=false, 그 외에는 true)
-		String[] activeProfiles = env.getActiveProfiles();
-		boolean isLocalProfile = Arrays.stream(activeProfiles)
-				.anyMatch(profile -> "local".equals(profile));
+		boolean isLocalProfile = bIsLocalProfile();
 
-		return ResponseCookie.from("refreshToken", "")
+		return ResponseCookie.from(REFRESH_COOKIE, "")
 			.httpOnly(true)
 			.path("/")
 			.secure(!isLocalProfile) // local 프로필이 아닌 경우에만 secure=true
 			.maxAge(0)
 			.sameSite("Lax")
 			.build();
+	}
+
+	/**
+	 * 현재 프로필이 로컬 환경인지 확인
+	 * @return 로컬 환경이면 true, 그 외에는 false
+	 */
+	private boolean bIsLocalProfile() {
+		String[] activeProfiles = env.getActiveProfiles();
+		return Arrays.stream(activeProfiles)
+			.anyMatch(profile -> "local".equals(profile));
 	}
 }
