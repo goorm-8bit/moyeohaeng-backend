@@ -1,8 +1,5 @@
 package eightbit.moyeohaeng.domain.project.dto.request;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 import org.hibernate.validator.constraints.URL;
 
 import jakarta.validation.constraints.DecimalMax;
@@ -32,14 +29,6 @@ public record PlaceBlockUpdateRequest(
 
 	@Size(max = 2000)
 	String memo,
-
-	LocalDate date,
-
-	LocalTime time,
-
-	@URL
-	@Size(max = 255)
-	String reviewLink,
 
 	@URL
 	@Size(max = 255)
