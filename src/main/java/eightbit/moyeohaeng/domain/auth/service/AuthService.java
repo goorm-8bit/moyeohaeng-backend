@@ -6,12 +6,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import eightbit.moyeohaeng.domain.auth.common.exception.AuthErrorCode;
 import eightbit.moyeohaeng.domain.auth.common.exception.AuthException;
+import eightbit.moyeohaeng.domain.auth.dto.TokenResult;
 import eightbit.moyeohaeng.domain.auth.dto.request.LoginRequest;
 import eightbit.moyeohaeng.domain.auth.dto.request.SignUpRequest;
-import eightbit.moyeohaeng.domain.auth.dto.response.TokenResponse;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +42,7 @@ public class AuthService {
 		memberRepository.save(member);
 	}
 
-	public TokenResponse login(LoginRequest loginRequest) {
+	public TokenResult login(LoginRequest loginRequest) {
 		Member member = memberRepository.findByEmail(loginRequest.email())
 			.orElseThrow(() -> {
 				log.error("존재하지 않는 이메일로 로그인 시도: {}", loginRequest.email());
@@ -55,7 +57,17 @@ public class AuthService {
 		String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(member.getId()));
 		String refreshToken = jwtTokenProvider.createRefreshToken(String.valueOf(member.getId()));
 
-		return new TokenResponse(accessToken, refreshToken);
+		return TokenResult.of(accessToken, refreshToken);
+	}
+
+	public String reissueToken(String refreshToken) {
+		try {
+			return jwtTokenProvider.reissueAccessToken(refreshToken);
+		} catch (ExpiredJwtException e) {
+			throw new AuthException(AuthErrorCode.REFRESH_TOKEN_EXPIRED);
+		} catch (JwtException e) {
+			throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+		}
 	}
 
 }

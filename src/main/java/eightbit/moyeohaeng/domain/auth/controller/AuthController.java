@@ -1,15 +1,23 @@
 package eightbit.moyeohaeng.domain.auth.controller;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import eightbit.moyeohaeng.domain.auth.common.exception.AuthErrorCode;
+import eightbit.moyeohaeng.domain.auth.common.exception.AuthException;
 import eightbit.moyeohaeng.domain.auth.common.success.AuthSuccessCode;
+import eightbit.moyeohaeng.domain.auth.controller.swagger.AuthApi;
+import eightbit.moyeohaeng.domain.auth.dto.TokenResult;
 import eightbit.moyeohaeng.domain.auth.dto.request.LoginRequest;
 import eightbit.moyeohaeng.domain.auth.dto.request.SignUpRequest;
-import eightbit.moyeohaeng.domain.auth.dto.response.TokenResponse;
 import eightbit.moyeohaeng.domain.auth.service.AuthService;
+import eightbit.moyeohaeng.domain.auth.utils.CookieGenerator;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +35,10 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthApi {
 
 	private final AuthService authService;
+	private final CookieGenerator cookieGenerator;
 
 	/**
 	 * 회원 가입 API
@@ -49,12 +58,27 @@ public class AuthController {
 	 * 데이터를 포함한 성공 응답 예시
 	 *
 	 * @param loginRequest 로그인 요청 정보
-	 * @return 토큰 정보를 포함한 성공 응답 (200 OK)
+	 * @return accessToken은 body, refreshToken은 http only 포함한 성공 응답 (200 OK)
 	 */
 	@PostMapping("/login")
-	public SuccessResponse<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-		TokenResponse tokenResponse = authService.login(loginRequest);
-		return SuccessResponse.of(AuthSuccessCode.LOGIN_SUCCESS, tokenResponse); // 로그인 성공 (200) 응답
+	public ResponseEntity<SuccessResponse<String>> login(@Valid @RequestBody LoginRequest loginRequest) {
+		TokenResult tokenResult = authService.login(loginRequest);
+		ResponseCookie responseCookie = cookieGenerator.createRefreshTokenCookie(tokenResult.refreshToken());
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+			.body(SuccessResponse.of(AuthSuccessCode.LOGIN_SUCCESS, tokenResult.accessToken()));
+	}
+
+	@PostMapping("/refresh")
+	public SuccessResponse<String> refreshAccessToken(
+		@CookieValue(name = "refreshToken", required = false) String refreshToken
+	) {
+		if (refreshToken == null || refreshToken.isBlank()) {
+			throw new AuthException(AuthErrorCode.REFRESH_TOKEN_NOT_FOUND);
+		}
+		String accessToken = authService.reissueToken(refreshToken);
+		return SuccessResponse.of(AuthSuccessCode.TOKEN_REFRESH_SUCCESS, accessToken);
 	}
 
 }

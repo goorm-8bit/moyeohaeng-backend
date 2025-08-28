@@ -1,37 +1,37 @@
 package eightbit.moyeohaeng.global.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
-
-@Getter
-@Setter
 @Configuration
-@ConfigurationProperties(prefix = "cors")
 public class CorsConfig {
 
-    private List<String> allowedOrigins;
-    private List<String> allowedMethods;
-    private List<String> allowedHeaders;
+	@Value("${cors.allowed-origins}")
+	private String[] allowedOrigins;
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
+	@Value("${cors.allowed-methods}")
+	private String[] allowedMethods;
 
-        config.setAllowedOrigins(allowedOrigins);
-        config.setAllowedMethods(allowedMethods);
-        config.setAllowedHeaders(allowedHeaders);
-        config.setAllowCredentials(true);
+	@Value("${cors.allowed-headers}")
+	private String[] allowedHeaders;
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+
+		config.setAllowedOrigins(List.of(allowedOrigins));
+		config.setAllowedMethods(List.of(allowedMethods));
+		config.setAllowedHeaders(List.of(allowedHeaders));
+		config.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", config);
+		return source;
+	}
 }
