@@ -1,7 +1,6 @@
 package eightbit.moyeohaeng.domain.project.entity;
 
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 import eightbit.moyeohaeng.global.domain.BaseEntity;
 import jakarta.persistence.Column;
@@ -23,7 +22,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "place_groups")
 @SQLDelete(sql = "UPDATE place_groups SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
 public class PlaceGroup extends BaseEntity {
 
 	@Id
