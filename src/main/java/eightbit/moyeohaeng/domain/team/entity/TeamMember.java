@@ -1,4 +1,6 @@
-package eightbit.moyeohaeng.global.team.entity;
+package eightbit.moyeohaeng.domain.team.entity;
+
+import org.hibernate.annotations.SQLDelete;
 
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.global.domain.BaseEntity;
@@ -19,8 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
@@ -35,20 +35,20 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE team_members SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 public class TeamMember extends BaseEntity {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	@Column(name = "team_member_id")
+	//	@Column(name = "team_member_id")
 	private Long id;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "team_id", nullable = false)
 	private Team team;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "member_id", nullable = false)
 	private Member member;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role", nullable = false)
 	private TeamRole role;
