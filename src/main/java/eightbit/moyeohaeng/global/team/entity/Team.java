@@ -36,8 +36,8 @@ public class Team extends BaseEntity {
 	@Column(name = "team_name", nullable = false, length = 100)
 	private String name;
 	
-	@Builder.Default
+//	@Builder.Default
 //	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private List<TeamMember> teamMembers = new ArrayList<>();
+//	private List<TeamMember> teamMembers = new ArrayList<>();
 	
 }
