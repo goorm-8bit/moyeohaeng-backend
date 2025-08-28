@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.hibernate.validator.constraints.URL;
 
 import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
+import eightbit.moyeohaeng.domain.project.entity.Project;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
@@ -54,14 +55,14 @@ public record PlaceBlockCreateRequest(
 ) {
 	/**
 	 * DTO를 PlaceBlock 엔티티로 변환합니다.
-	 * @param projectId 소속 프로젝트 ID (null 불가)
+	 * @param project 소속 프로젝트 (null 불가)
 	 * @return 변환된 PlaceBlock 엔티티
 	 * @throws NullPointerException projectId가 null인 경우
 	 */
-	public PlaceBlock toEntity(Long projectId) {
-		Objects.requireNonNull(projectId, "projectId");
+	public PlaceBlock toEntity(Project project) {
+		Objects.requireNonNull(project.getId(), "projectId");
 		return PlaceBlock.builder()
-			.projectId(projectId)
+			.project(project)
 			.name(name)
 			.address(address)
 			.latitude(latitude)

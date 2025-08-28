@@ -23,7 +23,7 @@ public interface PlaceBlockRepository extends JpaRepository<PlaceBlock, Long> {
 
 	@Lock(
 		LockModeType.PESSIMISTIC_WRITE)
-	@Query("select count(p) from PlaceBlock p where p.projectId = :projectId")
+	@Query("select count(p) from PlaceBlock p where p.project.id = :projectId")
 	long countByProjectIdWithLock(@Param("projectId") Long projectId);
 
 	boolean existsByIdAndProjectId(Long id, Long projectId);

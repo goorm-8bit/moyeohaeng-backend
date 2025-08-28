@@ -9,9 +9,11 @@ import eightbit.moyeohaeng.domain.project.dto.request.PlaceBlockCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.request.PlaceBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.project.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
+import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.exception.PlaceBlockErrorCode;
 import eightbit.moyeohaeng.domain.project.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.project.repository.PlaceBlockRepository;
+import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.global.dto.PageResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +29,7 @@ public class PlaceBlockService {
 	private static final int MAX_PER_PROJECT = 100;
 
 	private final PlaceBlockRepository placeBlockRepository;
+	private final ProjectRepository projectRepository;
 
 	/**
 	 * 새로운 장소 블록을 생성합니다.
@@ -48,7 +51,10 @@ public class PlaceBlockService {
 			throw new PlaceBlockException(PlaceBlockErrorCode.LIMIT_EXCEEDED, MAX_PER_PROJECT);
 		}
 
-		PlaceBlock saved = placeBlockRepository.save(request.toEntity(projectId));
+		Project project = projectRepository.findById(projectId)
+			.orElseThrow();
+
+		PlaceBlock saved = placeBlockRepository.save(request.toEntity(project));
 		return PlaceBlockResponse.from(saved);
 	}
 
