@@ -1,7 +1,7 @@
 package eightbit.moyeohaeng.global.domain.auth;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 
@@ -35,8 +35,16 @@ public class JwtTokenProvider {
 	public JwtTokenProvider(@Value("${jwt.secret.key}") String secretKey,
 		@Value("${jwt.access-token.expire-length}") long accessTokenExpireLength,
 		@Value("${jwt.refresh-token.expire-length}") long refreshTokenExpireLength) {
+		// Base64로 인코딩된 비밀키 디코딩
+		byte[] keyBytes;
+		try {
+			keyBytes = Base64.getDecoder().decode(secretKey);
+		} catch (IllegalArgumentException e) {
+			log.error("JWT 비밀키 Base64 디코딩 실패: {}", e.getMessage());
+			throw new IllegalArgumentException("JWT 비밀키가 유효한 Base64 형식이 아닙니다.", e);
+		}
+		
 		// 비밀키 길이 검증
-		byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
 		if (keyBytes.length < MIN_KEY_LENGTH_BYTES) {
 			throw new IllegalArgumentException(
 				"JWT 비밀키는 최소 " + MIN_KEY_LENGTH_BYTES + " 바이트(256비트) 이상이어야 합니다. 현재 키 길이: "

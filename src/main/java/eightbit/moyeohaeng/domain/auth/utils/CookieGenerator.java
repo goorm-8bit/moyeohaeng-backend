@@ -1,7 +1,6 @@
 package eightbit.moyeohaeng.domain.auth.utils;
 
 import java.time.Duration;
-import java.util.Arrays;
 
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseCookie;
@@ -25,12 +24,11 @@ public class CookieGenerator {
 	 * @return RefreshToken이 담긴 쿠키
 	 */
 	public ResponseCookie createRefreshTokenCookie(String refreshToken) {
-		boolean isLocalProfile = bIsLocalProfile();
 
 		return ResponseCookie.from(REFRESH_COOKIE, refreshToken)
 			.httpOnly(true)
 			.path("/")
-			.secure(!isLocalProfile) // local 프로필이 아닌 경우에만 secure=true
+			.secure(true) // TODO: 향후 개발시 내부 로직 변경
 			.maxAge(Duration.ofDays(7))
 			.sameSite("Lax")
 			.build();
@@ -41,24 +39,14 @@ public class CookieGenerator {
 	 * @return 만료 시간이 0으로 변경된 쿠키
 	 */
 	public ResponseCookie destroyRefreshTokenCookie() {
-		boolean isLocalProfile = bIsLocalProfile();
 
 		return ResponseCookie.from(REFRESH_COOKIE, "")
 			.httpOnly(true)
 			.path("/")
-			.secure(!isLocalProfile) // local 프로필이 아닌 경우에만 secure=true
+			.secure(false) // TODO: 향후 개발시 내부 로직 변경
 			.maxAge(0)
 			.sameSite("Lax")
 			.build();
 	}
 
-	/**
-	 * 현재 프로필이 로컬 환경인지 확인
-	 * @return 로컬 환경이면 true, 그 외에는 false
-	 */
-	private boolean bIsLocalProfile() {
-		String[] activeProfiles = env.getActiveProfiles();
-		return Arrays.stream(activeProfiles)
-			.anyMatch(profile -> "local".equals(profile));
-	}
 }
