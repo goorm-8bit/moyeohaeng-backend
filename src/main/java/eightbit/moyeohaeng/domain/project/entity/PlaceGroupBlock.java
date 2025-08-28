@@ -39,11 +39,11 @@ public class PlaceGroupBlock extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "place_block_id", nullable = false)
 	private PlaceBlock placeBlock;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "place_group_id", nullable = false)
 	private PlaceGroup placeGroup;
 }

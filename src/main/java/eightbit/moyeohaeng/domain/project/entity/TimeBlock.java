@@ -51,7 +51,7 @@ public class TimeBlock extends BaseEntity {
 	@Column(name = "memo", length = 50)
 	private String memo;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "place_group_id", nullable = false)
 	private PlaceBlock placeBlock;
 }
