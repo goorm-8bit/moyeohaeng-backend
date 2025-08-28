@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.global.config.security;
+package eightbit.moyeohaeng.global.security;
 
 import java.io.IOException;
 

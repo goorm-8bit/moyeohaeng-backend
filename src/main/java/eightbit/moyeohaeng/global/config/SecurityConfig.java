@@ -12,8 +12,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import eightbit.moyeohaeng.global.config.security.JwtAuthenticationFilter;
 import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;
+import eightbit.moyeohaeng.global.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -38,24 +38,15 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-<<<<<<< HEAD
-				.requestMatchers("/v1/auth/register", "/v1/auth/login").permitAll()
+				.requestMatchers("/v1/auth/**").permitAll()
 				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**").permitAll()
 				.requestMatchers("/actuator/**").permitAll()
 				.anyRequest().authenticated())
-=======
-				.requestMatchers("/v1/auth/**")
-				.permitAll()
-				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**")
-				.permitAll()
-				.anyRequest()
-				.authenticated())
 			.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
->>>>>>> a2e79b8 (feat: jwt 사용 보안 & 에러 강화 (#28))
 			.build();
-	}
-
-	@Bean
+		}
+	
+		@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
