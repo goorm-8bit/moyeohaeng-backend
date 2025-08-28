@@ -24,7 +24,7 @@ public record PlaceBlockResponse(
 	public static PlaceBlockResponse from(PlaceBlock e) {
 		return PlaceBlockResponse.builder()
 			.id(e.getId())
-			.projectId(e.getProjectId())
+			.projectId(e.getProject().getId())
 			.name(e.getName())
 			.address(e.getAddress())
 			.latitude(e.getLatitude())

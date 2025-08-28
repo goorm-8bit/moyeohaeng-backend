@@ -1,15 +1,18 @@
 package eightbit.moyeohaeng.domain.project.entity;
 
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
+import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,7 +33,6 @@ import lombok.NoArgsConstructor;
 	}
 )
 @SQLDelete(sql = "UPDATE place_block_comments SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
 public class PlaceBlockComment extends BaseEntity {
 
 	@Id
@@ -40,9 +42,11 @@ public class PlaceBlockComment extends BaseEntity {
 	@Column(name = "content", nullable = false, columnDefinition = "TEXT")
 	private String content;
 
-	@Column(name = "member_id", nullable = false)
-	private Long memberId;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "member_id", nullable = false)
+	private Member member;
 
-	@Column(name = "place_block_id", nullable = false)
-	private Long placeBlockId;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "place_block_id", nullable = false)
+	private PlaceBlock placeBlock;
 }
