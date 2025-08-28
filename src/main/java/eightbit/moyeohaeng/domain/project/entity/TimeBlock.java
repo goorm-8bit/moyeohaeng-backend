@@ -38,7 +38,7 @@ public class TimeBlock extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, length = 10)
+	@Column(nullable = false)
 	private Integer day;
 
 	@Column(name = "start_time", nullable = false)
