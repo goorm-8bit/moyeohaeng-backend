@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.domain.project.placeblock.exception;
+package eightbit.moyeohaeng.domain.project.exception;
 
 import org.springframework.http.HttpStatus;
 

@@ -1,11 +1,7 @@
-package eightbit.moyeohaeng.domain.project.placeblock.dto.request;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
+package eightbit.moyeohaeng.domain.project.dto.request;
 
 import org.hibernate.validator.constraints.URL;
 
-import eightbit.moyeohaeng.domain.project.placeblock.entity.PlaceBlockType;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
@@ -34,14 +30,6 @@ public record PlaceBlockUpdateRequest(
 	@Size(max = 2000)
 	String memo,
 
-	LocalDate date,
-
-	LocalTime time,
-
-	@URL
-	@Size(max = 255)
-	String reviewLink,
-
 	@URL
 	@Size(max = 255)
 	String detailLink,
@@ -54,8 +42,6 @@ public record PlaceBlockUpdateRequest(
 
 	@Email
 	@Size(max = 120)
-	String author,
-
-	PlaceBlockType type
+	String author
 ) {
 }

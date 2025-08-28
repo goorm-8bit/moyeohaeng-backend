@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.domain.project.placeblock.repository;
+package eightbit.moyeohaeng.domain.project.repository;
 
 import java.util.Optional;
 
@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import eightbit.moyeohaeng.domain.project.placeblock.entity.PlaceBlock;
+import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
 import jakarta.persistence.LockModeType;
 
 /**
