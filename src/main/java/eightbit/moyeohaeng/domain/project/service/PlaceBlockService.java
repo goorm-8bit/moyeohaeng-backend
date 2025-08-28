@@ -26,31 +26,29 @@ public class PlaceBlockService {
 
 	private static final int MAX_PER_PROJECT = 100;
 
-	private final PlaceBlockRepository repository;
+	private final PlaceBlockRepository placeBlockRepository;
 
 	/**
 	 * 새로운 장소 블록을 생성합니다.
 	 * 최대 개수(100개) 제한과 사용자 권한을 검사합니다.
-	 * 새로운 장소 블록을 생성합니다.
-	 * 최대 개수 제한과 사용자 권한을 검사합니다.
 	 *
 	 * @param projectId 프로젝트 ID
 	 * @param userId    요청 사용자 ID
 	 * @param userRole  요청 사용자 역할(OWNER/EDITOR/VIEWER)
-	 * @param req       생성 요청 DTO
+	 * @param request       생성 요청 DTO
 	 * @return 생성된 장소 블록 응답 DTO
 	 * @throws PlaceBlockException 권한 부족(FORBIDDEN) 또는 개수 제한 초과(LIMIT_EXCEEDED) 시
 	 */
 	@Transactional
-	public PlaceBlockResponse create(Long projectId, Long userId, String userRole, PlaceBlockCreateRequest req) {
+	public PlaceBlockResponse create(Long projectId, Long userId, String userRole, PlaceBlockCreateRequest request) {
 		if (!canEdit(userRole))
 			throw new PlaceBlockException(PlaceBlockErrorCode.FORBIDDEN);
 
-		if (repository.countByProjectIdWithLock(projectId) >= MAX_PER_PROJECT) {
+		if (placeBlockRepository.countByProjectIdWithLock(projectId) >= MAX_PER_PROJECT) {
 			throw new PlaceBlockException(PlaceBlockErrorCode.LIMIT_EXCEEDED, MAX_PER_PROJECT);
 		}
 
-		PlaceBlock saved = repository.save(req.toEntity(projectId));
+		PlaceBlock saved = placeBlockRepository.save(request.toEntity(projectId));
 		return PlaceBlockResponse.from(saved);
 	}
 
@@ -65,7 +63,7 @@ public class PlaceBlockService {
 	 * 주어진 프로젝트 내의 모든 장소 블록을 페이지로 조회합니다.
 	 */
 	public PageResponse<PlaceBlockResponse> getPages(Long projectId, Pageable pageable) {
-		Page<PlaceBlock> page = repository.findByProjectId(projectId, pageable);
+		Page<PlaceBlock> page = placeBlockRepository.findByProjectId(projectId, pageable);
 		return PageResponse.from(page, PlaceBlockResponse::from);
 	}
 
@@ -75,19 +73,19 @@ public class PlaceBlockService {
 	 */
 	@Transactional
 	public PlaceBlockResponse update(Long projectId, Long placeBlockId, Long userId, String userRole,
-		PlaceBlockUpdateRequest req) {
+		PlaceBlockUpdateRequest request) {
 		if (!canEdit(userRole))
 			throw new PlaceBlockException(PlaceBlockErrorCode.FORBIDDEN);
 
-		PlaceBlock pb = getOrThrow(projectId, placeBlockId);
+		PlaceBlock placeBlock = getOrThrow(projectId, placeBlockId);
 
-		pb.update(
-			req.name(), req.address(), req.latitude(), req.longitude(),
-			req.memo(), req.detailLink(), req.category(), req.color(),
-			req.author()
+		placeBlock.update(
+			request.name(), request.address(), request.latitude(), request.longitude(),
+			request.memo(), request.detailLink(), request.category(), request.color(),
+			request.author()
 		);
 
-		return PlaceBlockResponse.from(pb);
+		return PlaceBlockResponse.from(placeBlock);
 	}
 
 	/**
@@ -98,12 +96,12 @@ public class PlaceBlockService {
 	public void delete(Long projectId, Long placeBlockId, Long userId, String userRole) {
 		if (!canEdit(userRole))
 			throw new PlaceBlockException(PlaceBlockErrorCode.FORBIDDEN);
-		PlaceBlock pb = getOrThrow(projectId, placeBlockId);
-		repository.delete(pb);
+		PlaceBlock placeBlock = getOrThrow(projectId, placeBlockId);
+		placeBlockRepository.delete(placeBlock);
 	}
 
 	private PlaceBlock getOrThrow(Long projectId, Long placeBlockId) {
-		return repository.findByIdAndProjectId(placeBlockId, projectId)
+		return placeBlockRepository.findByIdAndProjectId(placeBlockId, projectId)
 			.orElseThrow(() -> new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND));
 	}
 
