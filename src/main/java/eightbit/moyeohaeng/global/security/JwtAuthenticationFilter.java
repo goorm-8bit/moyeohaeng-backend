@@ -3,11 +3,12 @@ package eightbit.moyeohaeng.global.security;
 import java.io.IOException;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;
+import eightbit.moyeohaeng.domain.member.entity.member.Member;
+import eightbit.moyeohaeng.domain.member.service.MemberService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import org.springframework.util.StringUtils;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final MemberService memberService;
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String TOKEN_PREFIX = "Bearer ";
 
@@ -34,13 +36,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 토큰이 유효한 경우 인증 정보 설정
         if (StringUtils.hasText(token) && jwtTokenProvider.validateAccessToken(token)) {
-            String memberId = jwtTokenProvider.getMemberId(token);
-            
-            // 인증 정보 생성 및 SecurityContext에 저장
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    memberId, null, AuthorityUtils.NO_AUTHORITIES);
-            
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String memberIdStr = jwtTokenProvider.getMemberId(token);
+            Long memberId = null;
+            try {
+                memberId = Long.valueOf(memberIdStr);
+            } catch (NumberFormatException ignored) {}
+
+            if (memberId != null) {
+                Member member = memberService.findById(memberId);
+                CustomUserDetails user = CustomUserDetails.from(member);
+
+                // 인증 정보 생성 및 SecurityContext에 저장
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    user, null, user.getAuthorities());
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
 
         // 다음 필터로 요청 전달
