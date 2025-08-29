@@ -8,3 +8,7 @@ services:
       - 'MYSQL_PASSWORD=password'
       - 'MYSQL_ROOT_PASSWORD=password'
       - 'MYSQL_USER=moyeohaeng'
+  redis:
+    image: 'redis:7.2'
+    ports:
+      - '6379:6379'
