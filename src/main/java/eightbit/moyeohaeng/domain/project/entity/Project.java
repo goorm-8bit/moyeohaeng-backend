@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.hibernate.annotations.SQLDelete;
 
+import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.global.domain.BaseEntity;
 import jakarta.persistence.Column;
@@ -59,4 +60,18 @@ public class Project extends BaseEntity {
 	@Column(name = "end_date")
 	private LocalDate endDate;
 
+	// 프로젝트 생성자 (소유자)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "creator_id")
+	private Member creator;
+
+	// 프로젝트 생성자 설정 메소드
+	public void setCreator(Member creator) {
+		this.creator = creator;
+	}
+
+	// 특정 사용자가 프로젝트 소유자인지 확인
+	public boolean isOwnedBy(Member member) {
+		return this.creator != null && this.creator.getId().equals(member.getId());
+	}
 }
