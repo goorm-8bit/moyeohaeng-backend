@@ -8,6 +8,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import eightbit.moyeohaeng.domain.project.dto.ProjectDto;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
+import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -59,7 +60,7 @@ public interface ProjectApi {
 	ResponseEntity<ProjectDto> update(
 		@Parameter(name = "projectId", description = "수정할 프로젝트 ID", in = ParameterIn.PATH, required = true)
 		Long projectId,
-		ProjectCreateRequest request,
+		ProjectUpdateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	);
 

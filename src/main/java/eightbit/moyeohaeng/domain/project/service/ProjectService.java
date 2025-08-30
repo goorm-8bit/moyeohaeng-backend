@@ -10,6 +10,7 @@ import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.service.MemberService;
 import eightbit.moyeohaeng.domain.project.dto.ProjectDto;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
+import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.team.entity.Team;
@@ -60,8 +61,13 @@ public class ProjectService {
 		return testProjectDTO;
 	}
 
+	public ProjectDto findByIdWithMe(ProjectUpdateRequest request, CustomUserDetails currentUser) {
+
+		return testProjectDTO;
+	}
+
 	@Transactional
-	public ProjectDto update(Long projectId, ProjectCreateRequest request, CustomUserDetails currentUser) {
+	public ProjectDto update(Long projectId, ProjectUpdateRequest request, CustomUserDetails currentUser) {
 		// CustomUserDetails에서 ID를 이용하여 Member 조회
 		Member member = memberService.findById(currentUser.getMemberId());
 		// Project project = projectRepository.findById(projectId)
@@ -96,4 +102,14 @@ public class ProjectService {
 		return Project.builder().title("테스트 entity").build();
 	}
 
+	public List<ProjectDto> findByMember(CustomUserDetails currentUser) {
+
+		// TODO 서비 내용 추가
+		List<ProjectDto> testDto = new ArrayList<>();
+
+		testDto.add(testProjectDTO);
+
+		return testDto;
+
+	}
 }

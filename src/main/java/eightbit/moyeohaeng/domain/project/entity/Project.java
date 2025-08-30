@@ -1,6 +1,7 @@
 package eightbit.moyeohaeng.domain.project.entity;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import org.hibernate.annotations.SQLDelete;
 
@@ -61,17 +62,18 @@ public class Project extends BaseEntity {
 	private LocalDate endDate;
 
 	// 프로젝트 생성자 (소유자)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "creator_id")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "creator_id", nullable = false)
 	private Member creator;
 
 	// 프로젝트 생성자 설정 메소드
 	public void setCreator(Member creator) {
-		this.creator = creator;
+		this.creator = Objects.requireNonNull(creator, "creator는 null일 수 없습니다.");
 	}
 
 	// 특정 사용자가 프로젝트 소유자인지 확인
 	public boolean isOwnedBy(Member member) {
-		return this.creator != null && this.creator.getId().equals(member.getId());
+		return this.creator != null && member != null
+			&& Objects.equals(this.creator.getId(), member.getId());
 	}
 }
