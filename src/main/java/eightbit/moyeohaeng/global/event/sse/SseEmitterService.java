@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -19,6 +20,7 @@ public class SseEmitterService {
 	private static final Duration DEFAULT_TIMEOUT = Duration.ofMinutes(30);
 
 	private final SseEmitterRepository sseEmitterRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	public SseEmitter subscribe(ChannelTopic channel, Long eventId) {
 		SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT.toMillis());
@@ -32,6 +34,7 @@ public class SseEmitterService {
 
 		// 이벤트 전송
 		sendToClient(emitter, MessageBody.of("CONNECT", "hello"));
+		eventPublisher.publishEvent(new SseSubscribeEvent(uuid));
 
 		return emitter;
 	}
@@ -54,5 +57,6 @@ public class SseEmitterService {
 
 	private void unsubscribe(SseEmitterId id, UUID uuid) {
 		sseEmitterRepository.delete(id, uuid);
+		eventPublisher.publishEvent(new SseUnsubscribeEvent(uuid));
 	}
 }
