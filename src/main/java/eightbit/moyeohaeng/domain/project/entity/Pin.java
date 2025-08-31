@@ -26,11 +26,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
-	name = "pin",
+	name = "pins",
 	indexes = @Index(name = "idx_pin_project_id", columnList = "project_id")
 )
 @Check(constraints = "latitude BETWEEN -90 AND 90 AND longitude BETWEEN -180 AND 180")
-@SQLDelete(sql = "UPDATE pin SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLDelete(sql = "UPDATE pins SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 public class Pin extends BaseEntity {
 
 	@Id
