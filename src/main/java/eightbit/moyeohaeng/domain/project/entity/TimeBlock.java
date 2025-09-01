@@ -52,6 +52,6 @@ public class TimeBlock extends BaseEntity {
 	private String memo;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "place_group_id", nullable = false)
+	@JoinColumn(name = "place_block_id", nullable = false)
 	private PlaceBlock placeBlock;
 }
