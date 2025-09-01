@@ -36,7 +36,7 @@ public class ProjectService {
 		// TODO TeamMember 권한 체크 로직 추가
 
 		// 프로젝트 생성 및 소유자 설정
-		Project project = request.toEntity(team, member);
+		Project project = Project.create(team, member, request.title(), request.startDate(), request.endDate());
 		// Project savedProject = projectRepository.save(project);  //TODO TeamRepository 추가 주석 해제
 
 		return testProjectDTO;

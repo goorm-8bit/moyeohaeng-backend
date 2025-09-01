@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.domain.project.entity;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.hibernate.annotations.SQLDelete;
 
@@ -76,4 +77,23 @@ public class Project extends BaseEntity {
 		return this.creator != null && member != null
 			&& Objects.equals(this.creator.getId(), member.getId());
 	}
+
+	// 정적 팩토리 메서드들 (DTO 비의존)
+	public static Project create(Team team,
+		Member creator,
+		String title,
+		LocalDate startDate,
+		LocalDate endDate) {
+
+		return Project.builder()
+			.team(team)
+			.creator(creator)
+			.title(title)
+			.startDate(startDate)
+			.endDate(endDate)
+			.projectAccess(ProjectAccess.PRIVATE)
+			.externalId(UUID.randomUUID().toString())
+			.build();
+	}
+
 }

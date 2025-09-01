@@ -2,10 +2,6 @@ package eightbit.moyeohaeng.domain.project.dto.request;
 
 import java.time.LocalDate;
 
-import eightbit.moyeohaeng.domain.member.entity.member.Member;
-import eightbit.moyeohaeng.domain.project.entity.Project;
-import eightbit.moyeohaeng.domain.project.entity.ProjectAccess;
-import eightbit.moyeohaeng.domain.team.entity.Team;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -36,22 +32,6 @@ public record ProjectCreateRequest(
 		LocalDate endDate
 	) {
 		return new ProjectCreateRequest(teamId, title, location, startDate, endDate);
-	}
-
-	public Project toEntity(Team team, Member member) {
-		return toEntity(team, member, ProjectAccess.PRIVATE);
-	}
-
-	public Project toEntity(Team team, Member member, ProjectAccess access) {
-		return Project.builder()
-			.team(team)
-			.creator(member)
-			.projectAccess(access)
-			.title(title)
-			.location(location)
-			.startDate(startDate)
-			.endDate(endDate)
-			.build();
 	}
 
 	public void validateDates() {
