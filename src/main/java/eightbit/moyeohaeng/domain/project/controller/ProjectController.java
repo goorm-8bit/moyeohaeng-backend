@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -42,7 +40,6 @@ public class ProjectController implements ProjectApi {
 
 	@Override
 	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
 	public SuccessResponse<ProjectDto> create(@Valid @RequestBody ProjectCreateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		ProjectDto response = projectService.create(request, currentUser);
@@ -61,7 +58,7 @@ public class ProjectController implements ProjectApi {
 
 	@Override
 	@GetMapping
-	public SuccessResponse<List<ProjectDto>> getProjects(
+	public SuccessResponse<List<ProjectDto>> get(
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		List<ProjectDto> projects = projectService.findWithMe(currentUser);
 		return SuccessResponse.of(CommonSuccessCode.SELECT_SUCCESS, projects);

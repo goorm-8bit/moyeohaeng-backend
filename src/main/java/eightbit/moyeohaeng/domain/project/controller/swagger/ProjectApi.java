@@ -2,8 +2,9 @@ package eightbit.moyeohaeng.domain.project.controller.swagger;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
@@ -45,6 +46,7 @@ public interface ProjectApi {
 		@ApiResponse(responseCode = "403", description = "권한 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
+	@ResponseStatus(HttpStatus.CREATED)
 	SuccessResponse<ProjectDto> create(ProjectCreateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser);
 
@@ -87,7 +89,7 @@ public interface ProjectApi {
 		@ApiResponse(responseCode = "401", description = "인증 실패",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	SuccessResponse<List<ProjectDto>> getProjects(@AuthenticationPrincipal CustomUserDetails currentUser);
+	SuccessResponse<List<ProjectDto>> get(@AuthenticationPrincipal CustomUserDetails currentUser);
 
 	@Operation(
 		summary = "특정 프로젝트 조회",
@@ -141,7 +143,7 @@ public interface ProjectApi {
 		@ApiResponse(
 			responseCode = "200",
 			description = "조회 성공",
-			content = @Content(schema = @Schema(implementation = MemberInfoResponse.class))
+			content = @Content(array = @ArraySchema(schema = @Schema(implementation = MemberInfoResponse.class)))
 
 		),
 		@ApiResponse(responseCode = "401", description = "인증 실패",
@@ -173,6 +175,7 @@ public interface ProjectApi {
 		@ApiResponse(responseCode = "404", description = "프로젝트를 찾을 수 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	SuccessResponse<Void> delete(
 		@Parameter(name = "projectId", description = "삭제할 프로젝트 ID", in = ParameterIn.PATH, required = true)
 		Long projectId,

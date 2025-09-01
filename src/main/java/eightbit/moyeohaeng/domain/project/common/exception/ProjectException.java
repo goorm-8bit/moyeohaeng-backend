@@ -7,8 +7,6 @@ import eightbit.moyeohaeng.global.exception.BaseException;
  * ErrorCode를 받아 BaseException으로 위임한다.
  */
 public class ProjectException extends BaseException {
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * 지정한 에러코드로 예외를 생성합니다.
 	 *
