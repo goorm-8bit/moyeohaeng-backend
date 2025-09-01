@@ -1,11 +1,11 @@
 package eightbit.moyeohaeng.domain.project.controller;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,65 +15,71 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
+import eightbit.moyeohaeng.domain.project.common.success.ProjectSuccessCode;
 import eightbit.moyeohaeng.domain.project.controller.swagger.ProjectApi;
 import eightbit.moyeohaeng.domain.project.dto.ProjectDto;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
 import eightbit.moyeohaeng.domain.project.service.ProjectService;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
+import eightbit.moyeohaeng.global.success.CommonSuccessCode;
+import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
-@RequestMapping(value = "/{projectId}/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+@RequestMapping("/v1/projects")
 public class ProjectController implements ProjectApi {
 
 	private final ProjectService projectService;
 
 	@Override
 	@PostMapping
-	public ResponseEntity<ProjectDto> create(@Valid @RequestBody ProjectCreateRequest request,
+	@ResponseStatus(HttpStatus.CREATED)
+	public SuccessResponse<ProjectDto> create(@Valid @RequestBody ProjectCreateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		ProjectDto response = projectService.create(request, currentUser);
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
+		return SuccessResponse.of(ProjectSuccessCode.CREATE_PROJECT, response);
 	}
 
 	@Override
 	@PutMapping("/{projectId}")
-	public ResponseEntity<ProjectDto> update(
+	public SuccessResponse<ProjectDto> update(
 		@PathVariable Long projectId,
 		@Valid @RequestBody ProjectUpdateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		ProjectDto updatedProject = projectService.update(projectId, request, currentUser);
-		return ResponseEntity.ok(updatedProject);
+		return SuccessResponse.of(CommonSuccessCode.UPDATE_SUCCESS, updatedProject);
 	}
 
 	@Override
 	@GetMapping
-	public ResponseEntity<List<ProjectDto>> getProjects(
+	public SuccessResponse<List<ProjectDto>> getProjects(
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
-		List<ProjectDto> projects = projectService.findByMember(currentUser);
-		return ResponseEntity.ok(projects);
+		List<ProjectDto> projects = projectService.findWithMe(currentUser);
+		return SuccessResponse.of(CommonSuccessCode.SELECT_SUCCESS, projects);
 	}
 
 	@Override
 	@GetMapping("/{projectId}")
-	public ResponseEntity<ProjectDto> getById(@PathVariable Long projectId,
+	public SuccessResponse<ProjectDto> getById(@PathVariable Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		ProjectDto project = projectService.findById(projectId);
-		return ResponseEntity.ok(project);
+		return SuccessResponse.of(CommonSuccessCode.SELECT_SUCCESS, project);
 	}
 
 	/**
 	 * 프로젝트 연결 및 SSE 구독
 	 */
 	@Override
-	@GetMapping("/{projectId}/connect")
+	@GetMapping(value = "/{projectId}/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public SseEmitter connectProject(@PathVariable Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 
@@ -87,10 +93,21 @@ public class ProjectController implements ProjectApi {
 	}
 
 	@Override
+	@GetMapping("/{projectId}/members")
+	public SuccessResponse<List<MemberInfoResponse>> getConnectedMember(
+		@PathVariable Long projectId,
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
+
+		List<MemberInfoResponse> responses = new ArrayList<>();
+		return SuccessResponse.of(ProjectSuccessCode.CONNECTING_MEMBERS, responses);
+	}
+
+	@Override
 	@DeleteMapping("/{projectId}")
-	public ResponseEntity<Void> delete(@PathVariable Long projectId,
+	public SuccessResponse<Void> delete(@PathVariable Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		projectService.delete(projectId, currentUser);
-		return ResponseEntity.noContent().build();
+		return SuccessResponse.of(CommonSuccessCode.DELETE_SUCCESS, null);
 	}
 }

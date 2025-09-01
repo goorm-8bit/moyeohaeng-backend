@@ -61,9 +61,13 @@ public class ProjectService {
 		return testProjectDTO;
 	}
 
-	public ProjectDto findByIdWithMe(ProjectUpdateRequest request, CustomUserDetails currentUser) {
+	public List<ProjectDto> findWithMe(CustomUserDetails currentUser) {
 
-		return testProjectDTO;
+		// 	// TODO 서비 내용 추가
+		List<ProjectDto> testDto = new ArrayList<>();
+
+		testDto.add(testProjectDTO);
+		return testDto;
 	}
 
 	@Transactional
@@ -102,14 +106,4 @@ public class ProjectService {
 		return Project.builder().title("테스트 entity").build();
 	}
 
-	public List<ProjectDto> findByMember(CustomUserDetails currentUser) {
-
-		// TODO 서비 내용 추가
-		List<ProjectDto> testDto = new ArrayList<>();
-
-		testDto.add(testProjectDTO);
-
-		return testDto;
-
-	}
 }

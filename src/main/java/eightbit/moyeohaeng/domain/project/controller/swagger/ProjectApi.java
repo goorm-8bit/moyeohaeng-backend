@@ -6,10 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
 import eightbit.moyeohaeng.domain.project.dto.ProjectDto;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
+import eightbit.moyeohaeng.global.exception.ErrorResponse;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
+import eightbit.moyeohaeng.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -35,11 +38,14 @@ public interface ProjectApi {
 			description = "프로젝트 생성 성공",
 			content = @Content(schema = @Schema(implementation = ProjectDto.class))
 		),
-		@ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터"),
-		@ApiResponse(responseCode = "401", description = "인증 실패"),
-		@ApiResponse(responseCode = "403", description = "권한 없음")
+		@ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "401", description = "인증 실패",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "403", description = "권한 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	ResponseEntity<ProjectDto> create(ProjectCreateRequest request,
+	SuccessResponse<ProjectDto> create(ProjectCreateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser);
 
 	@Operation(
@@ -52,12 +58,16 @@ public interface ProjectApi {
 			description = "수정 성공",
 			content = @Content(schema = @Schema(implementation = ProjectDto.class))
 		),
-		@ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터"),
-		@ApiResponse(responseCode = "401", description = "인증 실패"),
-		@ApiResponse(responseCode = "403", description = "권한 없음"),
-		@ApiResponse(responseCode = "404", description = "프로젝트를 찾을 수 없음")
+		@ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "401", description = "인증 실패",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "403", description = "권한 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "404", description = "프로젝트를 찾을 수 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	ResponseEntity<ProjectDto> update(
+	SuccessResponse<ProjectDto> update(
 		@Parameter(name = "projectId", description = "수정할 프로젝트 ID", in = ParameterIn.PATH, required = true)
 		Long projectId,
 		ProjectUpdateRequest request,
@@ -74,9 +84,10 @@ public interface ProjectApi {
 			description = "조회 성공",
 			content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProjectDto.class)))
 		),
-		@ApiResponse(responseCode = "401", description = "인증 실패")
+		@ApiResponse(responseCode = "401", description = "인증 실패",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	ResponseEntity<List<ProjectDto>> getProjects(@AuthenticationPrincipal CustomUserDetails currentUser);
+	SuccessResponse<List<ProjectDto>> getProjects(@AuthenticationPrincipal CustomUserDetails currentUser);
 
 	@Operation(
 		summary = "특정 프로젝트 조회",
@@ -88,10 +99,12 @@ public interface ProjectApi {
 			description = "조회 성공",
 			content = @Content(schema = @Schema(implementation = ProjectDto.class))
 		),
-		@ApiResponse(responseCode = "401", description = "인증 실패"),
-		@ApiResponse(responseCode = "404", description = "프로젝트를 찾을 수 없음")
+		@ApiResponse(responseCode = "401", description = "인증 실패",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "404", description = "프로젝트를 찾을 수 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	ResponseEntity<ProjectDto> getById(
+	SuccessResponse<ProjectDto> getById(
 		@Parameter(name = "projectId", description = "조회할 프로젝트 ID", in = ParameterIn.PATH, required = true)
 		Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
@@ -107,11 +120,38 @@ public interface ProjectApi {
 			description = "연결 성공",
 			content = @Content(mediaType = "text/event-stream")
 		),
-		@ApiResponse(responseCode = "401", description = "인증 실패"),
-		@ApiResponse(responseCode = "403", description = "권한 없음"),
-		@ApiResponse(responseCode = "404", description = "프로젝트를 찾을 수 없음")
+		@ApiResponse(responseCode = "401", description = "인증 실패",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "403", description = "권한 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "404", description = "프로젝트를 찾을 수 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
 	SseEmitter connectProject(
+		@Parameter(name = "projectId", description = "연결할 프로젝트 ID", in = ParameterIn.PATH, required = true)
+		Long projectId,
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	);
+
+	@Operation(
+		summary = "프로젝트에 접속한 멤버 목록",
+		description = "프로젝트에 접속한 멤버들의 프로필, 이름, 이메일 조회, 인증된 사용자만 접근 가능합니다. "
+	)
+	@ApiResponses({
+		@ApiResponse(
+			responseCode = "200",
+			description = "조회 성공",
+			content = @Content(schema = @Schema(implementation = MemberInfoResponse.class))
+
+		),
+		@ApiResponse(responseCode = "401", description = "인증 실패",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "403", description = "권한 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "404", description = "멤버 목록을 찾을 수 없습니다.",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	})
+	SuccessResponse<List<MemberInfoResponse>> getConnectedMember(
 		@Parameter(name = "projectId", description = "연결할 프로젝트 ID", in = ParameterIn.PATH, required = true)
 		Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
@@ -126,11 +166,14 @@ public interface ProjectApi {
 			responseCode = "204",
 			description = "삭제 성공"
 		),
-		@ApiResponse(responseCode = "401", description = "인증 실패"),
-		@ApiResponse(responseCode = "403", description = "권한 없음"),
-		@ApiResponse(responseCode = "404", description = "프로젝트를 찾을 수 없음")
+		@ApiResponse(responseCode = "401", description = "인증 실패",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "403", description = "권한 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "404", description = "프로젝트를 찾을 수 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	ResponseEntity<Void> delete(
+	SuccessResponse<Void> delete(
 		@Parameter(name = "projectId", description = "삭제할 프로젝트 ID", in = ParameterIn.PATH, required = true)
 		Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
