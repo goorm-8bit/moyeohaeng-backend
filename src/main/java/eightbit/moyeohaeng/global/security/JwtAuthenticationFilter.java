@@ -45,6 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			if (memberId != null) {
 				try {
+					// TODO 프로젝트 외부 공유 허용시에 프로젝트의 quest 생성
+					// 만약에 quest 생성이 안 될경우 동작하는 코드
 					Member member = memberService.findById(memberId);
 					CustomUserDetails user = CustomUserDetails.from(member);
 
