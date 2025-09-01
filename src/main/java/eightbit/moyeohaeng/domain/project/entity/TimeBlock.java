@@ -39,7 +39,7 @@ public class TimeBlock extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(name = "day", nullable = false)
 	private Integer day;
 
 	@Column(name = "start_time", nullable = false)
@@ -54,4 +54,16 @@ public class TimeBlock extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "place_block_id", nullable = false)
 	private PlaceBlock placeBlock;
+
+	public static TimeBlock of(Integer day, LocalTime startTime, LocalTime endTime, String memo,
+		PlaceBlock placeBlock) {
+
+		return builder()
+			.day(day)
+			.startTime(startTime)
+			.endTime(endTime)
+			.memo(memo)
+			.placeBlock(placeBlock)
+			.build();
+	}
 }
