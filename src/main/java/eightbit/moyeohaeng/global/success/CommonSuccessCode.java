@@ -15,11 +15,12 @@ public enum CommonSuccessCode implements SuccessCode {
 	//200
 	SELECT_SUCCESS(HttpStatus.OK, "조회 성공"),
 	UPDATE_SUCCESS(HttpStatus.OK, "수정 성공"),
-	DELETE_SUCCESS(HttpStatus.OK, "삭제 성공"),
-
+	
 	//201 Created
-	CREATE_SUCCESS(HttpStatus.CREATED, "생성 성공");
-
+	CREATE_SUCCESS(HttpStatus.CREATED, "생성 성공"),
+	//204
+	DELETE_SUCCESS(HttpStatus.NO_CONTENT, "삭제 성공");
+	
 	private final HttpStatus status;
 	private final String message;
 }

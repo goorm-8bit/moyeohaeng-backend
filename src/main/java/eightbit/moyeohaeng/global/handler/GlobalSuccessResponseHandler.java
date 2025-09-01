@@ -59,6 +59,12 @@ public class GlobalSuccessResponseHandler implements ResponseBodyAdvice<Object> 
 
 		// 204는 본문이 없어야 함 — 정책 선택 필요: 래핑 생략
 		if (effectiveStatus.value() == HttpStatus.NO_CONTENT.value()) {
+			if (response instanceof ServletServerHttpResponse servletResp) {
+				servletResp.getServletResponse().setContentLength(0);
+				servletResp.getServletResponse().setContentLengthLong(0L);
+			}
+			response.getHeaders().setContentLength(0);
+			response.getHeaders().remove("Content-Type");
 			return null;
 		}
 
@@ -66,8 +72,23 @@ public class GlobalSuccessResponseHandler implements ResponseBodyAdvice<Object> 
 			return SuccessResponse.from(mapHttpStatusToSuccessCode(effectiveStatus));
 		}
 
-		// 이미 포맷팅된 응답이나 에러는 그대로 반환
-		if (body instanceof SuccessResponse || body instanceof ErrorResponse) {
+		// 이미 포맷팅된 응답 또는 에러 처리
+		if (body instanceof SuccessResponse<?> sr) {
+			// 컨트롤러가 SuccessResponse(204)를 반환한 경우: 실제 HTTP 상태를 204로 강제하고 본문 제거
+			if (sr.getStatus() == HttpStatus.NO_CONTENT.value()) {
+				if (response instanceof ServletServerHttpResponse servletResp) {
+					servletResp.getServletResponse().setStatus(HttpStatus.NO_CONTENT.value());
+					servletResp.getServletResponse().setContentLength(0);
+					servletResp.getServletResponse().setContentLengthLong(0L);
+				}
+				response.getHeaders().setContentLength(0);
+				response.getHeaders().remove("Content-Type");
+				return null;
+			}
+			return body;
+		}
+
+		if (body instanceof ErrorResponse) {
 			return body;
 		}
 
