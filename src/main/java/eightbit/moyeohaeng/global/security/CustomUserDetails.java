@@ -31,11 +31,31 @@ public class CustomUserDetails implements UserDetails {
 	private final Long id;
 	private final String email;
 	private final Collection<? extends GrantedAuthority> authorities;
+	// Guest token context
+	private final boolean guest;                 // true when authenticated via share token
+	private final String guestType;              // "Guest" | "viewer"
+	private final Long shareProjectId;           // project bound to share token
+	private final String shareOwnerEmail;        // owner email encoded in share token
+
+	private CustomUserDetails(Long id, String email, Collection<? extends GrantedAuthority> authorities,
+		boolean guest, String guestType, Long shareProjectId, String shareOwnerEmail) {
+		this.id = id;
+		this.email = email;
+		this.authorities = authorities;
+		this.guest = guest;
+		this.guestType = guestType;
+		this.shareProjectId = shareProjectId;
+		this.shareOwnerEmail = shareOwnerEmail;
+	}
 
 	private CustomUserDetails(Long id, String email, Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.email = email;
 		this.authorities = authorities;
+		this.guest = false;
+		this.guestType = null;
+		this.shareProjectId = null;
+		this.shareOwnerEmail = null;
 	}
 
 	/**
@@ -50,7 +70,31 @@ public class CustomUserDetails implements UserDetails {
 		return new CustomUserDetails(
 			member.getId(),
 			member.getEmail(),
-			Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"))
+			Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+			false,
+			null,
+			null,
+			null
+		);
+	}
+
+	/**
+	 * Create a guest/viewer principal from share token context.
+	 */
+	public static CustomUserDetails guestOf(Long projectId, String userType, String ownerEmail) {
+		String normalized = userType == null ? "viewer" : userType.toLowerCase();
+		String role = switch (normalized) {
+			case "guest" -> "ROLE_GUEST";
+			default -> "ROLE_VIEWER";
+		};
+		return new CustomUserDetails(
+			null,                    // no member id
+			null,                    // no email for anonymous user
+			Collections.singleton(new SimpleGrantedAuthority(role)),
+			true,
+			normalized,
+			projectId,
+			ownerEmail
 		);
 	}
 
@@ -91,5 +135,21 @@ public class CustomUserDetails implements UserDetails {
 
 	public Long getMemberId() {
 		return id;
+	}
+
+	public boolean isGuest() {
+		return guest;
+	}
+
+	public String getGuestType() {
+		return guestType;
+	}
+
+	public Long getShareProjectId() {
+		return shareProjectId;
+	}
+
+	public String getShareOwnerEmail() {
+		return shareOwnerEmail;
 	}
 }

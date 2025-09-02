@@ -12,8 +12,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ProjectErrorCode implements ErrorCode {
-	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "프로젝트를 찾을 수 없습니다. ID: %d", "PJ1001"),
-	FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다.", "PJ1002");
+	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "프로젝트를 찾을 수 없습니다. ID: %d", "P1001"),
+	FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다.", "P1002"),
+
+	// 공유 기능
+	CREATE_SHARE_TOKEN_FAIL(HttpStatus.FORBIDDEN, "공유 토큰 생성에 실패하였습니다. (Owner만 가능합니다.)", "P1101");
 
 	private final HttpStatus status;
 	private final String message;

@@ -43,7 +43,7 @@ public class JwtTokenProvider {
 			log.error("JWT 비밀키 Base64 디코딩 실패: {}", e.getMessage());
 			throw new IllegalArgumentException("JWT 비밀키가 유효한 Base64 형식이 아닙니다.", e);
 		}
-		
+
 		// 비밀키 길이 검증
 		if (keyBytes.length < MIN_KEY_LENGTH_BYTES) {
 			throw new IllegalArgumentException(
