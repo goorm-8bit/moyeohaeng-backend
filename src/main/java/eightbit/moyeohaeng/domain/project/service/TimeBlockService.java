@@ -5,14 +5,14 @@ import java.time.LocalTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eightbit.moyeohaeng.domain.project.common.exception.PlaceBlockErrorCode;
+import eightbit.moyeohaeng.domain.project.common.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.project.common.exception.TimeBlockErrorCode;
 import eightbit.moyeohaeng.domain.project.common.exception.TimeBlockException;
 import eightbit.moyeohaeng.domain.project.dto.request.TimeBlockCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.response.TimeBlockResponse;
 import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
 import eightbit.moyeohaeng.domain.project.entity.TimeBlock;
-import eightbit.moyeohaeng.domain.project.exception.PlaceBlockErrorCode;
-import eightbit.moyeohaeng.domain.project.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.project.repository.PlaceBlockRepository;
 import eightbit.moyeohaeng.domain.project.repository.TimeBlockRepository;
 import lombok.RequiredArgsConstructor;
