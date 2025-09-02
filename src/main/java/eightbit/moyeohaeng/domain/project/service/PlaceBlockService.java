@@ -5,13 +5,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eightbit.moyeohaeng.domain.project.common.exception.PlaceBlockErrorCode;
+import eightbit.moyeohaeng.domain.project.common.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.project.dto.request.PlaceBlockCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.request.PlaceBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.project.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
 import eightbit.moyeohaeng.domain.project.entity.Project;
-import eightbit.moyeohaeng.domain.project.exception.PlaceBlockErrorCode;
-import eightbit.moyeohaeng.domain.project.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.project.repository.PlaceBlockRepository;
 import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.global.dto.PageResponse;

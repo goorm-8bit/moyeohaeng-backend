@@ -1,9 +1,12 @@
 package eightbit.moyeohaeng.domain.project.entity;
 
 import java.time.LocalDate;
+import java.util.Objects;
+import java.util.UUID;
 
 import org.hibernate.annotations.SQLDelete;
 
+import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.global.domain.BaseEntity;
 import jakarta.persistence.Column;
@@ -58,5 +61,39 @@ public class Project extends BaseEntity {
 
 	@Column(name = "end_date")
 	private LocalDate endDate;
+
+	// 프로젝트 생성자 (소유자)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "creator_id", nullable = false)
+	private Member creator;
+
+	// 프로젝트 생성자 설정 메소드
+	public void setCreator(Member creator) {
+		this.creator = Objects.requireNonNull(creator, "creator는 null일 수 없습니다.");
+	}
+
+	// 특정 사용자가 프로젝트 소유자인지 확인
+	public boolean isOwnedBy(Member member) {
+		return this.creator != null && member != null
+			&& Objects.equals(this.creator.getId(), member.getId());
+	}
+
+	// 정적 팩토리 메서드들 (DTO 비의존)
+	public static Project create(Team team,
+		Member creator,
+		String title,
+		LocalDate startDate,
+		LocalDate endDate) {
+
+		return Project.builder()
+			.team(team)
+			.creator(creator)
+			.title(title)
+			.startDate(startDate)
+			.endDate(endDate)
+			.projectAccess(ProjectAccess.PRIVATE)
+			.externalId(UUID.randomUUID().toString())
+			.build();
+	}
 
 }
