@@ -31,20 +31,18 @@ public class CustomUserDetails implements UserDetails {
 	private final Long id;
 	private final String email;
 	private final Collection<? extends GrantedAuthority> authorities;
-	// Guest token context
+	// 비로그인 context
 	private final boolean guest;                 // true when authenticated via share token
 	private final String guestType;              // "Guest" | "viewer"
-	private final Long shareProjectId;           // project bound to share token
 	private final String shareOwnerEmail;        // owner email encoded in share token
 
 	private CustomUserDetails(Long id, String email, Collection<? extends GrantedAuthority> authorities,
-		boolean guest, String guestType, Long shareProjectId, String shareOwnerEmail) {
+		boolean guest, String guestType, String shareOwnerEmail) {
 		this.id = id;
 		this.email = email;
 		this.authorities = authorities;
 		this.guest = guest;
 		this.guestType = guestType;
-		this.shareProjectId = shareProjectId;
 		this.shareOwnerEmail = shareOwnerEmail;
 	}
 
@@ -54,7 +52,6 @@ public class CustomUserDetails implements UserDetails {
 		this.authorities = authorities;
 		this.guest = false;
 		this.guestType = null;
-		this.shareProjectId = null;
 		this.shareOwnerEmail = null;
 	}
 
@@ -73,7 +70,6 @@ public class CustomUserDetails implements UserDetails {
 			Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
 			false,
 			null,
-			null,
 			null
 		);
 	}
@@ -81,7 +77,7 @@ public class CustomUserDetails implements UserDetails {
 	/**
 	 * Create a guest/viewer principal from share token context.
 	 */
-	public static CustomUserDetails guestOf(Long projectId, String userType, String ownerEmail) {
+	public static CustomUserDetails guestOf(String userType, String ownerEmail) {
 		String normalized = userType == null ? "viewer" : userType.toLowerCase();
 		String role = switch (normalized) {
 			case "guest" -> "ROLE_GUEST";
@@ -93,7 +89,6 @@ public class CustomUserDetails implements UserDetails {
 			Collections.singleton(new SimpleGrantedAuthority(role)),
 			true,
 			normalized,
-			projectId,
 			ownerEmail
 		);
 	}
@@ -143,10 +138,6 @@ public class CustomUserDetails implements UserDetails {
 
 	public String getGuestType() {
 		return guestType;
-	}
-
-	public Long getShareProjectId() {
-		return shareProjectId;
 	}
 
 	public String getShareOwnerEmail() {

@@ -16,7 +16,6 @@ import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;
 import eightbit.moyeohaeng.global.security.JwtAuthenticationFilter;
 import eightbit.moyeohaeng.global.security.ShareGuestAuthenticationFilter;
 import eightbit.moyeohaeng.domain.member.service.MemberService;
-import eightbit.moyeohaeng.global.domain.auth.ShareTokenProvider;
 import eightbit.moyeohaeng.domain.project.service.ProjectService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,12 +27,11 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
-    private final ShareTokenProvider shareTokenProvider;
     private final ProjectService projectService;
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenProvider, shareTokenProvider, memberService);
+        return new JwtAuthenticationFilter(jwtTokenProvider, memberService);
     }
 
     @Bean

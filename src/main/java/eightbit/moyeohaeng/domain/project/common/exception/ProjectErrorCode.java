@@ -16,8 +16,7 @@ public enum ProjectErrorCode implements ErrorCode {
 	FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다.", "P1002"),
 
 	// 공유 기능
-	CREATE_SHARE_TOKEN_FAIL(HttpStatus.FORBIDDEN, "공유 토큰 생성에 실패하였습니다. (Owner만 가능합니다.)", "P1101"),
-	SHARE_NOT_ALLOWED(HttpStatus.FORBIDDEN, "해당 프로젝트는 공유가 허용되지 않았습니다.", "P1102");
+	SHARE_NOT_ALLOWED(HttpStatus.FORBIDDEN, "해당 프로젝트는 공유가 허용되지 않았습니다.", "P1101");
 
 	private final HttpStatus status;
 	private final String message;

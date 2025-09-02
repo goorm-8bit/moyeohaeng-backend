@@ -35,15 +35,11 @@ public class UserAuthorizationService {
 			.orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectId));
 
 		if (auth != null && auth.getPrincipal() instanceof CustomUserDetails user) {
-			// Guest via share token
+			// Guest principal: decide role only by guestType
 			if (user.isGuest()) {
-				Long pid = user.getShareProjectId();
-				if (pid == null || !projectId.equals(pid))
-					return UserRole.VIEWER;
 				String type = user.getGuestType();
-				if ("guest".equalsIgnoreCase(type))
-					return UserRole.GUEST;
-				return UserRole.ANY;
+				if ("guest".equalsIgnoreCase(type)) return UserRole.GUEST;
+				return UserRole.VIEWER;
 			}
 
 			// Logged-in member

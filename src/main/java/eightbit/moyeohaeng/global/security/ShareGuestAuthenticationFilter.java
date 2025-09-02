@@ -83,7 +83,7 @@ public class ShareGuestAuthenticationFilter extends OncePerRequestFilter {
 			projectService.ensureShareAllowed(projectId);
 
 			// 비로그인 접근을 나타내는 최소한의 게스트 Principal 생성
-			CustomUserDetails guest = CustomUserDetails.guestOf(projectId, "viewer", "anonymous");
+			CustomUserDetails guest = CustomUserDetails.guestOf("viewer", "anonymous");
 			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 				guest, null, guest.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(authentication);

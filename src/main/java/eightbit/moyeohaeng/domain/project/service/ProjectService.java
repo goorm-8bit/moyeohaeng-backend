@@ -21,7 +21,6 @@ import eightbit.moyeohaeng.domain.team.entity.TeamMember;
 import eightbit.moyeohaeng.domain.team.entity.TeamRole;
 import eightbit.moyeohaeng.domain.team.repository.TeamMemberRepository;
 import eightbit.moyeohaeng.domain.team.repository.TeamRepository;
-import eightbit.moyeohaeng.global.domain.auth.ShareTokenProvider;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +31,6 @@ public class ProjectService {
 
 	private final ProjectRepository projectRepository;
 	private final MemberService memberService;
-	private final ShareTokenProvider shareTokenProvider;
 	private final TeamRepository teamRepository;
 	private final TeamMemberRepository teamMemberRepository;
 
@@ -138,20 +136,6 @@ public class ProjectService {
 		// projectRepository.delete(project);
 	}
 
-	/**
-	 * Owner가 프로젝트 공유 토큰(guest/viewer)을 발급합니다.
-	 * days가 null이면 기본 3일.
-	 */
-	public String createShareToken(Long projectId, String userType, Integer days, CustomUserDetails currentUser) {
-		// Owner 확인
-		Member owner = memberService.findById(currentUser.getMemberId());
-		Project project = findEntityById(projectId);
-		if (!project.isOwnedBy(owner)) {
-			throw new ProjectException(ProjectErrorCode.CREATE_SHARE_TOKEN_FAIL);
-		}
-		int expireDays = days == null ? 3 : Math.min(Math.max(days, 1), 14); // 1~14일 제한
-		return shareTokenProvider.createShareToken(projectId, owner.getEmail(), userType, expireDays);
-	}
 
 	public Project findEntityById(Long projectId) {
 		// Project project = projectRepository.findById(projectId)
