@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import eightbit.moyeohaeng.domain.auth.RequiredUserRole;
+import eightbit.moyeohaeng.domain.auth.UserRole;
 import eightbit.moyeohaeng.domain.auth.annotation.RequiredAccessRole;
 import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
 import eightbit.moyeohaeng.domain.project.common.success.ProjectSuccessCode;
@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/projects")
+@RequestMapping({"/v1/projects", "/sub/v1/projects"})
 public class ProjectController implements ProjectApi {
 
 	private final ProjectService projectService;
@@ -42,7 +42,7 @@ public class ProjectController implements ProjectApi {
 	@Override
 	@PostMapping
 	@PreAuthorize("isAuthenticated()")
-	@RequiredAccessRole(RequiredUserRole.MEMBER)
+	@RequiredAccessRole(UserRole.MEMBER)
 	public SuccessResponse<ProjectDto> create(@Valid @RequestBody ProjectCreateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		ProjectDto response = projectService.create(request, currentUser);
@@ -52,7 +52,7 @@ public class ProjectController implements ProjectApi {
 	@Override
 	@PutMapping("/{projectId}")
 	@PreAuthorize("isAuthenticated()")
-	@RequiredAccessRole(RequiredUserRole.MEMBER)
+	@RequiredAccessRole(UserRole.MEMBER)
 	public SuccessResponse<ProjectDto> update(
 		@PathVariable Long projectId,
 		@Valid @RequestBody ProjectUpdateRequest request,
@@ -72,9 +72,11 @@ public class ProjectController implements ProjectApi {
 
 	@Override
 	@GetMapping("/{projectId}")
-	@RequiredAccessRole(RequiredUserRole.VIEWER)
 	public SuccessResponse<ProjectDto> getById(@PathVariable Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
+		if (currentUser == null) {
+			projectService.ensureShareAllowed(projectId);
+		}
 		ProjectDto project = projectService.findById(projectId);
 		return SuccessResponse.of(CommonSuccessCode.SELECT_SUCCESS, project);
 	}
@@ -84,9 +86,12 @@ public class ProjectController implements ProjectApi {
 	 */
 	@Override
 	@GetMapping(value = "/{projectId}/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	@RequiredAccessRole(RequiredUserRole.VIEWER)
 	public SseEmitter connectProject(@PathVariable Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
+
+		if (currentUser == null) {
+			projectService.ensureShareAllowed(projectId);
+		}
 
 		// TODO: emitter registry에 등록하고 권한 검증(프로젝트 접근 가능 여부) 수행
 		SseEmitter emitter = new SseEmitter(Duration.ofMinutes(30).toMillis());
@@ -100,7 +105,7 @@ public class ProjectController implements ProjectApi {
 	@Override
 	@GetMapping("/{projectId}/members")
 	@org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
-	@RequiredAccessRole(RequiredUserRole.MEMBER)
+	@RequiredAccessRole(UserRole.MEMBER)
 	public SuccessResponse<List<MemberInfoResponse>> getConnectedMember(
 		@PathVariable Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
@@ -113,7 +118,7 @@ public class ProjectController implements ProjectApi {
 	@Override
 	@DeleteMapping("/{projectId}")
 	@org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
-	@RequiredAccessRole(RequiredUserRole.OWNER)
+	@RequiredAccessRole(UserRole.OWNER)
 	public SuccessResponse<Void> delete(@PathVariable Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		projectService.delete(projectId, currentUser);

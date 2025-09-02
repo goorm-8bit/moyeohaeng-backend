@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import eightbit.moyeohaeng.domain.auth.RequiredUserRole;
+import eightbit.moyeohaeng.domain.auth.UserRole;
 
 /**
  * Minimal access role required to access an endpoint across domains (Project/Team).
@@ -13,5 +13,5 @@ import eightbit.moyeohaeng.domain.auth.RequiredUserRole;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequiredAccessRole {
-	RequiredUserRole value();
+	UserRole value();
 }

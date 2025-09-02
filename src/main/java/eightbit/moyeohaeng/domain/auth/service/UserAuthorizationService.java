@@ -5,7 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import eightbit.moyeohaeng.domain.auth.RequiredUserRole;
+import eightbit.moyeohaeng.domain.auth.UserRole;
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.project.repository.TravelerRepository;
@@ -29,7 +29,7 @@ public class UserAuthorizationService {
 	private final TeamMemberRepository teamMemberRepository;
 	private final TravelerRepository travelerRepository;
 
-	public RequiredUserRole resolveProjectRole(Long projectId, HttpServletRequest request) {
+	public UserRole resolveProjectRole(Long projectId, HttpServletRequest request) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		Project project = projectRepository.findById(projectId)
 			.orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectId));
@@ -39,11 +39,11 @@ public class UserAuthorizationService {
 			if (user.isGuest()) {
 				Long pid = user.getShareProjectId();
 				if (pid == null || !projectId.equals(pid))
-					return RequiredUserRole.VIEWER;
+					return UserRole.VIEWER;
 				String type = user.getGuestType();
 				if ("guest".equalsIgnoreCase(type))
-					return RequiredUserRole.GUEST;
-				return RequiredUserRole.ANY;
+					return UserRole.GUEST;
+				return UserRole.ANY;
 			}
 
 			// Logged-in member
@@ -51,44 +51,44 @@ public class UserAuthorizationService {
 			// OWNER
 			if (project.getCreator() != null && project.getCreator().getId() != null
 				&& project.getCreator().getId().equals(memberId)) {
-				return RequiredUserRole.OWNER;
+				return UserRole.OWNER;
 			}
 			// MEMBER (같은 팀)
 			boolean isTeamMember = teamMemberRepository.existsByTeam_IdAndMember_Id(project.getTeam().getId(),
 				memberId);
 			if (isTeamMember)
-				return RequiredUserRole.MEMBER;
+				return UserRole.MEMBER;
 			// TRAVELER (초대 받은 유저)
 			boolean isTraveler = travelerRepository.existsByProject_IdAndMember_Id(projectId, memberId);
 			if (isTraveler)
-				return RequiredUserRole.TRAVELER;
+				return UserRole.TRAVELER;
 			// Logged-in but no relation: VIEWER
-			return RequiredUserRole.ANY;
+			return UserRole.ANY;
 		}
 
 		// No authentication principal
-		return RequiredUserRole.VIEWER;
+		return UserRole.VIEWER;
 	}
 
-	public RequiredUserRole resolveTeamRole(Long teamId, HttpServletRequest request) {
+	public UserRole resolveTeamRole(Long teamId, HttpServletRequest request) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null && auth.getPrincipal() instanceof CustomUserDetails user) {
 			Long memberId = user.getMemberId();
 			boolean isTeamMember = teamMemberRepository.existsByTeam_IdAndMember_Id(teamId, memberId);
-			return isTeamMember ? RequiredUserRole.MEMBER : RequiredUserRole.VIEWER;
+			return isTeamMember ? UserRole.MEMBER : UserRole.VIEWER;
 		}
-		return RequiredUserRole.VIEWER;
+		return UserRole.VIEWER;
 	}
 
 	// JwtAuthenticationFilter sets the authenticated principal; no header parsing here anymore.
 
-	public static boolean isAllowed(RequiredUserRole actual, RequiredUserRole required) {
+	public static boolean isAllowed(UserRole actual, UserRole required) {
 		int a = rank(actual);
 		int r = rank(required);
 		return a >= r;
 	}
 
-	private static int rank(RequiredUserRole role) {
+	private static int rank(UserRole role) {
 		return switch (role) {
 			case ANY -> 0;
 			case VIEWER -> 1;

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eightbit.moyeohaeng.domain.auth.UserRole;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.service.MemberService;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectErrorCode;
@@ -16,6 +17,10 @@ import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.team.entity.Team;
+import eightbit.moyeohaeng.domain.team.entity.TeamMember;
+import eightbit.moyeohaeng.domain.team.entity.TeamRole;
+import eightbit.moyeohaeng.domain.team.repository.TeamMemberRepository;
+import eightbit.moyeohaeng.domain.team.repository.TeamRepository;
 import eightbit.moyeohaeng.global.domain.auth.ShareTokenProvider;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +33,8 @@ public class ProjectService {
 	private final ProjectRepository projectRepository;
 	private final MemberService memberService;
 	private final ShareTokenProvider shareTokenProvider;
-	// TODO TeamRepository 추가
+	private final TeamRepository teamRepository;
+	private final TeamMemberRepository teamMemberRepository;
 
 	final ProjectDto testProjectDTO = ProjectDto.builder().title("테스트 project").build();
 
@@ -36,21 +42,30 @@ public class ProjectService {
 	public ProjectDto create(ProjectCreateRequest request, CustomUserDetails currentUser) {
 		// CustomUserDetails에서 ID를 이용하여 Member 조회
 		Member member = memberService.findById(currentUser.getMemberId());
-		Team team = Team.builder().build();    // TODO TeamRepository 추가
-		// TODO TeamMember 권한 체크 로직 추가
+		// Create and persist a Team for the project
+		String teamName =
+			(request.title() == null || request.title().isBlank()) ? "Project Team" : request.title() + " Team";
+		Team team = teamRepository.save(Team.builder().name(teamName).build());
+		// TODO TeamMember 권한 체크 로직 추가 (추후 권한 정책 적용)
 
 		// 프로젝트 생성 및 소유자 설정
 		Project project = Project.create(team, member, request.title(), request.startDate(), request.endDate());
-		// Project savedProject = projectRepository.save(project);  //TODO TeamRepository 추가 주석 해제
+		Project savedProject = projectRepository.save(project);
 
-		return testProjectDTO;
+		// Create OWNER membership for creator
+		TeamMember ownerMembership = TeamMember.builder()
+			.team(team)
+			.member(member)
+			.role(TeamRole.OWNER)
+			.build();
+		teamMemberRepository.save(ownerMembership);
+
+		return ProjectDto.from(savedProject);
 	}
 
 	public List<ProjectDto> find() {
 
 		List<ProjectDto> testDto = new ArrayList<>();
-
-		testDto.add(testProjectDTO);
 
 		return testDto;
 		// return projectRepository.findAll().stream()
@@ -63,6 +78,27 @@ public class ProjectService {
 		// Project project = projectRepository.findById(projectId)
 		// 	.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND, projectId));
 		return testProjectDTO;
+	}
+
+	// TODO RequiredUserRole 이름 변경
+
+	/**
+	 * 프로젝트가 외부 공유를 허용하는지 검사합니다. 
+	 * 허용되지 않으면 예외를 던집니다.
+	 * @return UserRole {GUEST, VIEWER}
+	 */
+	public UserRole ensureShareAllowed(Long projectId) {
+		Project project = findEntityById(projectId);
+
+		if (project.isAllowGuest() || project.isAllowViewer()) {
+			throw new ProjectException(ProjectErrorCode.SHARE_NOT_ALLOWED);
+		}
+
+		if (project.isAllowGuest()) {
+			return UserRole.GUEST;
+		}
+		return UserRole.VIEWER;
+
 	}
 
 	public List<ProjectDto> findWithMe(CustomUserDetails currentUser) {

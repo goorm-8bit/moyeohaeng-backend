@@ -14,7 +14,10 @@ public record ProjectDto(
 	String location,
 	ProjectAccess projectAccess,
 	LocalDate startDate,
-	LocalDate endDate
+	LocalDate endDate,
+	boolean isAllowGuest,
+	boolean isAllowViewer
+
 ) {
 	public static ProjectDto from(Project project) {
 		return ProjectDto.of(
@@ -23,7 +26,9 @@ public record ProjectDto(
 			project.getLocation(),
 			project.getProjectAccess(),
 			project.getStartDate(),
-			project.getEndDate()
+			project.getEndDate(),
+			project.isAllowGuest(),
+			project.isAllowViewer()
 		);
 	}
 
@@ -40,10 +45,12 @@ public record ProjectDto(
 		String location,
 		ProjectAccess projectAccess,
 		LocalDate startDate,
-		LocalDate endDate
+		LocalDate endDate,
+		boolean isAllowGuest,
+		boolean isAllowViewer
 	) {
 		return new ProjectDto(
-			externalId, title, location, projectAccess, startDate, endDate
+			externalId, title, location, projectAccess, startDate, endDate, isAllowGuest, isAllowViewer
 		);
 	}
 

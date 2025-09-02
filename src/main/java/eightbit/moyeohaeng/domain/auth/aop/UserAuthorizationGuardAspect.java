@@ -13,7 +13,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerMapping;
 
-import eightbit.moyeohaeng.domain.auth.RequiredUserRole;
+import eightbit.moyeohaeng.domain.auth.UserRole;
 import eightbit.moyeohaeng.domain.auth.annotation.RequiredAccessRole;
 import eightbit.moyeohaeng.domain.auth.service.UserAuthorizationService;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
@@ -34,7 +34,7 @@ public class UserAuthorizationGuardAspect {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "요청 정보를 확인할 수 없습니다.");
 		}
 		Long projectId = extractProjectId(request, jp.getArgs());
-		RequiredUserRole actual;
+		UserRole actual;
 		if (projectId != null) {
 			actual = accessService.resolveProjectRole(projectId, request);
 		} else {
