@@ -11,6 +11,7 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.web.server.ResponseStatusException;
 
 import eightbit.moyeohaeng.global.exception.BaseException;
 import eightbit.moyeohaeng.global.exception.ErrorCode;
@@ -42,6 +43,27 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
 		return getErrorResponse(e, GlobalErrorCode.INTERNAL_SERVER_ERROR);
+	}
+
+	@ExceptionHandler(ResponseStatusException.class)
+	public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException e) {
+		GlobalLogger.error(e.toString());
+		HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
+
+		GlobalErrorCode mapped = switch (status) {
+			case FORBIDDEN -> GlobalErrorCode.FORBIDDEN;
+			case NOT_FOUND -> GlobalErrorCode.RESOURCE_NOT_FOUND;
+			case BAD_REQUEST -> GlobalErrorCode.INVALID_INPUT;
+			case METHOD_NOT_ALLOWED -> GlobalErrorCode.METHOD_NOT_ALLOWED;
+			default -> GlobalErrorCode.INTERNAL_SERVER_ERROR;
+		};
+
+		String reason = e.getReason();
+		ErrorResponse body = (reason == null || reason.isBlank())
+			? ErrorResponse.of(mapped)
+			: ErrorResponse.of(mapped, reason);
+
+		return ResponseEntity.status(status).body(body);
 	}
 
 	@ExceptionHandler(Exception.class)
