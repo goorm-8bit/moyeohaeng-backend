@@ -14,8 +14,10 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;
 import eightbit.moyeohaeng.global.security.JwtAuthenticationFilter;
+import eightbit.moyeohaeng.global.security.ShareGuestAuthenticationFilter;
 import eightbit.moyeohaeng.domain.member.service.MemberService;
 import eightbit.moyeohaeng.global.domain.auth.ShareTokenProvider;
+import eightbit.moyeohaeng.domain.project.service.ProjectService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,35 +26,44 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	private final JwtTokenProvider jwtTokenProvider;
-	private final MemberService memberService;
-	private final ShareTokenProvider shareTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final MemberService memberService;
+    private final ShareTokenProvider shareTokenProvider;
+    private final ProjectService projectService;
 
-	@Bean
-	public JwtAuthenticationFilter jwtAuthenticationFilter() {
-		return new JwtAuthenticationFilter(jwtTokenProvider, shareTokenProvider, memberService);
-	}
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtTokenProvider, shareTokenProvider, memberService);
+    }
 
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws
-		Exception {
-		return http
-			.cors(cors -> cors.configurationSource(corsConfigurationSource))
-			.csrf(AbstractHttpConfigurer::disable)
-			.httpBasic(AbstractHttpConfigurer::disable)
-			.formLogin(AbstractHttpConfigurer::disable)
-			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/v1/auth/**").permitAll()
-				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**").permitAll()
-				.requestMatchers("/actuator/**").permitAll()
-				.anyRequest().authenticated())
-			.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-			.build();
-	}
+    @Bean
+    public ShareGuestAuthenticationFilter shareGuestAuthenticationFilter() {
+        return new ShareGuestAuthenticationFilter(projectService);
+    }
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws
+        Exception {
+        return http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
+            .csrf(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .formLogin(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/sub/v1/**").permitAll()
+                .requestMatchers("/v1/auth/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
+                .anyRequest().authenticated())
+            // 공유가 허용된 경우 /sub/** 요청에 대해 게스트 Principal을 설정
+            .addFilterBefore(shareGuestAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+            .build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
