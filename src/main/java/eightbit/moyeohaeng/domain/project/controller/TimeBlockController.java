@@ -31,7 +31,7 @@ public class TimeBlockController implements TimeBlockApi {
 		@Valid @RequestBody TimeBlockCreateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
-		TimeBlockResponse response = timeBlockService.create(request);
+		TimeBlockResponse response = timeBlockService.create(projectId, request);
 		return SuccessResponse.of(TimeBlockSuccessCode.CREATE_TIME_BLOCK, response);
 	}
 }

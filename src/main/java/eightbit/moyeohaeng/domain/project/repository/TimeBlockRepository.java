@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import eightbit.moyeohaeng.domain.project.entity.TimeBlock;
 
 @Repository
-public interface TimeBlockRepository extends JpaRepository<TimeBlock, Long> {
+public interface TimeBlockRepository extends JpaRepository<TimeBlock, Long>, TimeBlockRepositoryCustom {
 }

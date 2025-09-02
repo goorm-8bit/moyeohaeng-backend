@@ -1,8 +1,12 @@
 package eightbit.moyeohaeng.domain.project.service;
 
+import java.time.LocalTime;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eightbit.moyeohaeng.domain.project.common.exception.TimeBlockErrorCode;
+import eightbit.moyeohaeng.domain.project.common.exception.TimeBlockException;
 import eightbit.moyeohaeng.domain.project.dto.request.TimeBlockCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.response.TimeBlockResponse;
 import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
@@ -22,11 +26,11 @@ public class TimeBlockService {
 	private final PlaceBlockRepository placeBlockRepository;
 
 	@Transactional
-	public TimeBlockResponse create(TimeBlockCreateRequest request) {
-		PlaceBlock placeBlock = placeBlockRepository.findById(request.placeBlockId())
-			.orElseThrow(() -> new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND));
+	public TimeBlockResponse create(Long projectId, TimeBlockCreateRequest request) {
+		validateTimeBlockExists(projectId, request.day(), request.startTime(), request.endTime());
 
-		// TODO: 다른 블록과 시간 겹치는지 확인
+		PlaceBlock placeBlock = placeBlockRepository.findByIdAndProjectId(request.placeBlockId(), projectId)
+			.orElseThrow(() -> new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND));
 
 		TimeBlock timeBlock = TimeBlock.of(
 			request.day(),
@@ -38,5 +42,13 @@ public class TimeBlockService {
 
 		timeBlockRepository.save(timeBlock);
 		return TimeBlockResponse.from(timeBlock);
+	}
+
+	private void validateTimeBlockExists(Long projectId, Integer day, LocalTime startTime, LocalTime endTime) {
+		// 다른 시간 블록과 겹치는 시간이 있는지 확인
+		boolean bOverlap = timeBlockRepository.existsOverlappingTimeBlock(projectId, day, startTime, endTime);
+		if (bOverlap) {
+			throw new TimeBlockException(TimeBlockErrorCode.TIME_BLOCK_CONFLICT);
+		}
 	}
 }
