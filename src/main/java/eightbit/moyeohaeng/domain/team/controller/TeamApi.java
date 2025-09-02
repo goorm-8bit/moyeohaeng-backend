@@ -43,9 +43,9 @@ public interface TeamApi {
 	
 	ResponseEntity<> inviteMember();
 	
-	ResponseEntity<> creationTeam();
-	
 	ResponseEntity<> removeMember();
 	
 	ResponseEntity<> updateMemberRole();
+	
+	ResponseEntity<> updateTeamSettings();
 }
