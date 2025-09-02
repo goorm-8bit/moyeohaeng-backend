@@ -12,6 +12,7 @@ spring:
         format_sql: ${JPA_FORMAT_SQL:true}
         use_sql_comments: true
         highlight_sql: true
+    open-in-view: false
     show-sql: false
 
 jwt:
