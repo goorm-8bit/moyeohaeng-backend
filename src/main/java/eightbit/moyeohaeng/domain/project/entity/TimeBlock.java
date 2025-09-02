@@ -42,10 +42,10 @@ public class TimeBlock extends BaseEntity {
 	@Column(name = "day", nullable = false)
 	private Integer day;
 
-	@Column(name = "start_time", nullable = false)
+	@Column(name = "start_time")
 	private LocalTime startTime;
 
-	@Column(name = "end_time", nullable = false)
+	@Column(name = "end_time")
 	private LocalTime endTime;
 
 	@Column(name = "memo", length = 50)
