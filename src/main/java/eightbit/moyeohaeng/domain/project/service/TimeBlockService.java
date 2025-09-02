@@ -29,6 +29,8 @@ public class TimeBlockService {
 	public TimeBlockResponse create(Long projectId, TimeBlockCreateRequest request) {
 		validateTimeBlockExists(projectId, request.day(), request.startTime(), request.endTime());
 
+		// TODO: day에 대한 검증 추가
+
 		PlaceBlock placeBlock = placeBlockRepository.findByIdAndProjectId(request.placeBlockId(), projectId)
 			.orElseThrow(() -> new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND));
 
@@ -46,8 +48,8 @@ public class TimeBlockService {
 
 	private void validateTimeBlockExists(Long projectId, Integer day, LocalTime startTime, LocalTime endTime) {
 		// 다른 시간 블록과 겹치는 시간이 있는지 확인
-		boolean bOverlap = timeBlockRepository.existsOverlappingTimeBlock(projectId, day, startTime, endTime);
-		if (bOverlap) {
+		boolean bIsOverlap = timeBlockRepository.existsOverlappingTimeBlock(projectId, day, startTime, endTime);
+		if (bIsOverlap) {
 			throw new TimeBlockException(TimeBlockErrorCode.TIME_BLOCK_CONFLICT);
 		}
 	}
