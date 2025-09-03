@@ -31,8 +31,11 @@ public class PlaceGroup extends BaseEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "color", length = 7)
+	@Column(name = "color", nullable = false, length = 7)
 	private String color;
+
+	@Column(name = "memo")
+	private String memo;
 
 	public static PlaceGroup of(String name, String color) {
 		return builder()
