@@ -48,8 +48,8 @@ public class TimeBlockService {
 
 	private void validateTimeBlockExists(Long projectId, Integer day, LocalTime startTime, LocalTime endTime) {
 		// 다른 시간 블록과 겹치는 시간이 있는지 확인
-		boolean bIsOverlap = timeBlockRepository.existsOverlappingTimeBlock(projectId, day, startTime, endTime);
-		if (bIsOverlap) {
+		boolean overlap = timeBlockRepository.existsOverlappingTimeBlock(projectId, day, startTime, endTime);
+		if (overlap) {
 			throw new TimeBlockException(TimeBlockErrorCode.TIME_BLOCK_CONFLICT);
 		}
 	}
