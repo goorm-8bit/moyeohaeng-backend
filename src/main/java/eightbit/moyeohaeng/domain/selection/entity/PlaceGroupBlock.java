@@ -46,4 +46,11 @@ public class PlaceGroupBlock extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "place_group_id", nullable = false)
 	private PlaceGroup placeGroup;
+
+	public static PlaceGroupBlock of(PlaceGroup placeGroup, PlaceBlock placeBlock) {
+		return builder()
+			.placeGroup(placeGroup)
+			.placeBlock(placeBlock)
+			.build();
+	}
 }

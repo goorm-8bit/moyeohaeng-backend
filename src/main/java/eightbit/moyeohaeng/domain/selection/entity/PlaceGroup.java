@@ -28,9 +28,16 @@ public class PlaceGroup extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "name", nullable = false, length = 50)
+	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "color", length = 20)
+	@Column(name = "color", length = 7)
 	private String color;
+
+	public static PlaceGroup of(String name, String color) {
+		return builder()
+			.name(name)
+			.color(color)
+			.build();
+	}
 }
