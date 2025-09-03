@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.entity.ProjectAccess;
 import lombok.Builder;
@@ -14,7 +16,10 @@ public record ProjectDto(
 	String location,
 	ProjectAccess projectAccess,
 	LocalDate startDate,
-	LocalDate endDate
+	LocalDate endDate,
+	@JsonProperty("isAllowGuest") boolean isAllowGuest,
+	@JsonProperty("isAllowViewer") boolean isAllowViewer
+
 ) {
 	public static ProjectDto from(Project project) {
 		return ProjectDto.of(
@@ -23,7 +28,9 @@ public record ProjectDto(
 			project.getLocation(),
 			project.getProjectAccess(),
 			project.getStartDate(),
-			project.getEndDate()
+			project.getEndDate(),
+			project.isAllowGuest(),
+			project.isAllowViewer()
 		);
 	}
 
@@ -40,10 +47,12 @@ public record ProjectDto(
 		String location,
 		ProjectAccess projectAccess,
 		LocalDate startDate,
-		LocalDate endDate
+		LocalDate endDate,
+		boolean isAllowGuest,
+		boolean isAllowViewer
 	) {
 		return new ProjectDto(
-			externalId, title, location, projectAccess, startDate, endDate
+			externalId, title, location, projectAccess, startDate, endDate, isAllowGuest, isAllowViewer
 		);
 	}
 

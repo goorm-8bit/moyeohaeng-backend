@@ -62,6 +62,12 @@ public class Project extends BaseEntity {
 	@Column(name = "end_date")
 	private LocalDate endDate;
 
+	@Column(name = "is_allow_guest", nullable = false)
+	private boolean isAllowGuest = false;
+
+	@Column(name = "is_allow_viewer", nullable = false)
+	private boolean isAllowViewer = false;
+
 	// 프로젝트 생성자 (소유자)
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "creator_id", nullable = false)

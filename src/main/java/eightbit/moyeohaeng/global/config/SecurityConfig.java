@@ -14,7 +14,10 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;
 import eightbit.moyeohaeng.global.security.JwtAuthenticationFilter;
+import eightbit.moyeohaeng.global.security.ShareGuestAuthenticationFilter;
 import eightbit.moyeohaeng.domain.member.service.MemberService;
+import eightbit.moyeohaeng.domain.project.service.ProjectService;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -24,10 +27,16 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
-    
+    private final ProjectService projectService;
+
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtTokenProvider, memberService);
+    }
+
+    @Bean
+    public ShareGuestAuthenticationFilter shareGuestAuthenticationFilter() {
+        return new ShareGuestAuthenticationFilter(projectService);
     }
 
     @Bean
@@ -40,14 +49,17 @@ public class SecurityConfig {
             .formLogin(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/sub/v1/**").permitAll()
                 .requestMatchers("/v1/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated())
+            // 공유가 허용된 경우 /sub/** 요청에 대해 게스트 Principal을 설정
+            .addFilterBefore(shareGuestAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             .build();
-        }
-    
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
