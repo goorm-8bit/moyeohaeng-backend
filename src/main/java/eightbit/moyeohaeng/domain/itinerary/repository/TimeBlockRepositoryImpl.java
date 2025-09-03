@@ -8,8 +8,8 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import eightbit.moyeohaeng.domain.itinerary.entity.QTimeBlock;
 import eightbit.moyeohaeng.domain.project.entity.QProject;
-import eightbit.moyeohaeng.domain.project.entity.QTimeBlock;
 import lombok.RequiredArgsConstructor;
 
 @Repository
