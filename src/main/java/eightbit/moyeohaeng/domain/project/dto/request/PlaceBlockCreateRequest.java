@@ -1,11 +1,7 @@
 package eightbit.moyeohaeng.domain.project.dto.request;
 
-import java.util.Objects;
-
 import org.hibernate.validator.constraints.URL;
 
-import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
-import eightbit.moyeohaeng.domain.project.entity.Project;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
@@ -53,25 +49,4 @@ public record PlaceBlockCreateRequest(
 	String author
 
 ) {
-	/**
-	 * DTO를 PlaceBlock 엔티티로 변환합니다.
-	 * @param project 소속 프로젝트 (null 불가)
-	 * @return 변환된 PlaceBlock 엔티티
-	 * @throws NullPointerException projectId가 null인 경우
-	 */
-	public PlaceBlock toEntity(Project project) {
-		Objects.requireNonNull(project.getId(), "projectId");
-		return PlaceBlock.builder()
-			.project(project)
-			.name(name)
-			.address(address)
-			.latitude(latitude)
-			.longitude(longitude)
-			.memo(memo)
-			.detailLink(detailLink)
-			.category(category)
-			.color(color)
-			.author(author)
-			.build();
-	}
 }

@@ -1,6 +1,5 @@
 package eightbit.moyeohaeng.domain.project.dto.response;
 
-import eightbit.moyeohaeng.domain.project.entity.Pin;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "핀 응답 DTO")
@@ -27,6 +26,7 @@ public record PinResponse(
 	@Schema(description = "작성자", example = "test@test.com")
 	String author
 ) {
+	/*
 	public static PinResponse from(Pin pin) {
 		return new PinResponse(
 			pin.getId(),
@@ -38,4 +38,5 @@ public record PinResponse(
 			pin.getAuthor()
 		);
 	}
+	 */
 }

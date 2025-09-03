@@ -38,7 +38,7 @@ public class PlaceBlockService {
 	 * @param projectId 프로젝트 ID
 	 * @param userId    요청 사용자 ID
 	 * @param userRole  요청 사용자 역할(OWNER/EDITOR/VIEWER)
-	 * @param request       생성 요청 DTO
+	 * @param request   생성 요청 DTO
 	 * @return 생성된 장소 블록 응답 DTO
 	 * @throws PlaceBlockException 권한 부족(FORBIDDEN) 또는 개수 제한 초과(LIMIT_EXCEEDED) 시
 	 */
@@ -54,8 +54,8 @@ public class PlaceBlockService {
 		Project project = projectRepository.findById(projectId)
 			.orElseThrow();
 
-		PlaceBlock saved = placeBlockRepository.save(request.toEntity(project));
-		return PlaceBlockResponse.from(saved);
+		// PlaceBlock saved = placeBlockRepository.save(request.toEntity(project));
+		return null;
 	}
 
 	/**
@@ -84,12 +84,6 @@ public class PlaceBlockService {
 			throw new PlaceBlockException(PlaceBlockErrorCode.FORBIDDEN);
 
 		PlaceBlock placeBlock = getOrThrow(projectId, placeBlockId);
-
-		placeBlock.update(
-			request.name(), request.address(), request.latitude(), request.longitude(),
-			request.memo(), request.detailLink(), request.category(), request.color(),
-			request.author()
-		);
 
 		return PlaceBlockResponse.from(placeBlock);
 	}

@@ -48,15 +48,6 @@ public record PlaceBlockResponse(
 		return PlaceBlockResponse.builder()
 			.id(e.getId())
 			.projectId(e.getProject().getId())
-			.name(e.getName())
-			.address(e.getAddress())
-			.latitude(e.getLatitude())
-			.longitude(e.getLongitude())
-			.memo(e.getMemo())
-			.detailLink(e.getDetailLink())
-			.category(e.getCategory())
-			.color(e.getColor())
-			.author(e.getAuthor())
 			.build();
 	}
 }
