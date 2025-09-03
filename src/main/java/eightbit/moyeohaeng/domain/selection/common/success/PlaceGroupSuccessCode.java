@@ -1,0 +1,17 @@
+package eightbit.moyeohaeng.domain.selection.common.success;
+
+import org.springframework.http.HttpStatus;
+
+import eightbit.moyeohaeng.global.success.SuccessCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+public enum PlaceGroupSuccessCode implements SuccessCode {
+
+	CREATE_PLACE_GROUP(HttpStatus.CREATED, "장소 그룹 생성에 성공했습니다.");
+
+	private final HttpStatus status;
+	private final String message;
+}
