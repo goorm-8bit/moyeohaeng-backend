@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 		@UniqueConstraint(name = "uk_team_member", columnNames = {"team_id", "member_id"})
 	}
 )
-@Builder
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE team_members SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
@@ -51,5 +51,12 @@ public class TeamMember extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role", nullable = false)
-	private TeamRole role;
+	private TeamRole teamRole;
+	
+	@Builder
+	private TeamMember(Team team, Member member, TeamRole teamRole) {
+		this.team = team;
+		this.member = member;
+		this.teamRole = teamRole;
+	}
 }

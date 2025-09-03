@@ -1,6 +1,21 @@
 package eightbit.moyeohaeng.domain.team.controller;
 
 
+import eightbit.moyeohaeng.domain.team.dto.request.CreationTeamRequestDto;
+import eightbit.moyeohaeng.domain.team.dto.request.DeleteTeamRequestDto;
+import eightbit.moyeohaeng.domain.team.dto.request.InviteMemberRequestDto;
+import eightbit.moyeohaeng.domain.team.dto.request.RemoveMemberRequestDto;
+import eightbit.moyeohaeng.domain.team.dto.request.SearchMyTeamRequestDto;
+import eightbit.moyeohaeng.domain.team.dto.request.UpdateMemberRoleRequestDto;
+import eightbit.moyeohaeng.domain.team.dto.request.UpdateTeamSettingsRequestDto;
+import eightbit.moyeohaeng.domain.team.dto.response.CreationTeamResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.DeleteTeamResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.InviteMemberResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.RemoveMemberResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.SearchMyTeamResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.UpdateMemberRoleResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.UpdateTeamSettingsResponseDto;
+import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -12,6 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tags({
@@ -39,13 +55,24 @@ public interface TeamApi {
 		                                schema = @Schema(implementation = String.class))),
 		@ApiResponse(responseCode = "404", description = "응답에 대한 설명")
 	})
-	ResponseEntity<> creationTeam();
+	ResponseEntity<CreationTeamResponseDto> creationTeam(@AuthenticationPrincipal CustomUserDetails user,
+	                                                     @RequestBody CreationTeamRequestDto requestDto);
 	
-	ResponseEntity<> inviteMember();
+	ResponseEntity<InviteMemberResponseDto> inviteMember(@AuthenticationPrincipal CustomUserDetails user,
+	                                                    @RequestBody InviteMemberRequestDto requestDto);
 	
-	ResponseEntity<> removeMember();
+	ResponseEntity<RemoveMemberResponseDto> removeMember(@AuthenticationPrincipal CustomUserDetails user,
+	                                                     @RequestBody RemoveMemberRequestDto requestDto);
 	
-	ResponseEntity<> updateMemberRole();
+	ResponseEntity<UpdateMemberRoleResponseDto> updateMemberRole(@AuthenticationPrincipal CustomUserDetails user,
+	                                                             @RequestBody UpdateMemberRoleRequestDto requestDto);
 	
-	ResponseEntity<> updateTeamSettings();
+	ResponseEntity<UpdateTeamSettingsResponseDto> updateTeamSettings(@AuthenticationPrincipal CustomUserDetails user,
+	                                                                 @RequestBody UpdateTeamSettingsRequestDto requestDto);
+	
+	ResponseEntity<DeleteTeamResponseDto> deleteTeam(@AuthenticationPrincipal CustomUserDetails user,
+	                                                 @RequestBody DeleteTeamRequestDto requestDto);
+	
+	ResponseEntity<SearchMyTeamResponseDto> searchMyTeam(@AuthenticationPrincipal CustomUserDetails user,
+	                                                     @RequestBody SearchMyTeamRequestDto requestDto);
 }
