@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import eightbit.moyeohaeng.domain.auth.UserRole;
-import eightbit.moyeohaeng.domain.auth.annotation.RequiredAccessRole;
+import eightbit.moyeohaeng.domain.auth.common.annotation.RequiredAccessRole;
 import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
 import eightbit.moyeohaeng.domain.project.common.success.ProjectSuccessCode;
 import eightbit.moyeohaeng.domain.project.controller.swagger.ProjectApi;
@@ -41,7 +40,6 @@ public class ProjectController implements ProjectApi {
 
 	@Override
 	@PostMapping
-	@PreAuthorize("isAuthenticated()")
 	@RequiredAccessRole(UserRole.MEMBER)
 	public SuccessResponse<ProjectDto> create(@Valid @RequestBody ProjectCreateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
@@ -51,7 +49,6 @@ public class ProjectController implements ProjectApi {
 
 	@Override
 	@PutMapping("/{projectId}")
-	@PreAuthorize("isAuthenticated()")
 	@RequiredAccessRole(UserRole.MEMBER)
 	public SuccessResponse<ProjectDto> update(
 		@PathVariable Long projectId,
@@ -63,7 +60,6 @@ public class ProjectController implements ProjectApi {
 
 	@Override
 	@GetMapping
-	@PreAuthorize("isAuthenticated()")
 	public SuccessResponse<List<ProjectDto>> get(
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		List<ProjectDto> projects = projectService.findWithMe(currentUser);
@@ -104,7 +100,6 @@ public class ProjectController implements ProjectApi {
 
 	@Override
 	@GetMapping("/{projectId}/members")
-	@org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
 	@RequiredAccessRole(UserRole.MEMBER)
 	public SuccessResponse<List<MemberInfoResponse>> getConnectedMember(
 		@PathVariable Long projectId,
@@ -117,7 +112,6 @@ public class ProjectController implements ProjectApi {
 
 	@Override
 	@DeleteMapping("/{projectId}")
-	@org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
 	@RequiredAccessRole(UserRole.OWNER)
 	public SuccessResponse<Void> delete(@PathVariable Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {

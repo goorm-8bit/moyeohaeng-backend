@@ -18,7 +18,6 @@ spring:
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
-    guest: ${JWT_SECRET_GUEST_KEY}
   access-token:
     expire-length: ${JWT_ACCESS_TOKEN_EXPIRE_LENGTH:3600000} # 1시간
   refresh-token:

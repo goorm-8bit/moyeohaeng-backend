@@ -1,4 +1,4 @@
-package eightbit.moyeohaeng.domain.auth.aop;
+package eightbit.moyeohaeng.domain.auth.common.aop;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerMapping;
 
 import eightbit.moyeohaeng.domain.auth.UserRole;
-import eightbit.moyeohaeng.domain.auth.annotation.RequiredAccessRole;
+import eightbit.moyeohaeng.domain.auth.common.annotation.RequiredAccessRole;
 import eightbit.moyeohaeng.domain.auth.service.UserAuthorizationService;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +27,7 @@ public class UserAuthorizationGuardAspect {
 
 	private final UserAuthorizationService accessService;
 
-	@Before("@annotation(required) && execution(* *(..))")
+	@Before("@annotation(required)")
 	public void checkAccess(JoinPoint jp, RequiredAccessRole required) {
 		HttpServletRequest request = currentRequest();
 		if (request == null) {

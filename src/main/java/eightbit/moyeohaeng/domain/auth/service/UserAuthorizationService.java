@@ -38,7 +38,8 @@ public class UserAuthorizationService {
 			// Guest principal: decide role only by guestType
 			if (user.isGuest()) {
 				String type = user.getGuestType();
-				if ("guest".equalsIgnoreCase(type)) return UserRole.GUEST;
+				if ("guest".equalsIgnoreCase(type))
+					return UserRole.GUEST;
 				return UserRole.VIEWER;
 			}
 
@@ -76,22 +77,9 @@ public class UserAuthorizationService {
 		return UserRole.VIEWER;
 	}
 
-	// JwtAuthenticationFilter sets the authenticated principal; no header parsing here anymore.
-
 	public static boolean isAllowed(UserRole actual, UserRole required) {
-		int a = rank(actual);
-		int r = rank(required);
-		return a >= r;
+
+		return actual.getPriority() >= required.getPriority();
 	}
 
-	private static int rank(UserRole role) {
-		return switch (role) {
-			case ANY -> 0;
-			case VIEWER -> 1;
-			case GUEST -> 2;
-			case TRAVELER -> 3;
-			case MEMBER -> 4;
-			case OWNER -> 5;
-		};
-	}
 }
