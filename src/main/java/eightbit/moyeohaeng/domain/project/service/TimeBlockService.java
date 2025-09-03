@@ -5,15 +5,19 @@ import java.time.LocalTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import eightbit.moyeohaeng.domain.project.common.exception.PlaceBlockErrorCode;
-import eightbit.moyeohaeng.domain.project.common.exception.PlaceBlockException;
+import eightbit.moyeohaeng.domain.project.common.exception.PlaceErrorCode;
+import eightbit.moyeohaeng.domain.project.common.exception.PlaceException;
+import eightbit.moyeohaeng.domain.project.common.exception.ProjectErrorCode;
+import eightbit.moyeohaeng.domain.project.common.exception.ProjectException;
 import eightbit.moyeohaeng.domain.project.common.exception.TimeBlockErrorCode;
 import eightbit.moyeohaeng.domain.project.common.exception.TimeBlockException;
 import eightbit.moyeohaeng.domain.project.dto.request.TimeBlockCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.response.TimeBlockResponse;
-import eightbit.moyeohaeng.domain.project.entity.PlaceBlock;
+import eightbit.moyeohaeng.domain.project.entity.Place;
+import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.entity.TimeBlock;
-import eightbit.moyeohaeng.domain.project.repository.PlaceBlockRepository;
+import eightbit.moyeohaeng.domain.project.repository.PlaceRepository;
+import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.project.repository.TimeBlockRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +27,8 @@ import lombok.RequiredArgsConstructor;
 public class TimeBlockService {
 
 	private final TimeBlockRepository timeBlockRepository;
-	private final PlaceBlockRepository placeBlockRepository;
+	private final ProjectRepository projectRepository;
+	private final PlaceRepository placeRepository;
 
 	@Transactional
 	public TimeBlockResponse create(Long projectId, TimeBlockCreateRequest request) {
@@ -31,15 +36,19 @@ public class TimeBlockService {
 
 		// TODO: day에 대한 검증 추가
 
-		PlaceBlock placeBlock = placeBlockRepository.findByIdAndProjectId(request.placeBlockId(), projectId)
-			.orElseThrow(() -> new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND));
+		Project project = projectRepository.findById(projectId)
+			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND));
+
+		Place place = placeRepository.findById(request.placeId())
+			.orElseThrow(() -> new PlaceException(PlaceErrorCode.PLACE_NOT_FOUND));
 
 		TimeBlock timeBlock = TimeBlock.of(
 			request.day(),
 			request.startTime(),
 			request.endTime(),
 			request.memo(),
-			placeBlock
+			project,
+			place
 		);
 
 		timeBlockRepository.save(timeBlock);

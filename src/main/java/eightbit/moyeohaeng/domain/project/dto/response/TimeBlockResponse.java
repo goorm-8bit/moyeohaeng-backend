@@ -22,8 +22,8 @@ public record TimeBlockResponse(
 	@Schema(description = "메모", example = "야경이 아름다운 곳")
 	String memo,
 
-	@Schema(description = "장소 블록 ID", example = "1")
-	Long placeBlockId
+	@Schema(description = "장소 ID", example = "1")
+	Long placeId
 ) {
 	public static TimeBlockResponse from(TimeBlock timeBlock) {
 		return new TimeBlockResponse(
@@ -32,7 +32,7 @@ public record TimeBlockResponse(
 			timeBlock.getStartTime(),
 			timeBlock.getEndTime(),
 			timeBlock.getMemo(),
-			timeBlock.getPlaceBlock().getId()
+			timeBlock.getPlace().getId()
 		);
 	}
 }

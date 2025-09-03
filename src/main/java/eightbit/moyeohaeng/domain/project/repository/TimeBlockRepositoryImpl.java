@@ -8,7 +8,6 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import eightbit.moyeohaeng.domain.project.entity.QPlaceBlock;
 import eightbit.moyeohaeng.domain.project.entity.QProject;
 import eightbit.moyeohaeng.domain.project.entity.QTimeBlock;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ public class TimeBlockRepositoryImpl implements TimeBlockRepositoryCustom {
 		}
 
 		QProject project = QProject.project;
-		QPlaceBlock placeBlock = QPlaceBlock.placeBlock;
 		QTimeBlock timeBlock = QTimeBlock.timeBlock;
 
 		// 둘 중 하나가 null인 경우 시작 시간 = 종료 시간으로 생각하기
@@ -66,8 +64,7 @@ public class TimeBlockRepositoryImpl implements TimeBlockRepositoryCustom {
 		return queryFactory
 			.selectOne()
 			.from(timeBlock)
-			.join(timeBlock.placeBlock, placeBlock)
-			.join(placeBlock.project, project)
+			.join(timeBlock.project, project)
 			.where(
 				project.id.eq(projectId),
 				timeBlock.day.eq(day),

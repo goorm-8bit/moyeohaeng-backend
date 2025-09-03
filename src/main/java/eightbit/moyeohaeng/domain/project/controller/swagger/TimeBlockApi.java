@@ -19,7 +19,7 @@ public interface TimeBlockApi {
 	@Operation(summary = "시간 블록 생성", description = "여행 일정에 새로운 블록을 생성합니다.")
 	@ApiResponses({
 		@ApiResponse(responseCode = "201", description = "시간 블록 생성 성공"),
-		@ApiResponse(responseCode = "404", description = "장소 블록을 찾을 수 없음",
+		@ApiResponse(responseCode = "404", description = "장소 또는 프로젝트를 찾을 수 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
 		@ApiResponse(responseCode = "409", description = "다른 일정과 시간이 겹침",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))

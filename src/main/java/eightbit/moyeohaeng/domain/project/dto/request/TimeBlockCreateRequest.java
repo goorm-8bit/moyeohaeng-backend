@@ -23,9 +23,9 @@ public record TimeBlockCreateRequest(
 	@Size(max = 14, message = "메모는 최대 14자까지 입력할 수 있습니다.")
 	String memo,
 
-	@Schema(description = "장소 블록 ID", example = "1")
-	@NotNull(message = "장소 블록 ID는 필수 입력값입니다.")
-	Long placeBlockId
+	@Schema(description = "장소 ID", example = "1")
+	@NotNull(message = "장소 ID는 필수 입력값입니다.")
+	Long placeId
 ) {
 
 	@AssertTrue(message = "종료 시간은 시작 시간보다 이후여야 합니다.")
