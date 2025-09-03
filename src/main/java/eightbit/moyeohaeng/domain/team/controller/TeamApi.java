@@ -5,14 +5,15 @@ import eightbit.moyeohaeng.domain.team.dto.request.CreationTeamRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.request.DeleteTeamRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.request.InviteMemberRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.request.RemoveMemberRequestDto;
-import eightbit.moyeohaeng.domain.team.dto.request.SearchMyTeamRequestDto;
+import eightbit.moyeohaeng.domain.team.dto.request.GetMyTeamsRequestDto;
+import eightbit.moyeohaeng.domain.team.dto.response.TeamMembersResponseDto;
 import eightbit.moyeohaeng.domain.team.dto.request.UpdateMemberRoleRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.request.UpdateTeamSettingsRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.response.CreationTeamResponseDto;
 import eightbit.moyeohaeng.domain.team.dto.response.DeleteTeamResponseDto;
 import eightbit.moyeohaeng.domain.team.dto.response.InviteMemberResponseDto;
 import eightbit.moyeohaeng.domain.team.dto.response.RemoveMemberResponseDto;
-import eightbit.moyeohaeng.domain.team.dto.response.SearchMyTeamResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.GetMyTeamsResponseDto;
 import eightbit.moyeohaeng.domain.team.dto.response.UpdateMemberRoleResponseDto;
 import eightbit.moyeohaeng.domain.team.dto.response.UpdateTeamSettingsResponseDto;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
@@ -27,8 +28,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Tags({
 	@Tag(name="Team API", description = "Team 관련 조작에 쓰이는 API"),
@@ -58,21 +59,43 @@ public interface TeamApi {
 	ResponseEntity<CreationTeamResponseDto> creationTeam(@AuthenticationPrincipal CustomUserDetails user,
 	                                                     @RequestBody CreationTeamRequestDto requestDto);
 	
+	@Operation(
+		summary = "이 부분 오래 걸릴 것 같아서 일단 스킵"
+	)
 	ResponseEntity<InviteMemberResponseDto> inviteMember(@AuthenticationPrincipal CustomUserDetails user,
 	                                                    @RequestBody InviteMemberRequestDto requestDto);
 	
+	@Operation(
+		summary = "이 부분 오래 걸릴 것 같아서 일단 스킵"
+	)
 	ResponseEntity<RemoveMemberResponseDto> removeMember(@AuthenticationPrincipal CustomUserDetails user,
-	                                                     @RequestBody RemoveMemberRequestDto requestDto);
-	
+	                                                     @PathVariable("memberId") Long memberId);
+	@Operation(
+		summary = "OWNER 가 MEMBER 의 권한을 재조정"
+	)
 	ResponseEntity<UpdateMemberRoleResponseDto> updateMemberRole(@AuthenticationPrincipal CustomUserDetails user,
-	                                                             @RequestBody UpdateMemberRoleRequestDto requestDto);
-	
+	                                                             @RequestBody UpdateMemberRoleRequestDto requestDto,
+	                                                             @PathVariable("memberId") Long memberId);
+	@Operation(
+		summary = "이 부분 오래 걸릴 것 같아서 일단 스킵"
+	)
 	ResponseEntity<UpdateTeamSettingsResponseDto> updateTeamSettings(@AuthenticationPrincipal CustomUserDetails user,
-	                                                                 @RequestBody UpdateTeamSettingsRequestDto requestDto);
-	
+	                                                                 @RequestBody UpdateTeamSettingsRequestDto requestDto,
+	                                                                 @PathVariable("teamId") Long teamId);
+	@Operation(
+		summary = "이 부분 오래 걸릴 것 같아서 일단 스킵"
+	)
 	ResponseEntity<DeleteTeamResponseDto> deleteTeam(@AuthenticationPrincipal CustomUserDetails user,
-	                                                 @RequestBody DeleteTeamRequestDto requestDto);
+	                                                 @PathVariable Long teamId);
+	@Operation(
+		summary = "현재 로그인 유저의 id 를 이용해서 속한 팀 목록 출력"
+	)
+	ResponseEntity<GetMyTeamsResponseDto> getMyTeams(@AuthenticationPrincipal CustomUserDetails user,
+	                                                 @PathVariable("memberId") Long memberId);
 	
-	ResponseEntity<SearchMyTeamResponseDto> searchMyTeam(@AuthenticationPrincipal CustomUserDetails user,
-	                                                     @RequestBody SearchMyTeamRequestDto requestDto);
+	@Operation(
+		summary = "팀 id 를 이용해서 팀원 목록 출력"
+	)
+	ResponseEntity<TeamMembersResponseDto> getTeamMembers(@AuthenticationPrincipal CustomUserDetails user,
+	                                                      @PathVariable("teamId") Long teamId);
 }
