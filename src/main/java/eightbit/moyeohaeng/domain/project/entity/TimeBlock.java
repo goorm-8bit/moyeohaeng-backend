@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
 	name = "time_blocks",
-	indexes = @Index(name = "idx_time_blocks_place_block_id", columnList = "place_block_id")
+	indexes = @Index(name = "idx_time_blocks_project_id", columnList = "project_id")
 )
 @Check(constraints = "end_time > start_time")
 @SQLDelete(sql = "UPDATE time_blocks SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
@@ -52,18 +52,23 @@ public class TimeBlock extends BaseEntity {
 	private String memo;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "place_block_id", nullable = false)
-	private PlaceBlock placeBlock;
+	@JoinColumn(name = "project_id", nullable = false)
+	private Project project;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "place_id", nullable = false)
+	private Place place;
 
 	public static TimeBlock of(Integer day, LocalTime startTime, LocalTime endTime, String memo,
-		PlaceBlock placeBlock) {
+		Project project, Place place) {
 
 		return builder()
 			.day(day)
 			.startTime(startTime)
 			.endTime(endTime)
 			.memo(memo)
-			.placeBlock(placeBlock)
+			.project(project)
+			.place(place)
 			.build();
 	}
 }
