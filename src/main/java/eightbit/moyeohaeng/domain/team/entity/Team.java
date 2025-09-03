@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "teams")
-@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE teams SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
@@ -35,5 +34,9 @@ public class Team extends BaseEntity {
 	//	@Builder.Default
 	//	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	//	private List<TeamMember> teamMembers = new ArrayList<>();
-
+	
+	@Builder
+	private Team(String name) {
+		this.name = name;
+	}
 }
