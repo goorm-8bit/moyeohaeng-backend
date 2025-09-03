@@ -44,6 +44,12 @@ public class UserAuthorizationGuardAspect {
 			}
 			actual = accessService.resolveTeamRole(teamId, request);
 		}
+		if (actual == null) {
+			throw new ResponseStatusException(
+				HttpStatus.UNAUTHORIZED,
+				"인증 정보가 없거나 확인할 수 없습니다."
+			);
+		}
 		if (!UserAuthorizationService.isAllowed(actual, required.value())) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다. 최소 요구 권한: " + required.value());
 		}
@@ -69,15 +75,6 @@ public class UserAuthorizationGuardAspect {
 		Long id = coerceLong(q);
 		if (id != null)
 			return id;
-		for (Object a : args) {
-			if (a instanceof Long l)
-				return l;
-			if (a instanceof String s) {
-				Long c = coerceLong(s);
-				if (c != null)
-					return c;
-			}
-		}
 		return null;
 	}
 

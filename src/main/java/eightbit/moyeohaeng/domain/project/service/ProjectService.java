@@ -88,7 +88,7 @@ public class ProjectService {
 	public UserRole ensureShareAllowed(Long projectId) {
 		Project project = findEntityById(projectId);
 
-		if (project.isAllowGuest() || project.isAllowViewer()) {
+		if (!(project.isAllowGuest() || project.isAllowViewer())) {
 			throw new ProjectException(ProjectErrorCode.SHARE_NOT_ALLOWED);
 		}
 
@@ -135,7 +135,6 @@ public class ProjectService {
 
 		// projectRepository.delete(project);
 	}
-
 
 	public Project findEntityById(Long projectId) {
 		// Project project = projectRepository.findById(projectId)

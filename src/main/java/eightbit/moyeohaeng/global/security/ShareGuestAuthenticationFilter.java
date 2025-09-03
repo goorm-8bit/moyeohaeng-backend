@@ -8,11 +8,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import eightbit.moyeohaeng.domain.project.common.exception.ProjectException;
 import eightbit.moyeohaeng.domain.project.service.ProjectService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 대상 프로젝트가 외부 공유를 허용하는 경우, "/sub/**" 경로의 비로그인 접근에 대해
@@ -20,6 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *  비로그인 사용자 요청에서도 {@code @AuthenticationPrincipal CustomUserDetails}
  *  사용 가능
  */
+@Slf4j
 public class ShareGuestAuthenticationFilter extends OncePerRequestFilter {
 
 	private final ProjectService projectService;
@@ -87,8 +90,11 @@ public class ShareGuestAuthenticationFilter extends OncePerRequestFilter {
 			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 				guest, null, guest.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-		} catch (RuntimeException ignored) {
-			//TODO 공유 허용이 아니거나 처리 중 오류 발생 시 로직 추가 
+		} catch (ProjectException ex) {
+			// 공유 비허용 등 도메인 차단: 인증 미설정 상태로 계속 진행
+		} catch (Exception ex) {
+			// 예기치 못한 오류는 최소 warn 로깅 후 진행(또는 적절히 차단)
+			log.warn("Guest auth setup failed for projectId={}", projectId, ex);
 		}
 	}
 }
