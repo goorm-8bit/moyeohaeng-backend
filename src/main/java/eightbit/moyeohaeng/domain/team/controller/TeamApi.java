@@ -63,7 +63,7 @@ public interface TeamApi {
 	                                                    @RequestBody InviteMemberRequestDto requestDto);
 	
 	@Operation(
-		summary = "이 부분 오래 걸릴 것 같아서 일단 스킵"
+		summary = "ONWER 가 MEMBER 를 강퇴할 수 있음"
 	)
 	ResponseEntity<RemoveMemberResponseDto> removeMember(@AuthenticationPrincipal CustomUserDetails user,
 	                                                     @PathVariable("memberId") Long memberId);
@@ -74,13 +74,13 @@ public interface TeamApi {
 	                                                             @RequestBody UpdateMemberRoleRequestDto requestDto,
 	                                                             @PathVariable("memberId") Long memberId);
 	@Operation(
-		summary = "이 부분 오래 걸릴 것 같아서 일단 스킵"
+		summary = "user 권한을 확인해서 팀 세팅을 바꿈 (현재 teamName 만 바꿀 수 있음)"
 	)
 	ResponseEntity<UpdateTeamSettingsResponseDto> updateTeamSettings(@AuthenticationPrincipal CustomUserDetails user,
 	                                                                 @RequestBody UpdateTeamSettingsRequestDto requestDto,
 	                                                                 @PathVariable("teamId") Long teamId);
 	@Operation(
-		summary = "이 부분 오래 걸릴 것 같아서 일단 스킵"
+		summary = "user 권한을 확인해서 팀을 삭제함"
 	)
 	ResponseEntity<DeleteTeamResponseDto> deleteTeam(@AuthenticationPrincipal CustomUserDetails user,
 	                                                 @PathVariable Long teamId);
