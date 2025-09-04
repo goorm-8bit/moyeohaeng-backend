@@ -20,6 +20,7 @@ public class TeamServiceImpl implements TeamService{
 	private final TeamMemberRepository teamMemberRepository;
 	private final MemberRepository memberRepository;
 	
+	// 멤버를 찾아서 TeamName 으로 팀 이름을 만들고 만든 사람을 teamMember 이자 OWNER 권한으로 생성
 	@Transactional
 	public Team creationTeam(String TeamName, Long memberId) {
 		
