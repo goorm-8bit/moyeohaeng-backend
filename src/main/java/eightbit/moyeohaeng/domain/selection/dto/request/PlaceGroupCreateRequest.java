@@ -5,11 +5,13 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Schema(description = "장소 그룹 생성 요청 DTO")
 public record PlaceGroupCreateRequest(
 	@Schema(description = "이름", example = "점심 먹을 곳")
 	@NotBlank(message = "이름은 필수 입력값입니다.")
+	@Size(max = 20, message = "이름은 최대 20자까지 입력할 수 있습니다.")
 	String name,
 
 	@Schema(description = "색상", example = "#FFFFFF")
