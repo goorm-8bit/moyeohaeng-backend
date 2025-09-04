@@ -1,10 +1,7 @@
 package eightbit.moyeohaeng.domain.team.controller;
 
 import eightbit.moyeohaeng.domain.team.dto.request.CreationTeamRequestDto;
-import eightbit.moyeohaeng.domain.team.dto.request.DeleteTeamRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.request.InviteMemberRequestDto;
-import eightbit.moyeohaeng.domain.team.dto.request.RemoveMemberRequestDto;
-import eightbit.moyeohaeng.domain.team.dto.request.GetMyTeamsRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.response.TeamMembersResponseDto;
 import eightbit.moyeohaeng.domain.team.dto.request.UpdateMemberRoleRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.request.UpdateTeamSettingsRequestDto;
@@ -59,7 +56,9 @@ public class TeamController implements TeamApi{
         ) {
 		
 		user.getId();
-		requestDto.teamName();
+		requestDto.newTeamName();
+		
+		
 		
 		
 		return null;

@@ -14,7 +14,7 @@ public record TeamDto(
 	String teamName
 ) {
 
-	public static TeamDto TeamDto(Team team) {
+	public static TeamDto teamDto(Team team) {
 		return TeamDto.builder()
 		              .teamId(team.getId())
 		              .teamName(team.getName())
