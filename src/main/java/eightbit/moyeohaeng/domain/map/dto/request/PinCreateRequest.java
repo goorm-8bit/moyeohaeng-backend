@@ -37,7 +37,7 @@ public record PinCreateRequest(
 	@Size(max = 30)
 	String category,
 
-	@Schema(description = "작성자", example = "test@test.com", maxLength = 120)
+	@Schema(description = "기록자", example = "test@test.com", maxLength = 120)
 	@Email
 	@Size(max = 120)
 	String author
