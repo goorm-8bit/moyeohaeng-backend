@@ -5,9 +5,15 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eightbit.moyeohaeng.domain.project.common.exception.ProjectErrorCode;
+import eightbit.moyeohaeng.domain.project.common.exception.ProjectException;
+import eightbit.moyeohaeng.domain.project.entity.Project;
+import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockErrorCode;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockException;
+import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupCreateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceGroup;
@@ -25,19 +31,30 @@ public class PlaceGroupService {
 	private final PlaceGroupRepository placeGroupRepository;
 	private final PlaceGroupBlockRepository placeGroupBlockRepository;
 	private final PlaceBlockRepository placeBlockRepository;
+	private final ProjectRepository projectRepository;
 
 	@Transactional
 	public PlaceGroupResponse create(Long projectId, PlaceGroupCreateRequest request) {
+		Project project = projectRepository.findById(projectId)
+			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND));
+
 		List<PlaceBlock> placeBlocks = getPlaceBlocks(projectId, request.placeBlockIds());
 
 		// 장소 그룹 생성
-		PlaceGroup placeGroup = PlaceGroup.of(request.name(), request.color());
+		PlaceGroup placeGroup = PlaceGroup.of(request.name(), request.color(), project);
 		placeGroupRepository.save(placeGroup);
 
 		// 장소 그룹에 장소 블록 추가
 		addPlaceBlocksToGroup(placeGroup, placeBlocks);
 
 		return PlaceGroupResponse.of(placeGroup, request.placeBlockIds());
+	}
+
+	@Transactional
+	public PlaceGroupBlockResponse addPlaceBlockToGroups(Long projectId, Long placeBlockId,
+		PlaceBlockToGroupsRequest request) {
+
+		return null;
 	}
 
 	private List<PlaceBlock> getPlaceBlocks(Long projectId, List<Long> placeBlockIds) {
