@@ -3,6 +3,7 @@ package eightbit.moyeohaeng.domain.selection.controller;
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -86,5 +87,16 @@ public class PlaceGroupController implements PlaceGroupApi {
 	) {
 		List<PlaceGroupResponse> responses = placeGroupService.getPlaceGroups(projectId);
 		return SuccessResponse.of(PlaceGroupSuccessCode.GET_LIST, responses);
+	}
+
+	@Override
+	@DeleteMapping("/place-groups/{placeGroupId}")
+	public SuccessResponse<Void> delete(
+		@PathVariable Long projectId,
+		@PathVariable Long placeGroupId,
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
+		placeGroupService.delete(projectId, placeGroupId);
+		return SuccessResponse.from(PlaceGroupSuccessCode.DELETE_PLACE_GROUP);
 	}
 }

@@ -44,6 +44,7 @@ public interface PlaceGroupApi {
 	SuccessResponse<PlaceGroupBlockResponse> updatePlaceBlockToGroups(
 		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
+		@Parameter(description = "장소 블록 ID", required = true)
 		Long placeBlockId,
 		PlaceBlockToGroupsRequest request,
 		CustomUserDetails currentUser
@@ -58,6 +59,7 @@ public interface PlaceGroupApi {
 	SuccessResponse<PlaceGroupResponse> update(
 		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
+		@Parameter(description = "장소 그룹 ID", required = true)
 		Long placeGroupId,
 		PlaceGroupRequest request,
 		CustomUserDetails currentUser
@@ -72,6 +74,7 @@ public interface PlaceGroupApi {
 	SuccessResponse<PlaceGroupUpdateMemoResponse> updateMemo(
 		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
+		@Parameter(description = "장소 그룹 ID", required = true)
 		Long placeGroupId,
 		PlaceGroupUpdateMemoRequest request,
 		CustomUserDetails currentUser
@@ -84,6 +87,20 @@ public interface PlaceGroupApi {
 	SuccessResponse<List<PlaceGroupResponse>> getPlaceGroups(
 		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
+		CustomUserDetails currentUser
+	);
+
+	@Operation(summary = "장소 그룹 삭제", description = "장소 그룹을 삭제합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "204", description = "장소 그룹 삭제 성공"),
+		@ApiResponse(responseCode = "404", description = "장소 그룹을 찾을 수 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	})
+	SuccessResponse<Void> delete(
+		@Parameter(description = "프로젝트 ID", required = true)
+		Long projectId,
+		@Parameter(description = "장소 그룹 ID", required = true)
+		Long placeGroupId,
 		CustomUserDetails currentUser
 	);
 }

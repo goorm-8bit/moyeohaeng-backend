@@ -20,6 +20,7 @@ import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsReques
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupDeleteResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
@@ -130,6 +131,15 @@ public class PlaceGroupService {
 
 	public List<PlaceGroupResponse> getPlaceGroups(Long projectId) {
 		return placeGroupRepository.findPlaceGroups(projectId);
+	}
+
+	@Transactional
+	public PlaceGroupDeleteResponse delete(Long projectId, Long placeGroupId) {
+		// 장소 그룹 조회 및 프로젝트에 속해있는지 검증
+		PlaceGroup placeGroup = getPlaceGroup(projectId, placeGroupId);
+		placeGroupRepository.delete(placeGroup);
+
+		return PlaceGroupDeleteResponse.of(placeGroupId);
 	}
 
 	/**

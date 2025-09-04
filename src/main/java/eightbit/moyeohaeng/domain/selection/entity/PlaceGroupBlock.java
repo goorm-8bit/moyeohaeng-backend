@@ -1,5 +1,8 @@
 package eightbit.moyeohaeng.domain.selection.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import eightbit.moyeohaeng.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -42,6 +45,7 @@ public class PlaceGroupBlock extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "place_group_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private PlaceGroup placeGroup;
 
 	public static PlaceGroupBlock of(PlaceGroup placeGroup, PlaceBlock placeBlock) {
