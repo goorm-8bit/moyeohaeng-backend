@@ -2,47 +2,48 @@ package eightbit.moyeohaeng.domain.map.controller.swagger;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-
 import eightbit.moyeohaeng.domain.map.dto.request.PinCreateRequest;
 import eightbit.moyeohaeng.domain.map.dto.response.PinResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
+import eightbit.moyeohaeng.global.security.CustomUserDetails;
+import eightbit.moyeohaeng.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Pin", description = "핀 API - 생성, 조회, 제거")
+@Tag(name = "핀 API", description = "핀 CRUD 작업을 처리하는 API")
 public interface PinApi {
 
 	@Operation(summary = "핀 생성", description = "프로젝트에 핀을 생성합니다.")
 	@ApiResponses({
 		@ApiResponse(responseCode = "201", description = "핀 생성 성공",
-			content = @Content(schema = @Schema(implementation = PinResponse.class))),
-		@ApiResponse(responseCode = "400", description = "잘못된 요청 데이터",
-			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+			content = @Content(schema = @Schema(implementation = SuccessResponse.class))),
 		@ApiResponse(responseCode = "404", description = "프로젝트 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "409", description = "중복된 핀",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	ResponseEntity<PinResponse> create(
-		@Parameter(description = "프로젝트 ID", required = true, example = "1")
+	SuccessResponse<PinResponse> create(
+		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
-		PinCreateRequest request
+		@Parameter(description = "생성 요청 바디", required = true)
+		PinCreateRequest request,
+		CustomUserDetails currentUser
 	);
 
 	@Operation(summary = "핀 조회", description = "프로젝트의 모든 핀을 조회합니다.")
 	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "조회 성공",
-			content = @Content(array = @ArraySchema(schema = @Schema(implementation = PinResponse.class)))),
+		@ApiResponse(responseCode = "200", description = "핀 목록 조회 성공",
+			content = @Content(schema = @Schema(implementation = SuccessResponse.class))),
 		@ApiResponse(responseCode = "404", description = "프로젝트 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	ResponseEntity<List<PinResponse>> list(
-		@Parameter(description = "프로젝트 ID", required = true, example = "1")
+	SuccessResponse<List<PinResponse>> getPins(
+		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId
 	);
 
@@ -52,10 +53,10 @@ public interface PinApi {
 		@ApiResponse(responseCode = "404", description = "프로젝트/핀 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	ResponseEntity<Void> delete(
-		@Parameter(description = "프로젝트 ID", required = true, example = "1")
+	SuccessResponse<Void> delete(
+		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
-		@Parameter(description = "핀 ID", required = true, example = "10")
+		@Parameter(description = "핀 ID", required = true)
 		Long pinId
 	);
 }
