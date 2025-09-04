@@ -110,6 +110,9 @@ public class TeamController implements TeamApi{
 	    @PathVariable Long teamId
         ) {
 		
+		user.getId();
+		
+		
 		
 		// delete team by team id member need role-owner
 		
