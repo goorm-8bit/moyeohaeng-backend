@@ -24,7 +24,7 @@ public interface PlaceGroupApi {
 	@Operation(summary = "장소 그룹 생성", description = "새로운 장소 그룹을 생성합니다.")
 	@ApiResponses({
 		@ApiResponse(responseCode = "201", description = "장소 그룹 생성 성공"),
-		@ApiResponse(responseCode = "404", description = "장소 블록을 찾을 수 없음",
+		@ApiResponse(responseCode = "404", description = "프로젝트 또는 장소 블록을 찾을 수 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
 	})
 	SuccessResponse<PlaceGroupResponse> create(
