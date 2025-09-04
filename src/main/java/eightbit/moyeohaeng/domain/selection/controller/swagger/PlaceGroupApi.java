@@ -9,7 +9,6 @@ import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupUpdateMemoResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
-import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,8 +30,7 @@ public interface PlaceGroupApi {
 	SuccessResponse<PlaceGroupResponse> create(
 		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
-		PlaceGroupRequest request,
-		CustomUserDetails currentUser
+		PlaceGroupRequest request
 	);
 
 	@Operation(summary = "장소 블록에 그룹 추가/삭제", description = "장소 블록을 여러 장소 그룹에 추가/삭제합니다.")
@@ -46,8 +44,7 @@ public interface PlaceGroupApi {
 		Long projectId,
 		@Parameter(description = "장소 블록 ID", required = true)
 		Long placeBlockId,
-		PlaceBlockToGroupsRequest request,
-		CustomUserDetails currentUser
+		PlaceBlockToGroupsRequest request
 	);
 
 	@Operation(summary = "장소 그룹 수정", description = "장소 그룹의 이름, 색상, 블록을 수정합니다.")
@@ -61,8 +58,7 @@ public interface PlaceGroupApi {
 		Long projectId,
 		@Parameter(description = "장소 그룹 ID", required = true)
 		Long placeGroupId,
-		PlaceGroupRequest request,
-		CustomUserDetails currentUser
+		PlaceGroupRequest request
 	);
 
 	@Operation(summary = "메모 수정", description = "장소 그룹에 메모를 작성합니다.")
@@ -76,8 +72,7 @@ public interface PlaceGroupApi {
 		Long projectId,
 		@Parameter(description = "장소 그룹 ID", required = true)
 		Long placeGroupId,
-		PlaceGroupUpdateMemoRequest request,
-		CustomUserDetails currentUser
+		PlaceGroupUpdateMemoRequest request
 	);
 
 	@Operation(summary = "장소 그룹 목록 조회", description = "장소 그룹 목록을 조회합니다.")
@@ -86,8 +81,7 @@ public interface PlaceGroupApi {
 	})
 	SuccessResponse<List<PlaceGroupResponse>> getPlaceGroups(
 		@Parameter(description = "프로젝트 ID", required = true)
-		Long projectId,
-		CustomUserDetails currentUser
+		Long projectId
 	);
 
 	@Operation(summary = "장소 그룹 삭제", description = "장소 그룹을 삭제합니다.")
@@ -100,7 +94,6 @@ public interface PlaceGroupApi {
 		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
 		@Parameter(description = "장소 그룹 ID", required = true)
-		Long placeGroupId,
-		CustomUserDetails currentUser
+		Long placeGroupId
 	);
 }
