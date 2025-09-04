@@ -73,4 +73,13 @@ public class TimeBlock extends BaseEntity {
 			.place(place)
 			.build();
 	}
+
+	public void update(Integer day, LocalTime startTime, LocalTime endTime, String memo) {
+		if (day != null) {
+			this.day = day;
+		}
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.memo = memo;
+	}
 }
