@@ -1,7 +1,5 @@
 package eightbit.moyeohaeng.domain.selection.entity;
 
-import org.hibernate.annotations.SQLDelete;
-
 import eightbit.moyeohaeng.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,7 +30,6 @@ import lombok.NoArgsConstructor;
 		@Index(name = "idx_pgb_place_group_id", columnList = "place_group_id")
 	}
 )
-@SQLDelete(sql = "UPDATE place_group_blocks SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 public class PlaceGroupBlock extends BaseEntity {
 
 	@Id
