@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eightbit.moyeohaeng.domain.selection.common.success.PlaceGroupSuccessCode;
 import eightbit.moyeohaeng.domain.selection.controller.swagger.PlaceGroupApi;
+import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupCreateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
 import eightbit.moyeohaeng.domain.selection.service.PlaceGroupService;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
@@ -33,5 +35,17 @@ public class PlaceGroupController implements PlaceGroupApi {
 	) {
 		PlaceGroupResponse response = placeGroupService.create(projectId, request);
 		return SuccessResponse.of(PlaceGroupSuccessCode.CREATE_PLACE_GROUP, response);
+	}
+
+	@Override
+	@PostMapping("/place-blocks/{placeBlockId}/place-groups")
+	public SuccessResponse<PlaceGroupBlockResponse> updatePlaceBlockToGroups(
+		@PathVariable Long projectId,
+		@PathVariable Long placeBlockId,
+		@Valid @RequestBody PlaceBlockToGroupsRequest request,
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
+		PlaceGroupBlockResponse response = placeGroupService.updatePlaceBlockToGroups(projectId, placeBlockId, request);
+		return SuccessResponse.of(PlaceGroupSuccessCode.UPDATE_PLACE_BLOCK_TO_GROUPS, response);
 	}
 }

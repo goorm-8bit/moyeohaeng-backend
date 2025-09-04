@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum PlaceGroupErrorCode implements ErrorCode {
 
-	;
+	PLACE_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "장소 그룹을 찾을 수 없습니다.", "PG1001");
 
 	private final HttpStatus status;
 	private final String message;

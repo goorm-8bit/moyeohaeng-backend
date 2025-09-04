@@ -1,6 +1,9 @@
 package eightbit.moyeohaeng.domain.selection.service;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +14,8 @@ import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockErrorCode;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockException;
+import eightbit.moyeohaeng.domain.selection.common.exception.PlaceGroupErrorCode;
+import eightbit.moyeohaeng.domain.selection.common.exception.PlaceGroupException;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupCreateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse;
@@ -45,19 +50,50 @@ public class PlaceGroupService {
 		placeGroupRepository.save(placeGroup);
 
 		// 장소 그룹에 장소 블록 추가
-		addPlaceBlocksToGroup(placeGroup, placeBlocks);
+		if (!request.placeBlockIds().isEmpty()) {
+			addPlaceBlocksToGroups(List.of(placeGroup), placeBlocks);
+		}
 
 		return PlaceGroupResponse.of(placeGroup, request.placeBlockIds());
 	}
 
 	@Transactional
-	public PlaceGroupBlockResponse addPlaceBlockToGroups(Long projectId, Long placeBlockId,
+	public PlaceGroupBlockResponse updatePlaceBlockToGroups(Long projectId, Long placeBlockId,
 		PlaceBlockToGroupsRequest request) {
+		// 장소 블록 조회 및 프로젝트에 속해있는지 검증
+		PlaceBlock placeBlock = getPlaceBlocks(projectId, List.of(placeBlockId)).getFirst();
 
-		return null;
+		// 장소 블록이 속한 그룹 ID 조회
+		List<Long> placeGroupIds = placeGroupBlockRepository.findByPlaceBlockId(placeBlockId);
+
+		// 추가해야 하는 그룹
+		Set<Long> addGroupIds = new HashSet<>(request.placeGroupIds());
+		placeGroupIds.forEach(addGroupIds::remove);
+
+		if (!addGroupIds.isEmpty()) {
+			List<PlaceGroup> placeGroups = getPlaceGroups(projectId, addGroupIds);
+			addPlaceBlocksToGroups(placeGroups, List.of(placeBlock));
+		}
+
+		// 삭제해야 하는 그룹
+		Set<Long> deleteGroupIds = new HashSet<>(placeGroupIds);
+		request.placeGroupIds().forEach(deleteGroupIds::remove);
+
+		if (!deleteGroupIds.isEmpty()) {
+			placeGroupBlockRepository.deleteByPlaceGroupIdInAndPlaceBlockId(deleteGroupIds, placeBlockId);
+		}
+
+		return PlaceGroupBlockResponse.of(placeBlockId, request.placeGroupIds());
 	}
 
-	private List<PlaceBlock> getPlaceBlocks(Long projectId, List<Long> placeBlockIds) {
+	/**
+	 * 장소 블록을 조회하고, 프로젝트에 속한 장소 블록인지 검증 후 반환하는 메서드
+	 *
+	 * @param projectId     프로젝트 ID
+	 * @param placeBlockIds 장소 블록 ID
+	 * @return 장소 블록 목록
+	 */
+	private List<PlaceBlock> getPlaceBlocks(Long projectId, Collection<Long> placeBlockIds) {
 		List<PlaceBlock> placeBlocks = placeBlockRepository.findByIdInAndProjectId(placeBlockIds, projectId);
 		if (placeBlocks.size() != placeBlockIds.size()) {
 			throw new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND);
@@ -65,9 +101,31 @@ public class PlaceGroupService {
 		return placeBlocks;
 	}
 
-	private void addPlaceBlocksToGroup(PlaceGroup placeGroup, List<PlaceBlock> placeBlocks) {
-		List<PlaceGroupBlock> placeGroupBlocks = placeBlocks.stream()
-			.map(placeBlock -> PlaceGroupBlock.of(placeGroup, placeBlock))
+	/**
+	 * 장소 그룹을 조회하고, 프로젝트에 속한 장소 그룹인지 검증 후 반환하는 메서드
+	 *
+	 * @param projectId     프로젝트 Id
+	 * @param placeGroupIds 장소 그룹 ID
+	 * @return 장소 그룹 목록
+	 */
+	private List<PlaceGroup> getPlaceGroups(Long projectId, Collection<Long> placeGroupIds) {
+		List<PlaceGroup> placeGroups = placeGroupRepository.findByIdInAndProjectId(placeGroupIds, projectId);
+		if (placeGroups.size() != placeGroupIds.size()) {
+			throw new PlaceGroupException(PlaceGroupErrorCode.PLACE_GROUP_NOT_FOUND);
+		}
+		return placeGroups;
+	}
+
+	/**
+	 * 장소 블록을 장소 그룹에 추가하는 메서드
+	 *
+	 * @param placeGroups 장소 블록
+	 * @param placeBlocks 장소 그룹
+	 */
+	private void addPlaceBlocksToGroups(Collection<PlaceGroup> placeGroups, Collection<PlaceBlock> placeBlocks) {
+		List<PlaceGroupBlock> placeGroupBlocks = placeGroups.stream()
+			.flatMap(placeGroup -> placeBlocks.stream()
+				.map(placeBlock -> PlaceGroupBlock.of(placeGroup, placeBlock)))
 			.toList();
 
 		placeGroupBlockRepository.saveAll(placeGroupBlocks);
