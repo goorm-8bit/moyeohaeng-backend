@@ -27,7 +27,7 @@ public class PlaceGroupRepositoryImpl implements PlaceGroupRepositoryCustom {
 
 		return queryFactory
 			.from(placeGroup)
-			.join(placeGroupBlock).on(placeGroupBlock.placeGroup.id.eq(placeGroup.id))
+			.leftJoin(placeGroupBlock).on(placeGroupBlock.placeGroup.id.eq(placeGroup.id))
 			.where(placeGroup.project.id.eq(projectId))
 			.transform(groupBy(placeGroup.id).list(
 				new QPlaceGroupResponse(
