@@ -12,7 +12,12 @@ import eightbit.moyeohaeng.domain.selection.entity.PlaceGroupBlock;
 @Repository
 public interface PlaceGroupBlockRepository extends JpaRepository<PlaceGroupBlock, Long> {
 	@Query("SELECT pgb.placeGroup.id FROM PlaceGroupBlock pgb WHERE pgb.placeBlock.id = :placeBlockId")
-	List<Long> findByPlaceBlockId(Long placeBlockId);
+	List<Long> findPlaceGroupIdByPlaceBlockId(Long placeBlockId);
 
 	void deleteByPlaceGroupIdInAndPlaceBlockId(Collection<Long> placeGroupIds, Long placeBlockId);
+
+	@Query("SELECT pgb.placeBlock.id FROM PlaceGroupBlock pgb WHERE pgb.placeGroup.id = :placeGroupId")
+	List<Long> findPlaceBlockIdByPlaceGroupId(Long placeGroupId);
+
+	void deleteByPlaceGroupIdAndPlaceBlockIdIn(Long placeGroupId, Collection<Long> placeBlockIds);
 }

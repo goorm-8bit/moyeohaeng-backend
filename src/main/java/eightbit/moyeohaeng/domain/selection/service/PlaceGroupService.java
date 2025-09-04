@@ -17,7 +17,7 @@ import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockException
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceGroupErrorCode;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceGroupException;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsRequest;
-import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupCreateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
@@ -41,7 +41,7 @@ public class PlaceGroupService {
 	private final ProjectRepository projectRepository;
 
 	@Transactional
-	public PlaceGroupResponse create(Long projectId, PlaceGroupCreateRequest request) {
+	public PlaceGroupResponse create(Long projectId, PlaceGroupRequest request) {
 		Project project = projectRepository.findById(projectId)
 			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND));
 
@@ -67,7 +67,7 @@ public class PlaceGroupService {
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 
 		// 장소 블록이 속한 그룹 ID 조회
-		List<Long> placeGroupIds = placeGroupBlockRepository.findByPlaceBlockId(placeBlockId);
+		List<Long> placeGroupIds = placeGroupBlockRepository.findPlaceGroupIdByPlaceBlockId(placeBlockId);
 
 		// 추가해야 하는 그룹
 		Set<Long> addGroupIds = new HashSet<>(request.placeGroupIds());
@@ -87,6 +87,35 @@ public class PlaceGroupService {
 		}
 
 		return PlaceGroupBlockResponse.of(placeBlockId, request.placeGroupIds());
+	}
+
+	@Transactional
+	public PlaceGroupResponse update(Long projectId, Long placeGroupId, PlaceGroupRequest request) {
+		// 장소 그룹 조회 및 프로젝트에 속해있는지 검증
+		PlaceGroup placeGroup = getPlaceGroup(projectId, placeGroupId);
+		placeGroup.update(request.name(), request.color());
+
+		// 장소 그룹에 속한 블록 ID 조회
+		List<Long> placeBlockIds = placeGroupBlockRepository.findPlaceBlockIdByPlaceGroupId(placeGroupId);
+
+		// 추가해야 하는 블록
+		Set<Long> addBlockIds = new HashSet<>(request.placeBlockIds());
+		placeBlockIds.forEach(addBlockIds::remove);
+
+		if (!addBlockIds.isEmpty()) {
+			List<PlaceBlock> placeBlocks = getPlaceBlocks(projectId, addBlockIds);
+			addPlaceBlocksToGroups(List.of(placeGroup), placeBlocks);
+		}
+
+		// 삭제해야 하는 블록
+		Set<Long> deleteBlockIds = new HashSet<>(placeBlockIds);
+		request.placeBlockIds().forEach(deleteBlockIds::remove);
+
+		if (!deleteBlockIds.isEmpty()) {
+			placeGroupBlockRepository.deleteByPlaceGroupIdAndPlaceBlockIdIn(placeGroupId, deleteBlockIds);
+		}
+
+		return PlaceGroupResponse.of(placeGroup, request.placeBlockIds());
 	}
 
 	@Transactional

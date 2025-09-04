@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import eightbit.moyeohaeng.domain.selection.common.success.PlaceGroupSuccessCode;
 import eightbit.moyeohaeng.domain.selection.controller.swagger.PlaceGroupApi;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsRequest;
-import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupCreateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
@@ -33,7 +33,7 @@ public class PlaceGroupController implements PlaceGroupApi {
 	@PostMapping("/place-groups")
 	public SuccessResponse<PlaceGroupResponse> create(
 		@PathVariable Long projectId,
-		@Valid @RequestBody PlaceGroupCreateRequest request,
+		@Valid @RequestBody PlaceGroupRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
 		PlaceGroupResponse response = placeGroupService.create(projectId, request);
@@ -50,6 +50,18 @@ public class PlaceGroupController implements PlaceGroupApi {
 	) {
 		PlaceGroupBlockResponse response = placeGroupService.updatePlaceBlockToGroups(projectId, placeBlockId, request);
 		return SuccessResponse.of(PlaceGroupSuccessCode.UPDATE_PLACE_BLOCK_TO_GROUPS, response);
+	}
+
+	@Override
+	@PutMapping("/place-groups/{placeGroupId}")
+	public SuccessResponse<PlaceGroupResponse> update(
+		@PathVariable Long projectId,
+		@PathVariable Long placeGroupId,
+		@Valid @RequestBody PlaceGroupRequest request,
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
+		PlaceGroupResponse response = placeGroupService.update(projectId, placeGroupId, request);
+		return SuccessResponse.of(PlaceGroupSuccessCode.UPDATE_PLACE_GROUP, response);
 	}
 
 	@Override
