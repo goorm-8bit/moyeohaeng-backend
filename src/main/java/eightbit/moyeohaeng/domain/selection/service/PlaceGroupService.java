@@ -128,6 +128,10 @@ public class PlaceGroupService {
 		return PlaceGroupUpdateMemoResponse.of(placeGroupId, request.memo());
 	}
 
+	public List<PlaceGroupResponse> getPlaceGroups(Long projectId) {
+		return placeGroupRepository.findPlaceGroups(projectId);
+	}
+
 	/**
 	 * 장소 블록을 조회하고, 프로젝트에 속한 장소 블록인지 검증 후 반환하는 메서드
 	 *

@@ -1,6 +1,9 @@
 package eightbit.moyeohaeng.domain.selection.controller;
 
+import java.util.List;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -73,5 +76,15 @@ public class PlaceGroupController implements PlaceGroupApi {
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		PlaceGroupUpdateMemoResponse response = placeGroupService.updateMemo(projectId, placeGroupId, request);
 		return SuccessResponse.of(PlaceGroupSuccessCode.UPDATE_MEMO, response);
+	}
+
+	@Override
+	@GetMapping("/place-groups")
+	public SuccessResponse<List<PlaceGroupResponse>> getPlaceGroups(
+		@PathVariable Long projectId,
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
+		List<PlaceGroupResponse> responses = placeGroupService.getPlaceGroups(projectId);
+		return SuccessResponse.of(PlaceGroupSuccessCode.GET_LIST, responses);
 	}
 }

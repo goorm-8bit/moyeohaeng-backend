@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceGroup;
 
 @Repository
-public interface PlaceGroupRepository extends JpaRepository<PlaceGroup, Long> {
+public interface PlaceGroupRepository extends JpaRepository<PlaceGroup, Long>, PlaceGroupRepositoryCustom {
 	List<PlaceGroup> findByIdInAndProjectId(Collection<Long> ids, Long projectId);
 }

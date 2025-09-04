@@ -1,5 +1,7 @@
 package eightbit.moyeohaeng.domain.selection.controller.swagger;
 
+import java.util.List;
+
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupUpdateMemoRequest;
@@ -72,6 +74,16 @@ public interface PlaceGroupApi {
 		Long projectId,
 		Long placeGroupId,
 		PlaceGroupUpdateMemoRequest request,
+		CustomUserDetails currentUser
+	);
+
+	@Operation(summary = "장소 그룹 목록 조회", description = "장소 그룹 목록을 조회합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "장소 그룹 목록 조회 성공")
+	})
+	SuccessResponse<List<PlaceGroupResponse>> getPlaceGroups(
+		@Parameter(description = "프로젝트 ID", required = true)
+		Long projectId,
 		CustomUserDetails currentUser
 	);
 }

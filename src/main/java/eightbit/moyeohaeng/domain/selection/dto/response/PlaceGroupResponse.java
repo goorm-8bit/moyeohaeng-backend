@@ -2,6 +2,8 @@ package eightbit.moyeohaeng.domain.selection.dto.response;
 
 import java.util.List;
 
+import com.querydsl.core.annotations.QueryProjection;
+
 import eightbit.moyeohaeng.domain.selection.entity.PlaceGroup;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -22,6 +24,10 @@ public record PlaceGroupResponse(
 	@Schema(description = "장소 블록 ID", example = "[1, 2, 3]")
 	List<Long> placeBlockIds
 ) {
+	@QueryProjection
+	public PlaceGroupResponse {
+	}
+
 	public static PlaceGroupResponse of(PlaceGroup placeGroup, List<Long> placeBlockIds) {
 		return new PlaceGroupResponse(
 			placeGroup.getId(),
