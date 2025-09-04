@@ -18,8 +18,10 @@ import eightbit.moyeohaeng.domain.selection.common.exception.PlaceGroupErrorCode
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceGroupException;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupCreateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceGroup;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceGroupBlock;
@@ -43,6 +45,7 @@ public class PlaceGroupService {
 		Project project = projectRepository.findById(projectId)
 			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND));
 
+		// 장소 블록 목록 조회 및 프로젝트에 속해있는지 검증
 		List<PlaceBlock> placeBlocks = getPlaceBlocks(projectId, request.placeBlockIds());
 
 		// 장소 그룹 생성
@@ -61,7 +64,7 @@ public class PlaceGroupService {
 	public PlaceGroupBlockResponse updatePlaceBlockToGroups(Long projectId, Long placeBlockId,
 		PlaceBlockToGroupsRequest request) {
 		// 장소 블록 조회 및 프로젝트에 속해있는지 검증
-		PlaceBlock placeBlock = getPlaceBlocks(projectId, List.of(placeBlockId)).getFirst();
+		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 
 		// 장소 블록이 속한 그룹 ID 조회
 		List<Long> placeGroupIds = placeGroupBlockRepository.findByPlaceBlockId(placeBlockId);
@@ -86,6 +89,27 @@ public class PlaceGroupService {
 		return PlaceGroupBlockResponse.of(placeBlockId, request.placeGroupIds());
 	}
 
+	@Transactional
+	public PlaceGroupUpdateMemoResponse updateMemo(Long projectId, Long placeGroupId,
+		PlaceGroupUpdateMemoRequest request) {
+		// 장소 그룹 조회 및 프로젝트에 속해있는지 검증
+		PlaceGroup placeGroup = getPlaceGroup(projectId, placeGroupId);
+		placeGroup.updateMemo(request.memo());
+
+		return PlaceGroupUpdateMemoResponse.of(placeGroupId, request.memo());
+	}
+
+	/**
+	 * 장소 블록을 조회하고, 프로젝트에 속한 장소 블록인지 검증 후 반환하는 메서드
+	 *
+	 * @param projectId    프로젝트 ID
+	 * @param placeBlockId 장소 블록 ID
+	 * @return 장소 블록
+	 */
+	private PlaceBlock getPlaceBlock(Long projectId, Long placeBlockId) {
+		return getPlaceBlocks(projectId, List.of(placeBlockId)).getFirst();
+	}
+
 	/**
 	 * 장소 블록을 조회하고, 프로젝트에 속한 장소 블록인지 검증 후 반환하는 메서드
 	 *
@@ -99,6 +123,17 @@ public class PlaceGroupService {
 			throw new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND);
 		}
 		return placeBlocks;
+	}
+
+	/**
+	 * 장소 그룹을 조회하고, 프로젝트에 속한 장소 그룹인지 검증 후 반환하는 메서드
+	 *
+	 * @param projectId    프로젝트 Id
+	 * @param placeGroupId 장소 그룹 ID
+	 * @return 장소 그룹
+	 */
+	private PlaceGroup getPlaceGroup(Long projectId, Long placeGroupId) {
+		return getPlaceGroups(projectId, List.of(placeGroupId)).getFirst();
 	}
 
 	/**

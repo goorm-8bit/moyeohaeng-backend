@@ -2,8 +2,10 @@ package eightbit.moyeohaeng.domain.selection.controller.swagger;
 
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupCreateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupUpdateMemoResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
@@ -42,6 +44,20 @@ public interface PlaceGroupApi {
 		Long projectId,
 		Long placeBlockId,
 		PlaceBlockToGroupsRequest request,
+		CustomUserDetails currentUser
+	);
+
+	@Operation(summary = "메모 수정", description = "장소 그룹에 메모를 작성합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "메모 수정 성공"),
+		@ApiResponse(responseCode = "404", description = "장소 그룹을 찾을 수 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+	})
+	SuccessResponse<PlaceGroupUpdateMemoResponse> updateMemo(
+		@Parameter(description = "프로젝트 ID", required = true)
+		Long projectId,
+		Long placeGroupId,
+		PlaceGroupUpdateMemoRequest request,
 		CustomUserDetails currentUser
 	);
 }

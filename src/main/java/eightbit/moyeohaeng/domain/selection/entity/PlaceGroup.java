@@ -58,4 +58,8 @@ public class PlaceGroup extends BaseEntity {
 			.project(project)
 			.build();
 	}
+
+	public void updateMemo(String memo) {
+		this.memo = memo;
+	}
 }
