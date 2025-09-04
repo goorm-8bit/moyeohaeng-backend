@@ -20,6 +20,7 @@ import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.selection.service.PlaceGroupService;
+import eightbit.moyeohaeng.global.success.CommonSuccessCode;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -85,6 +86,6 @@ public class PlaceGroupController implements PlaceGroupApi {
 	@DeleteMapping("/place-groups/{placeGroupId}")
 	public SuccessResponse<Void> delete(@PathVariable Long projectId, @PathVariable Long placeGroupId) {
 		placeGroupService.delete(projectId, placeGroupId);
-		return SuccessResponse.from(PlaceGroupSuccessCode.DELETE_PLACE_GROUP);
+		return SuccessResponse.from(CommonSuccessCode.DELETE_SUCCESS);
 	}
 }

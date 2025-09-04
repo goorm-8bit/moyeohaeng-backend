@@ -14,8 +14,7 @@ public enum PlaceGroupSuccessCode implements SuccessCode {
 	UPDATE_PLACE_BLOCK_TO_GROUPS(HttpStatus.OK, "장소 블록 그룹 정보를 수정했습니다."),
 	UPDATE_PLACE_GROUP(HttpStatus.OK, "장소 그룹 수정에 성공했습니다."),
 	UPDATE_MEMO(HttpStatus.OK, "메모를 수정했습니다."),
-	GET_LIST(HttpStatus.OK, "장소 그룹 목록을 조회했습니다."),
-	DELETE_PLACE_GROUP(HttpStatus.NO_CONTENT, "장소 그룹을 삭제했습니다.");
+	GET_LIST(HttpStatus.OK, "장소 그룹 목록을 조회했습니다.");
 
 	private final HttpStatus status;
 	private final String message;
