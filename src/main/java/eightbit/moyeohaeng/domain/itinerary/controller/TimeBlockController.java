@@ -1,6 +1,5 @@
 package eightbit.moyeohaeng.domain.itinerary.controller;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,7 +13,6 @@ import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockCreateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockResponse;
 import eightbit.moyeohaeng.domain.itinerary.service.TimeBlockService;
-import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +28,7 @@ public class TimeBlockController implements TimeBlockApi {
 	@PostMapping
 	public SuccessResponse<TimeBlockResponse> create(
 		@PathVariable Long projectId,
-		@Valid @RequestBody TimeBlockCreateRequest request,
-		@AuthenticationPrincipal CustomUserDetails currentUser
+		@Valid @RequestBody TimeBlockCreateRequest request
 	) {
 		TimeBlockResponse response = timeBlockService.create(projectId, request);
 		return SuccessResponse.of(TimeBlockSuccessCode.CREATE_TIME_BLOCK, response);
@@ -42,8 +39,7 @@ public class TimeBlockController implements TimeBlockApi {
 	public SuccessResponse<TimeBlockResponse> update(
 		@PathVariable Long projectId,
 		@PathVariable Long timeBlockId,
-		@Valid @RequestBody TimeBlockUpdateRequest request,
-		@AuthenticationPrincipal CustomUserDetails currentUser
+		@Valid @RequestBody TimeBlockUpdateRequest request
 	) {
 		TimeBlockResponse response = timeBlockService.update(projectId, timeBlockId, request);
 		return SuccessResponse.of(TimeBlockSuccessCode.UPDATE_TIME_BLOCK, response);

@@ -4,7 +4,6 @@ import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockCreateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
-import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,8 +27,7 @@ public interface TimeBlockApi {
 	SuccessResponse<TimeBlockResponse> create(
 		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
-		TimeBlockCreateRequest request,
-		CustomUserDetails currentUser
+		TimeBlockCreateRequest request
 	);
 
 	@Operation(summary = "시간 블록 수정", description = "시간 블록의 일차, 시작 시간, 종료 시간, 메모를 수정합니다.")
@@ -44,7 +42,6 @@ public interface TimeBlockApi {
 		Long projectId,
 		@Parameter(description = "시간 블록 ID", required = true)
 		Long timeBlockId,
-		TimeBlockUpdateRequest request,
-		CustomUserDetails currentUser
+		TimeBlockUpdateRequest request
 	);
 }
