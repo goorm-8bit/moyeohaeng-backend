@@ -34,10 +34,10 @@ public class Place extends BaseEntity {
 	@Column(name = "address")
 	private String address;
 
-	@Column(name = "latitude", nullable = false, precision = 10, scale = 7)
+	@Column(name = "latitude", nullable = false, precision = 10)
 	private Double latitude;
 
-	@Column(name = "longitude", nullable = false, precision = 10, scale = 7)
+	@Column(name = "longitude", nullable = false, precision = 10)
 	private Double longitude;
 
 	@Column(name = "detail_link")
