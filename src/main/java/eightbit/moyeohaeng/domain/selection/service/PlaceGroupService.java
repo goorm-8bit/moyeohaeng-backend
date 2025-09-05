@@ -62,7 +62,7 @@ public class PlaceGroupService {
 	}
 
 	@Transactional
-	public PlaceGroupBlockResponse updatePlaceBlockToGroups(Long projectId, Long placeBlockId,
+	public PlaceGroupBlockResponse savePlaceBlockToGroups(Long projectId, Long placeBlockId,
 		PlaceBlockToGroupsRequest request) {
 		// 장소 블록 조회 및 프로젝트에 속해있는지 검증
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);

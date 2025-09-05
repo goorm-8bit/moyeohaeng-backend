@@ -39,7 +39,7 @@ public interface PlaceGroupApi {
 		@ApiResponse(responseCode = "404", description = "장소 블록 또는 장소 그룹을 찾을 수 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
 	})
-	SuccessResponse<PlaceGroupBlockResponse> updatePlaceBlockToGroups(
+	SuccessResponse<PlaceGroupBlockResponse> savePlaceBlockToGroups(
 		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
 		@Parameter(description = "장소 블록 ID", required = true)

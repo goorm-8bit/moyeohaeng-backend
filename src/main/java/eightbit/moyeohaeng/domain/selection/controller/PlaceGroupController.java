@@ -44,12 +44,12 @@ public class PlaceGroupController implements PlaceGroupApi {
 
 	@Override
 	@PostMapping("/place-blocks/{placeBlockId}/place-groups")
-	public SuccessResponse<PlaceGroupBlockResponse> updatePlaceBlockToGroups(
+	public SuccessResponse<PlaceGroupBlockResponse> savePlaceBlockToGroups(
 		@PathVariable Long projectId,
 		@PathVariable Long placeBlockId,
 		@Valid @RequestBody PlaceBlockToGroupsRequest request
 	) {
-		PlaceGroupBlockResponse response = placeGroupService.updatePlaceBlockToGroups(projectId, placeBlockId, request);
+		PlaceGroupBlockResponse response = placeGroupService.savePlaceBlockToGroups(projectId, placeBlockId, request);
 		return SuccessResponse.of(PlaceGroupSuccessCode.UPDATE_PLACE_BLOCK_TO_GROUPS, response);
 	}
 
