@@ -9,6 +9,7 @@ import org.hibernate.annotations.SQLDelete;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.global.domain.BaseEntity;
+import eightbit.moyeohaeng.global.utils.TimeUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -101,6 +102,23 @@ public class Project extends BaseEntity {
 			.externalId(UUID.randomUUID().toString())
 			.color("#ffffff")
 			.build();
+	}
+
+	public void update(String title, String color, LocalDate startDate, LocalDate endDate) {
+
+		// startDate와 endDate 검증
+		TimeUtils.validateDateRange(startDate, endDate);
+
+		this.title = Objects.requireNonNull(title, "title은 null일 수 없습니다.");
+		this.color = color;
+		this.startDate = startDate;
+		this.endDate = endDate;
+	}
+
+	public void updateShareOption(boolean isAllowGuest, boolean isAllowViewer) {
+		this.isAllowGuest = isAllowGuest;
+		this.isAllowViewer = isAllowViewer;
+
 	}
 
 }

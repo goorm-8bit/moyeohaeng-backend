@@ -2,8 +2,8 @@ package eightbit.moyeohaeng.domain.project.service;
 
 import java.util.List;
 
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -37,7 +37,6 @@ public class ProjectService {
 	private final ProjectRepository projectRepository;
 	private final SseEmitterService sseEmitterService;
 	private final ChannelTopic channelTopic;
-
 	private final MemberService memberService;
 	private final TeamRepository teamRepository;
 	private final TeamMemberRepository teamMemberRepository;
@@ -76,17 +75,41 @@ public class ProjectService {
 		// 	.collect(Collectors.toList());
 
 	}
+	/**
+	 * 현재 사용자가 접근 가능한 프로젝트 조회
+	 * 프로젝트의 소유자이거나 프로젝트 팀의 멤버인 경우에만 접근이 가능
+	 *
+	 * @param projectId 조회할 프로젝트 ID
+	 * @param currentUser 현재 로그인한 사용자 정보
+	 * @return 조회된 프로젝트 DTO
+	 * @throws ProjectException 프로젝트가 존재하지 않거나 접근 권한이 없는 경우
+	 */
+	public ProjectDto getById(Long projectId, CustomUserDetails currentUser) {
+		// 프로젝트 조회 및 접근 권한 검사를 하나의 쿼리로 처리
+		Project project = findMyProjectById(projectId, currentUser);
+		return ProjectDto.from(project);
+	}
 
+
+	/**
+	 * 외부 공유가 허용된 프로젝트 조회
+	 * 비로그인 사용자도 접근 가능
+	 *
+	 * @param projectId 조회할 프로젝트 ID
+	 * @return 조회된 프로젝트 DTO
+	 * @throws ProjectException 프로젝트가 존재하지 않거나 외부 공유가 허용되지 않은 경우
+	 */
 	public ProjectDto findById(Long projectId) {
-		// Project project = projectRepository.findById(projectId)
-		// 	.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND, projectId));
-		return testProjectDTO;
+		// 프로젝트 조회 및 외부 공유 허용 여부 검사
+		Project project = findEntityById(projectId);
+		ensureShareAllowed(projectId);
+		return ProjectDto.from(project);
 	}
 
 	// TODO RequiredUserRole 이름 변경
 
 	/**
-	 * 프로젝트가 외부 공유를 허용하는지 검사합니다.
+	 * 프로젝트가 외부 공유를 허용하는지 검사합니다. 
 	 * 허용되지 않으면 예외를 던집니다.
 	 * @return UserRole {GUEST, VIEWER}
 	 */
@@ -113,7 +136,6 @@ public class ProjectService {
 	public SseEmitter connect(Long projectId, String lastEventId, String user) {
 		return sseEmitterService.subscribe(channelTopic, projectId, lastEventId, user);
 	}
-
 	public List<ProjectDto> searchMyProjects(CustomUserDetails currentUser, ProjectSearchCondition condition) {
 		Sort sort = getSortFromType(condition.sortType());
 		List<Project> projects;
@@ -171,6 +193,18 @@ public class ProjectService {
 		//
 		// // return project;
 		return Project.builder().title("테스트 entity").build();
+	}
+	/**
+	 * 현재 사용자의 프로젝트 조회
+	 *
+	 * @param projectId 조회할 프로젝트 ID
+	 * @param currentUser 현재 로그인한 사용자 정보
+	 * @return 조회된 프로젝트 엔티티
+	 * @throws ProjectException 프로젝트가 존재하지 않거나 접근 권한이 없는 경우
+	 */
+	protected Project findMyProjectById(Long projectId, CustomUserDetails currentUser) {
+		return projectRepository.findByIdWithAccessCheck(projectId, currentUser.getMemberId())
+			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND, projectId));
 	}
 
 }
