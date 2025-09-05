@@ -28,11 +28,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "프로젝트 API", description = "프로젝트 관련 CRUD 작업을 처리하는 API")
-@SecurityRequirement(name = "Bearer Authentication")
 public interface ProjectApi {
 
 	@Operation(
