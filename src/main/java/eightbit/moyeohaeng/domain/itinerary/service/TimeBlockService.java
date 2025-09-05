@@ -58,12 +58,12 @@ public class TimeBlockService {
 	}
 
 	@Transactional
-	public TimeBlockResponse update(Long projectId, Long timeBlockId, TimeBlockUpdateRequest request) {
+	public TimeBlockResponse update(Long projectId, Long targetTimeBlockId, TimeBlockUpdateRequest request) {
 		// 다른 시간 블록과 겹치는 시간이 있는지 확인
-		validateTimeBlockExists(projectId, timeBlockId, request.day(), request.startTime(), request.endTime());
+		validateTimeBlockExists(projectId, targetTimeBlockId, request.day(), request.startTime(), request.endTime());
 
 		// 시간 블록 조회 및 프로젝트에 속해있는지 검증
-		TimeBlock timeBlock = getTimeBlock(projectId, timeBlockId);
+		TimeBlock timeBlock = getTimeBlock(projectId, targetTimeBlockId);
 		timeBlock.update(request.day(), request.startTime(), request.endTime(), request.memo());
 
 		return TimeBlockResponse.from(timeBlock);
