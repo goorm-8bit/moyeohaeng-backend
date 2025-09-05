@@ -15,7 +15,7 @@ import lombok.Builder;
 public record ProjectDto(
 	String externalId,
 	String title,
-	String location,
+	String color,
 	ProjectAccess projectAccess,
 	LocalDate startDate,
 	LocalDate endDate,
@@ -29,7 +29,7 @@ public record ProjectDto(
 		return ProjectDto.of(
 			project.getExternalId(),
 			project.getTitle(),
-			project.getLocation(),
+			project.getColor(),
 			project.getProjectAccess(),
 			project.getStartDate(),
 			project.getEndDate(),
@@ -50,7 +50,7 @@ public record ProjectDto(
 	public static ProjectDto of(
 		String externalId,
 		String title,
-		String location,
+		String color,
 		ProjectAccess projectAccess,
 		LocalDate startDate,
 		LocalDate endDate,
@@ -60,7 +60,7 @@ public record ProjectDto(
 		Team team
 	) {
 		return new ProjectDto(
-			externalId, title, location, projectAccess, startDate, endDate, isAllowGuest, isAllowViewer, updateAt, team
+			externalId, title, color, projectAccess, startDate, endDate, isAllowGuest, isAllowViewer, updateAt, team
 		);
 	}
 

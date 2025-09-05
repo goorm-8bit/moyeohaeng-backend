@@ -14,9 +14,9 @@ public record ProjectUpdateRequest(
 	@Schema(description = "프로젝트 제목", example = "제주 맛 집 여행 - 수정")
 	String title,
 
-	@Size(max = 50, message = "위치는 최대 50자까지 입력 가능합니다.")
-	@Schema(description = "프로젝트 위치(선택)", example = "제주도 제주시")
-	String location,
+	@Size(max = 7, message = "색상 코드는 7자까지 입력 가능합니다.")
+	@Schema(description = "프로젝트 색상(선택)", example = "#ffffff")
+	String color,
 
 	@Schema(description = "시작일(YYYY-MM-DD)", example = "2025-10-02")
 	LocalDate startDate,

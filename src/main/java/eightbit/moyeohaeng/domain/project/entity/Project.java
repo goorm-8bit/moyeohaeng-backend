@@ -53,8 +53,8 @@ public class Project extends BaseEntity {
 	@Column(name = "project_access", nullable = false)
 	private ProjectAccess projectAccess;
 
-	@Column(name = "location", length = 50)
-	private String location;
+	@Column(name = "color", length = 7)
+	private String color;
 
 	@Column(name = "start_date")
 	private LocalDate startDate;
@@ -99,6 +99,7 @@ public class Project extends BaseEntity {
 			.endDate(endDate)
 			.projectAccess(ProjectAccess.PRIVATE)
 			.externalId(UUID.randomUUID().toString())
+			.color("#ffffff")
 			.build();
 	}
 
