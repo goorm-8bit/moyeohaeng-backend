@@ -16,16 +16,16 @@ public record PinCreateRequest(
 	@Size(max = 200)
 	String address,
 
-	@Schema(description = "위도(-90 ~ 90)", example = "35.1587")
+	@Schema(description = "위도", example = "35.1587")
 	@NotNull
-	@DecimalMin(value = "-90.0")
-	@DecimalMax(value = "90.0")
+	@DecimalMin(value = "33.0")
+	@DecimalMax(value = "43.0")
 	Double latitude,
 
-	@Schema(description = "경도(-180 ~ 180)", example = "129.1604")
+	@Schema(description = "경도", example = "129.1604")
 	@NotNull
-	@DecimalMin(value = "-180.0")
-	@DecimalMax(value = "180.0")
+	@DecimalMin(value = "124.0")
+	@DecimalMax(value = "132.0")
 	Double longitude,
 
 	@Schema(description = "상세 링크", example = "https://example.com/pin/1", maxLength = 250)
@@ -37,7 +37,7 @@ public record PinCreateRequest(
 	@Size(max = 30)
 	String category,
 
-	@Schema(description = "기록자", example = "test@test.com", maxLength = 120)
+	@Schema(description = "작성자", example = "test@test.com", maxLength = 120)
 	@Email
 	@Size(max = 120)
 	String author
