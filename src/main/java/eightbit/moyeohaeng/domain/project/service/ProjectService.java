@@ -1,9 +1,9 @@
 package eightbit.moyeohaeng.domain.project.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -14,7 +14,9 @@ import eightbit.moyeohaeng.domain.member.service.MemberService;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectErrorCode;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectException;
 import eightbit.moyeohaeng.domain.project.dto.ProjectDto;
+import eightbit.moyeohaeng.domain.project.dto.condition.ProjectSearchCondition;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
+import eightbit.moyeohaeng.domain.project.dto.request.ProjectSortType;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
@@ -32,14 +34,13 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true) // 기본 조회 최적화
 public class ProjectService {
 
-	private final MemberService memberService;
-	private final SseEmitterService sseEmitterService;
-
 	private final ProjectRepository projectRepository;
+	private final SseEmitterService sseEmitterService;
+	private final ChannelTopic channelTopic;
+
+	private final MemberService memberService;
 	private final TeamRepository teamRepository;
 	private final TeamMemberRepository teamMemberRepository;
-
-	private final ChannelTopic channelTopic;
 
 	final ProjectDto testProjectDTO = ProjectDto.builder().title("테스트 project").build();
 
@@ -68,22 +69,8 @@ public class ProjectService {
 		return ProjectDto.from(savedProject);
 	}
 
-	/**
-	 * SSE 연결
-	 *
-	 * @param projectId 프로젝트 Id
-	 * @param user 사용자 정보
-	 * @return SseEmitter
-	 */
-	public SseEmitter connect(Long projectId, String lastEventId, String user) {
-		return sseEmitterService.subscribe(channelTopic, projectId, lastEventId, user);
-	}
-
 	public List<ProjectDto> find() {
-
-		List<ProjectDto> testDto = new ArrayList<>();
-
-		return testDto;
+		return ProjectDto.from(projectRepository.findAll());
 		// return projectRepository.findAll().stream()
 		// 	.map(ProjectDto::from)
 		// 	.collect(Collectors.toList());
@@ -116,20 +103,44 @@ public class ProjectService {
 		return UserRole.VIEWER;
 
 	}
+	/**
+	 * SSE 연결
+	 *
+	 * @param projectId 프로젝트 Id
+	 * @param user 사용자 정보
+	 * @return SseEmitter
+	 */
+	public SseEmitter connect(Long projectId, String lastEventId, String user) {
+		return sseEmitterService.subscribe(channelTopic, projectId, lastEventId, user);
+	}
 
-	public List<ProjectDto> findWithMe(CustomUserDetails currentUser) {
+	public List<ProjectDto> searchMyProjects(CustomUserDetails currentUser, ProjectSearchCondition condition) {
+		Sort sort = getSortFromType(condition.sortType());
+		List<Project> projects;
 
-		// 	// TODO 서비 내용 추가
-		List<ProjectDto> testDto = new ArrayList<>();
+		// 내가 속한 팀에 프로젝트 조회
+		if (condition.hasTeamFilter()) {
+			projects = projectRepository.findByTeamId(condition.teamId(), sort);
+		} else { // 내가 접근 가능한  프로젝트 조회
+			Long memberId = currentUser.getMemberId();
+			projects = projectRepository.findByMemberId(memberId, sort);
+		}
 
-		testDto.add(testProjectDTO);
-		return testDto;
+		return ProjectDto.from(projects);
+	}
+
+	private Sort getSortFromType(ProjectSortType sortType) {
+		return switch (sortType) {
+			case MODIFIED_AT_DESC -> Sort.by(Sort.Direction.DESC, "modifiedAt");
+			case MODIFIED_AT_ASC -> Sort.by(Sort.Direction.ASC, "modifiedAt");
+			case CREATED_AT_DESC -> Sort.by(Sort.Direction.DESC, "createdAt");
+			case CREATED_AT_ASC -> Sort.by(Sort.Direction.ASC, "createdAt");
+			default -> Sort.by(Sort.Direction.DESC, "modifiedAt");
+		};
 	}
 
 	@Transactional
 	public ProjectDto update(Long projectId, ProjectUpdateRequest request, CustomUserDetails currentUser) {
-		// CustomUserDetails에서 ID를 이용하여 Member 조회
-		Member member = memberService.findById(currentUser.getMemberId());
 		// Project project = projectRepository.findById(projectId)
 		// 	.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND, projectId));
 
