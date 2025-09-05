@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
 import eightbit.moyeohaeng.domain.project.dto.ProjectDto;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
+import eightbit.moyeohaeng.domain.project.dto.request.ProjectSortType;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
@@ -76,20 +78,21 @@ public interface ProjectApi {
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	);
 
-	@Operation(
-		summary = "프로젝트 목록 조회",
-		description = "프로젝트 목록을 조회합니다. 인증된 사용자만 접근 가능합니다."
-	)
-	@ApiResponses({
-		@ApiResponse(
-			responseCode = "200",
-			description = "조회 성공",
-			content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProjectDto.class)))
-		),
-		@ApiResponse(responseCode = "401", description = "인증 실패",
+	@Operation(summary = "프로젝트 목록 조회", description = "프로젝트 목록을 조회합니다. 팀 ID나 멤버 ID로 필터링하고 수정일시나 생성일시로 정렬할 수 있습니다.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "프로젝트 목록 조회 성공",
+			content = @Content(schema = @Schema(implementation = SuccessResponse.class))),
+		@ApiResponse(responseCode = "401", description = "인증되지 않은 사용자",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "403", description = "권한이 없는 사용자",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	SuccessResponse<List<ProjectDto>> get(@AuthenticationPrincipal CustomUserDetails currentUser);
+	SuccessResponse<List<ProjectDto>> searchMyProjects(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
+		@Parameter(description = "팀 ID로 필터링") @RequestParam(required = false) Long teamId,
+		@Parameter(description = "정렬 방식 (MODIFIED_AT_DESC, MODIFIED_AT_ASC, CREATED_AT_DESC, CREATED_AT_ASC)")
+		@RequestParam(required = false, defaultValue = "MODIFIED_AT_DESC") ProjectSortType sortType
+	);
 
 	@Operation(
 		summary = "특정 프로젝트 조회",

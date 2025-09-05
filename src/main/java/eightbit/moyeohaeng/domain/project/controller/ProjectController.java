@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -22,7 +23,9 @@ import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
 import eightbit.moyeohaeng.domain.project.common.success.ProjectSuccessCode;
 import eightbit.moyeohaeng.domain.project.controller.swagger.ProjectApi;
 import eightbit.moyeohaeng.domain.project.dto.ProjectDto;
+import eightbit.moyeohaeng.domain.project.dto.condition.ProjectSearchCondition;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
+import eightbit.moyeohaeng.domain.project.dto.request.ProjectSortType;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
 import eightbit.moyeohaeng.domain.project.service.ProjectService;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
@@ -60,9 +63,18 @@ public class ProjectController implements ProjectApi {
 
 	@Override
 	@GetMapping
-	public SuccessResponse<List<ProjectDto>> get(
-		@AuthenticationPrincipal CustomUserDetails currentUser) {
-		List<ProjectDto> projects = projectService.findWithMe(currentUser);
+	@RequiredAccessRole(UserRole.MEMBER)
+	public SuccessResponse<List<ProjectDto>> searchMyProjects(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
+		@RequestParam(required = false) Long teamId,
+		@RequestParam(required = false, defaultValue = "MODIFIED_AT_DESC") ProjectSortType sortType
+	) {
+		ProjectSearchCondition condition = ProjectSearchCondition.builder()
+			.teamId(teamId)
+			.sortType(sortType)
+			.build();
+
+		List<ProjectDto> projects = projectService.searchMyProjects(currentUser, condition);
 		return SuccessResponse.of(CommonSuccessCode.SELECT_SUCCESS, projects);
 	}
 
