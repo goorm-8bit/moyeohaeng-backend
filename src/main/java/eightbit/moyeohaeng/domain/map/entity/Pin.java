@@ -1,7 +1,5 @@
 package eightbit.moyeohaeng.domain.map.entity;
 
-import org.hibernate.annotations.SQLDelete;
-
 import eightbit.moyeohaeng.domain.place.entity.Place;
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.global.domain.BaseEntity;
@@ -15,6 +13,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,9 +27,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
 	name = "pins",
+	uniqueConstraints = @UniqueConstraint(
+		name = "uk_project_place",
+		columnNames = {"project_id", "place_id"}
+	),
 	indexes = @Index(name = "idx_pin_project_id", columnList = "project_id")
 )
-@SQLDelete(sql = "UPDATE pins SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 public class Pin extends BaseEntity {
 
 	@Id
@@ -47,4 +49,12 @@ public class Pin extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "place_id", nullable = false)
 	private Place place;
+
+	public static Pin of(Project project, Place place, String author) {
+		return Pin.builder()
+			.project(project)
+			.place(place)
+			.author(author)
+			.build();
+	}
 }
