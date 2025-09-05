@@ -35,7 +35,8 @@ public class PinController implements PinApi {
 		@Valid @RequestBody PinCreateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
-		PinResponse response = pinService.create(projectId, request, currentUser);
+		String email = (currentUser != null ? currentUser.getEmail() : null);
+		PinResponse response = pinService.create(projectId, request, email);
 		return SuccessResponse.of(PinSuccessCode.CREATE_PIN, response);
 	}
 

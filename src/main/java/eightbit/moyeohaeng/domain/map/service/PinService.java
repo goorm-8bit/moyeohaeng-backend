@@ -18,7 +18,6 @@ import eightbit.moyeohaeng.domain.project.common.exception.ProjectErrorCode;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectException;
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
-import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -34,16 +33,16 @@ public class PinService {
 	 * 핀 생성
 	 */
 	@Transactional
-	public PinResponse create(Long projectId, PinCreateRequest request, CustomUserDetails currentUser) {
+	public PinResponse create(Long projectId, PinCreateRequest request, String email) {
 		Project project = projectRepository.findById(projectId)
-			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND));
+			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND, projectId));
 
 		Place place = resolvePlace(request);
 
 		// 중복 핀 검증
 		validateDuplicatePin(projectId, place.getId());
 
-		String author = (currentUser != null) ? currentUser.getEmail() : request.author();
+		String author = email;
 
 		Pin saved = pinRepository.save(Pin.of(project, place, author));
 
@@ -54,6 +53,9 @@ public class PinService {
 	 * 핀 조회
 	 */
 	public List<PinResponse> getPins(Long projectId) {
+		if (!projectRepository.existsById(projectId)) {
+			throw new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND, projectId);
+		}
 		return pinRepository.findAllByProjectId(projectId)
 			.stream()
 			.map(PinResponse::from)
@@ -83,27 +85,27 @@ public class PinService {
 	}
 
 	/**
-	 * 주어진 좌표로 Place 조회, 없으면 생성 (위도/경도는 소수점 6자리 반올림 처리)
+	 * 주어진 좌표로 Place 조회, 없으면 생성 (위도/경도는 소수점 7자리 반올림 처리)
 	 */
-	private Place resolvePlace(PinCreateRequest req) {
-		double latitude = roundToSixDecimals(req.latitude());
-		double longitude = roundToSixDecimals(req.longitude());
+	private Place resolvePlace(PinCreateRequest request) {
+		double latitude = roundToSevenDecimals(request.latitude());
+		double longitude = roundToSevenDecimals(request.longitude());
 
 		return placeRepository.findByLatitudeAndLongitude(latitude, longitude)
 			.orElseGet(() -> placeRepository.save(
 				Place.builder()
-					.address(req.address())
+					.address(request.address())
 					.latitude(latitude)
 					.longitude(longitude)
-					.detailLink(req.detailLink())
-					.category(req.category())
+					.detailLink(request.detailLink())
+					.category(request.category())
 					.build()
 			));
 	}
 
-	private double roundToSixDecimals(Double value) {
+	private double roundToSevenDecimals(Double value) {
 		return new BigDecimal(value)
-			.setScale(6, java.math.RoundingMode.HALF_UP)
+			.setScale(7, java.math.RoundingMode.HALF_UP)
 			.doubleValue();
 	}
 }
