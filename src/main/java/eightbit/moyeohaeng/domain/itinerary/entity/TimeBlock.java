@@ -75,11 +75,22 @@ public class TimeBlock extends BaseEntity {
 	}
 
 	public void update(Integer day, LocalTime startTime, LocalTime endTime, String memo) {
+		validateTimeRange(startTime, endTime);
+
 		if (day != null) {
 			this.day = day;
 		}
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.memo = memo;
+	}
+
+	private void validateTimeRange(LocalTime startTime, LocalTime endTime) {
+		if (startTime == null || endTime == null) {
+			return;
+		}
+		if (!startTime.isBefore(endTime)) {
+			throw new IllegalArgumentException("종료 시간은 시작 시간보다 이후여야 합니다.");
+		}
 	}
 }
