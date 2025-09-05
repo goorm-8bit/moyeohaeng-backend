@@ -24,4 +24,14 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 		"JOIN TeamMember tm ON tm.team = t " +
 		"WHERE tm.member.id = :memberId")
 	List<Project> findByMemberId(@Param("memberId") Long memberId, Sort sort);
+
+	@Query("SELECT p FROM Project p " +
+		"WHERE p.id = :projectId " +
+		"AND (p.creator.id = :memberId " +
+		"OR EXISTS (" +
+		"    SELECT tm FROM TeamMember tm " +
+		"    WHERE tm.team.id = p.team.id " +
+		"    AND tm.member.id = :memberId" +
+		"))")
+	Optional<Project> findByIdWithAccessCheck(@Param("projectId") Long projectId, @Param("memberId") Long memberId);
 }
