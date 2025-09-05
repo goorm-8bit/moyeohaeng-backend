@@ -83,7 +83,7 @@ class TimeBlockServiceTest {
 		// when & then
 		assertThatThrownBy(() -> timeBlockService.create(projectId, request))
 			.isInstanceOf(TimeBlockException.class)
-			.hasMessageContaining(TimeBlockErrorCode.TIME_BLOCK_CONFLICT.getMessage());
+			.hasMessage(TimeBlockErrorCode.TIME_BLOCK_CONFLICT.getMessage());
 	}
 
 	@DisplayName("시간 블록 수정 테스트 - 성공")
@@ -116,5 +116,33 @@ class TimeBlockServiceTest {
 		assertThat(response.startTime()).isEqualTo(request.startTime());
 		assertThat(response.endTime()).isEqualTo(request.endTime());
 		assertThat(response.memo()).isEqualTo(request.memo());
+	}
+
+	@DisplayName("시간 블록 수정 테스트 - 실패 (시작 시간 > 종료 시간)")
+	@Test
+	void update_fail_validateTimeRange() {
+		// given
+		Long projectId = 1L;
+		Long timeBlockId = 1L;
+		TimeBlockUpdateRequest request = new TimeBlockUpdateRequest(
+			2,
+			LocalTime.of(12, 0),
+			LocalTime.of(10, 0),
+			"점심이 맛있는 곳"
+		);
+
+		given(timeBlockRepository.findByIdAndProjectId(timeBlockId, projectId)).willReturn(Optional.of(TimeBlock.of(
+			1,
+			LocalTime.of(20, 30),
+			LocalTime.of(22, 0),
+			"야경이 아름다운 곳",
+			mock(Project.class),
+			mock(Place.class)
+		)));
+
+		// when & then
+		assertThatThrownBy(() -> timeBlockService.update(projectId, timeBlockId, request))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("종료 시간은 시작 시간보다 이후여야 합니다.");
 	}
 }
