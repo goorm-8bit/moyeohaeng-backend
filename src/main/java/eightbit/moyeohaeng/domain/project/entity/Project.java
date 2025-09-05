@@ -57,6 +57,9 @@ public class Project extends BaseEntity {
 	@Column(name = "color", length = 7)
 	private String color;
 
+	@Column(name = "travel_days")
+	private int travelDays;
+
 	@Column(name = "start_date")
 	private LocalDate startDate;
 
@@ -101,6 +104,7 @@ public class Project extends BaseEntity {
 			.projectAccess(ProjectAccess.PRIVATE)
 			.externalId(UUID.randomUUID().toString())
 			.color("#ffffff")
+			.travelDays(TimeUtils.calculateTravelDays(startDate, endDate))
 			.build();
 	}
 
@@ -113,6 +117,7 @@ public class Project extends BaseEntity {
 		this.color = color;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.travelDays = TimeUtils.calculateTravelDays(startDate, endDate);
 	}
 
 	public void updateShareOption(boolean isAllowGuest, boolean isAllowViewer) {

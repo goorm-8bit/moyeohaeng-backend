@@ -19,6 +19,7 @@ public record ProjectDto(
 	ProjectAccess projectAccess,
 	LocalDate startDate,
 	LocalDate endDate,
+	Integer travelDays,
 	@JsonProperty("isAllowGuest") boolean isAllowGuest,
 	@JsonProperty("isAllowViewer") boolean isAllowViewer,
 	LocalDateTime modifiedAt,
@@ -33,6 +34,7 @@ public record ProjectDto(
 			project.getProjectAccess(),
 			project.getStartDate(),
 			project.getEndDate(),
+			project.getTravelDays(),
 			project.isAllowGuest(),
 			project.isAllowViewer(),
 			project.getModifiedAt(),
@@ -54,13 +56,15 @@ public record ProjectDto(
 		ProjectAccess projectAccess,
 		LocalDate startDate,
 		LocalDate endDate,
+		Integer travelDays,
 		boolean isAllowGuest,
 		boolean isAllowViewer,
 		LocalDateTime updateAt,
 		Team team
 	) {
 		return new ProjectDto(
-			externalId, title, color, projectAccess, startDate, endDate, isAllowGuest, isAllowViewer, updateAt, team
+			externalId, title, color, projectAccess, startDate, endDate, travelDays, isAllowGuest, isAllowViewer,
+			updateAt, team
 		);
 	}
 

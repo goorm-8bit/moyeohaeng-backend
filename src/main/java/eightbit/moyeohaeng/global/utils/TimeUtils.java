@@ -5,7 +5,14 @@ import java.time.LocalTime;
 
 public class TimeUtils {
 
-	static public void validateTimeRange(LocalTime startTime, LocalTime endTime) {
+	public static Integer calculateTravelDays(LocalDate startDate, LocalDate endDate) {
+		if (startDate == null || endDate == null) {
+			return null;
+		}
+		return (int) (endDate.toEpochDay() - startDate.toEpochDay() + 1);
+	}
+
+	public static void validateTimeRange(LocalTime startTime, LocalTime endTime) {
 		if (startTime == null || endTime == null) {
 			return;
 		}
@@ -14,7 +21,7 @@ public class TimeUtils {
 		}
 	}
 
-	static public void validateDateRange(LocalDate startDate, LocalDate endDate) {
+	public static void validateDateRange(LocalDate startDate, LocalDate endDate) {
 		if (startDate == null || endDate == null) {
 			return;
 		}
