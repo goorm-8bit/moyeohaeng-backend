@@ -22,7 +22,15 @@ public class SseEmitterService {
 	private final SseEmitterRepository sseEmitterRepository;
 	private final ApplicationEventPublisher eventPublisher;
 
-	public SseEmitter subscribe(ChannelTopic channel, Long eventId) {
+	/**
+	 * 지정된 채널과 이벤트에 대한 SSE 연결을 생성하고 구독하는 메서드
+	 *
+	 * @param channel 구독할 채널 (ex. PROJECT)
+	 * @param eventId 구독할 특정 이벤트의 Id (ex. 프로젝트 Id)
+	 * @param user    사용자 정보
+	 * @return SseEmitter
+	 */
+	public SseEmitter subscribe(ChannelTopic channel, Long eventId, String user) {
 		SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT.toMillis());
 		SseEmitterId id = SseEmitterId.of(channel.getTopic(), eventId);
 		UUID uuid = sseEmitterRepository.save(id, emitter);
@@ -34,7 +42,7 @@ public class SseEmitterService {
 
 		// 이벤트 전송
 		sendToClient(emitter, MessageBody.of("CONNECT", "hello"));
-		eventPublisher.publishEvent(new SseSubscribeEvent(uuid));
+		eventPublisher.publishEvent(new SseSubscribeEvent(uuid, user));
 
 		return emitter;
 	}
