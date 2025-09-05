@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record CreationTeamResponseDto(
+public record CreateTeamResponseDto(
 	@NotNull
 	TeamDto newTeam
 ) {
