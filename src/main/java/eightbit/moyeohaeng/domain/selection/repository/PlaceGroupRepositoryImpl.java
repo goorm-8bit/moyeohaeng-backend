@@ -29,6 +29,7 @@ public class PlaceGroupRepositoryImpl implements PlaceGroupRepositoryCustom {
 			.from(placeGroup)
 			.leftJoin(placeGroupBlock).on(placeGroupBlock.placeGroup.id.eq(placeGroup.id))
 			.where(placeGroup.project.id.eq(projectId))
+			.orderBy(placeGroup.createdAt.desc())
 			.transform(groupBy(placeGroup.id).list(
 				new QPlaceGroupResponse(
 					placeGroup.id,
