@@ -44,7 +44,7 @@ public class PlaceGroupService {
 	@Transactional
 	public PlaceGroupResponse create(Long projectId, PlaceGroupRequest request) {
 		Project project = projectRepository.findById(projectId)
-			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND));
+			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND, projectId));
 
 		// 장소 블록 목록 조회 및 프로젝트에 속해있는지 검증
 		List<PlaceBlock> placeBlocks = getPlaceBlocks(projectId, request.placeBlockIds());
