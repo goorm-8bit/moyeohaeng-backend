@@ -13,6 +13,10 @@ import eightbit.moyeohaeng.domain.project.dto.ProjectDto;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectSortType;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
+import eightbit.moyeohaeng.domain.project.dto.response.ProjectCreateResponse;
+import eightbit.moyeohaeng.domain.project.dto.response.ProjectGetResponse;
+import eightbit.moyeohaeng.domain.project.dto.response.ProjectSearchResponse;
+import eightbit.moyeohaeng.domain.project.dto.response.ProjectUpdateResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
@@ -49,7 +53,7 @@ public interface ProjectApi {
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
 	@ResponseStatus(HttpStatus.CREATED)
-	SuccessResponse<ProjectDto> create(ProjectCreateRequest request,
+	SuccessResponse<ProjectCreateResponse> create(ProjectCreateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser);
 
 	@Operation(
@@ -71,7 +75,7 @@ public interface ProjectApi {
 		@ApiResponse(responseCode = "404", description = "프로젝트를 찾을 수 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	SuccessResponse<ProjectDto> update(
+	SuccessResponse<ProjectUpdateResponse> update(
 		@Parameter(name = "projectId", description = "수정할 프로젝트 ID", in = ParameterIn.PATH, required = true)
 		Long projectId,
 		ProjectUpdateRequest request,
@@ -87,7 +91,7 @@ public interface ProjectApi {
 		@ApiResponse(responseCode = "403", description = "권한이 없는 사용자",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	SuccessResponse<List<ProjectDto>> searchMyProjects(
+	SuccessResponse<ProjectSearchResponse> searchMyProjects(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@Parameter(description = "팀 ID로 필터링") @RequestParam(required = false) Long teamId,
 		@Parameter(description = "정렬 방식 (MODIFIED_AT_DESC, MODIFIED_AT_ASC, CREATED_AT_DESC, CREATED_AT_ASC)")
@@ -109,7 +113,7 @@ public interface ProjectApi {
 		@ApiResponse(responseCode = "404", description = "프로젝트를 찾을 수 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	SuccessResponse<ProjectDto> getById(
+	SuccessResponse<ProjectGetResponse> getById(
 		@Parameter(name = "projectId", description = "조회할 프로젝트 ID", in = ParameterIn.PATH, required = true)
 		Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
