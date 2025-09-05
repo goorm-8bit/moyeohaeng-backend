@@ -19,7 +19,9 @@ public class TimeBlockRepositoryImpl implements TimeBlockRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public boolean existsOverlappingTimeBlock(Long projectId, Integer day, LocalTime startTime, LocalTime endTime) {
+	public boolean existsOverlappingTimeBlock(Long projectId, Long excludeId, Integer day, LocalTime startTime,
+		LocalTime endTime) {
+
 		// 시간 미정인 경우 겹침 없음
 		if (startTime == null && endTime == null) {
 			return false;
@@ -61,15 +63,21 @@ public class TimeBlockRepositoryImpl implements TimeBlockRepositoryCustom {
 
 		overlap.and(startLt).and(endGt);
 
+		BooleanBuilder builder = new BooleanBuilder()
+			.and(project.id.eq(projectId))
+			.and(timeBlock.day.eq(day))
+			.and(overlap);
+
+		// 제외할 시간 블록이 있다면 조건에 추가
+		if (excludeId != null) {
+			builder.and(timeBlock.id.ne(excludeId));
+		}
+
 		return queryFactory
 			.selectOne()
 			.from(timeBlock)
 			.join(timeBlock.project, project)
-			.where(
-				project.id.eq(projectId),
-				timeBlock.day.eq(day),
-				overlap
-			)
+			.where(builder)
 			.fetchFirst() != null;
 	}
 }
