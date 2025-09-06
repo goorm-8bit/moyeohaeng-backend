@@ -19,6 +19,10 @@ spring:
       host: ${SPRING_REDIS_HOST}
       port: ${SPRING_REDIS_PORT}
 
+scheduling:
+  heartbeat:
+    fixed-rate: ${SCHEDULING_FIXED_RATE:30000}
+
 jwt:
   secret:
     key: ${SPRING_JWT_SECRET_KEY}

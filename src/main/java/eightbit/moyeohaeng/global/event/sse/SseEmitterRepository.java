@@ -1,6 +1,7 @@
 package eightbit.moyeohaeng.global.event.sse;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +21,12 @@ public class SseEmitterRepository {
 			.put(uuid, emitter);
 
 		return uuid;
+	}
+
+	public List<SseEmitter> findAll() {
+		return emitters.values().stream()
+			.flatMap(entry -> entry.values().stream())
+			.toList();
 	}
 
 	public Map<UUID, SseEmitter> findAllById(SseEmitterId id) {

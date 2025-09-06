@@ -14,6 +14,10 @@ spring:
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
 
+scheduling:
+  heartbeat:
+    fixed-rate: 30000
+
 jwt:
   secret:
     key: VEVTVFNFUkVUQ09ERUZPUk1PWUVPSEFFTkdURVNURU5WSVJPTk1FTlRET05PVFVTRVRISU5QUk9EVUNUSU9O

@@ -15,6 +15,10 @@ spring:
     open-in-view: false
     show-sql: false
 
+scheduling:
+  heartbeat:
+    fixed-rate: ${SCHEDULING_FIXED_RATE:30000} # 30초
+
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}

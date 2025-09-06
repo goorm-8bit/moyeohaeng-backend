@@ -59,7 +59,7 @@ public class SseEmitterService {
 				.name(messageBody.eventName())
 				.data(messageBody.payload()));
 		} catch (Exception e) {
-			GlobalLogger.error("SSE 이벤트 전송 실패", e);
+			GlobalLogger.error("[SSE] 이벤트 전송 실패", e);
 		}
 	}
 
