@@ -1,6 +1,5 @@
 package eightbit.moyeohaeng.global.event.sse;
 
-import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -18,10 +17,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SseEventCacheRepository {
 
-	private static final int CACHE_LIMIT = 100;
-	private static final Duration CACHE_TTL = Duration.ofMinutes(30);
-
 	private final RedisTemplate<String, Object> redisTemplate;
+	private final SseCacheProperties cacheProperties;
 	private final ObjectMapper objectMapper;
 
 	public void cacheEvent(SseEmitterId id, MessageBody body) {
@@ -30,11 +27,11 @@ public class SseEventCacheRepository {
 		// 새 이벤트 추가
 		redisTemplate.opsForZSet().add(key, body, body.timestamp());
 
-		// 캐시 크기를 CACHE_LIMIT로 유지
-		redisTemplate.opsForZSet().removeRange(key, 0, -(CACHE_LIMIT + 1));
+		// 캐시 크기 제한
+		redisTemplate.opsForZSet().removeRange(key, 0, -(cacheProperties.limit() + 1));
 
 		// 캐시 유효 기간 갱신
-		redisTemplate.expire(key, CACHE_TTL);
+		redisTemplate.expire(key, cacheProperties.ttl());
 	}
 
 	public List<MessageBody> getMissedEvents(SseEmitterId id, String lastEventId) {

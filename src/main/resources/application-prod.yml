@@ -19,9 +19,13 @@ spring:
       host: ${SPRING_REDIS_HOST}
       port: ${SPRING_REDIS_PORT}
 
-scheduling:
-  heartbeat:
-    fixed-rate: ${SCHEDULING_FIXED_RATE:30000}
+sse:
+  cache:
+    limit: ${SSE_CACHE_LIMIT:100}
+    ttl: ${SSE_CACHE_TTL:30m}
+  scheduling:
+    heartbeat:
+      fixed-rate: ${SCHEDULING_FIXED_RATE:30000}
 
 jwt:
   secret:

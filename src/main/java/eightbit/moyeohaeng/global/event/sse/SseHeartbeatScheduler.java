@@ -19,7 +19,7 @@ public class SseHeartbeatScheduler {
 	/**
 	 * 정해진 시간마다 모든 SSE 연결에 대해 하트비트 이벤트를 전송
 	 */
-	@Scheduled(fixedDelayString = "${scheduling.heartbeat.fixed-rate}")
+	@Scheduled(fixedDelayString = "${sse.scheduling.heartbeat.fixed-rate}")
 	public void sendHeartbeat() {
 		List<SseEmitter> emitters = sseEmitterRepository.findAll();
 		GlobalLogger.info("[SSE] 프로젝트에 접속하고 있는 유저 수:", emitters.size() + "명");
