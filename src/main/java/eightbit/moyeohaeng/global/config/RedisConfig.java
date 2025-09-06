@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import eightbit.moyeohaeng.global.event.message.redis.RedisSubscriber;
+import eightbit.moyeohaeng.global.utils.GlobalLogger;
 
 @Configuration
 public class RedisConfig {
@@ -44,6 +45,7 @@ public class RedisConfig {
 	) {
 		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
+		container.setErrorHandler(e -> GlobalLogger.error("Redis 리스너 처리 중 예외", e));
 
 		// 채널 구독
 		container.addMessageListener(redisSubscriber, projectChannel());

@@ -1,6 +1,6 @@
 package eightbit.moyeohaeng.global.event.message.redis;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
@@ -24,10 +24,10 @@ public class RedisSubscriber implements MessageListener {
 	@Override
 	public void onMessage(@NonNull Message message, byte[] pattern) {
 		try {
-			String channel = new String(message.getChannel());
+			String channel = new String(message.getChannel(), StandardCharsets.UTF_8);
 			MessageBody messageBody = objectMapper.readValue(message.getBody(), MessageBody.class);
 			sseEmitterService.sendEvent(channel, messageBody);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			GlobalLogger.error("Redis 메시지 처리 중 예외 발생", e);
 		}
 	}
