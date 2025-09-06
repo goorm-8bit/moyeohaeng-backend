@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.global.handler;
 
 import java.util.stream.Collectors;
 
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -114,6 +115,12 @@ public class GlobalExceptionHandler {
 	public void handleAsyncRequestNotUsableException() {
 		// SSE 같은 비동기 응답에서, 이미 응답이 끝났거나 오류로 인해 더 이상 응답 스트림에 쓰기 불가능할 때 발생하는 예외
 		// https://github.com/spring-projects/spring-framework/issues/32509
+	}
+
+	@ExceptionHandler(InvalidDataAccessApiUsageException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidDataAccessApiUsageException(
+		InvalidDataAccessApiUsageException e) {
+		return getErrorResponse(e, GlobalErrorCode.INVALID_DATA_ACCESS_API_USAGE);
 	}
 
 	private static ResponseEntity<ErrorResponse> getErrorResponse(Exception e, GlobalErrorCode errorCode) {
