@@ -1,5 +1,7 @@
 package eightbit.moyeohaeng.domain.selection.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.SQLDelete;
 
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
@@ -39,14 +41,25 @@ public class PlaceBlockComment extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "content", nullable = false, columnDefinition = "TEXT")
+	@Column(name = "content", nullable = false, length = 500)
 	private String content;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "member_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Member member;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "place_block_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private PlaceBlock placeBlock;
+
+	/**
+	 * 댓글 내용 수정
+	 *
+	 * @param newContent 새로운 댓글 내용
+	 */
+	public void updateContent(String newContent) {
+		this.content = newContent;
+	}
 }
