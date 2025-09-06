@@ -94,6 +94,7 @@ public class PinService {
 		return placeRepository.findByLatitudeAndLongitude(latitude, longitude)
 			.orElseGet(() -> placeRepository.save(
 				Place.builder()
+					.name(request.name())
 					.address(request.address())
 					.latitude(latitude)
 					.longitude(longitude)

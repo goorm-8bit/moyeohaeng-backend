@@ -6,11 +6,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Schema(description = "핀 생성 요청 DTO")
 public record PinCreateRequest(
+	@Schema(description = "이름", example = "해운대 해수욕장")
+	@NotBlank
+	String name,
 
 	@Schema(description = "주소", example = "부산광역시 해운대구 우동", maxLength = 200)
 	@Size(max = 200)
