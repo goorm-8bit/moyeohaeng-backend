@@ -78,4 +78,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 		return null;
 	}
+
+	@Override
+	protected boolean shouldNotFilterAsyncDispatch() {
+		// 비동기 디스패치(async dispatch) 요청도 필터링하도록 설정
+		// SSE 연결이 종료될 때 필터를 거치게 되어 Access Denied가 발생하지 않음
+		return false;
+	}
 }

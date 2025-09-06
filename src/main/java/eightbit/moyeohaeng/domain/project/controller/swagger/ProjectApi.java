@@ -132,6 +132,8 @@ public interface ProjectApi {
 	SseEmitter connectProject(
 		@Parameter(name = "projectId", description = "연결할 프로젝트 ID", in = ParameterIn.PATH, required = true)
 		Long projectId,
+		@Parameter(description = "클라이언트가 마지막으로 수신한 이벤트 ID")
+		String lastEventId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	);
 

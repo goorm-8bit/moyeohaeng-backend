@@ -1,6 +1,5 @@
 package eightbit.moyeohaeng.domain.project.controller;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -82,20 +82,16 @@ public class ProjectController implements ProjectApi {
 	 */
 	@Override
 	@GetMapping(value = "/{projectId}/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public SseEmitter connectProject(@PathVariable Long projectId,
-		@AuthenticationPrincipal CustomUserDetails currentUser) {
+	@RequiredAccessRole(UserRole.VIEWER)
+	public SseEmitter connectProject(
+		@PathVariable Long projectId,
+		@RequestHeader(value = "Last-Event-ID", required = false) String lastEventId,
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
 
-		if (currentUser == null) {
-			projectService.ensureShareAllowed(projectId);
-		}
-
-		// TODO: emitter registry에 등록하고 권한 검증(프로젝트 접근 가능 여부) 수행
-		SseEmitter emitter = new SseEmitter(Duration.ofMinutes(30).toMillis());
-		emitter.onTimeout(emitter::complete);
-		emitter.onCompletion(() -> {
-			// TODO: registry에서 제거
-		});
-		return emitter;
+		// TODO: guest에 대한 처리 필요함
+		String user = currentUser.getEmail();
+		return projectService.connect(projectId, lastEventId, user);
 	}
 
 	@Override
