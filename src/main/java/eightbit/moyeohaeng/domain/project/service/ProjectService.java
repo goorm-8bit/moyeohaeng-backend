@@ -3,8 +3,10 @@ package eightbit.moyeohaeng.domain.project.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import eightbit.moyeohaeng.domain.auth.UserRole;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
@@ -21,6 +23,7 @@ import eightbit.moyeohaeng.domain.team.entity.TeamMember;
 import eightbit.moyeohaeng.domain.team.entity.TeamRole;
 import eightbit.moyeohaeng.domain.team.repository.TeamMemberRepository;
 import eightbit.moyeohaeng.domain.team.repository.TeamRepository;
+import eightbit.moyeohaeng.global.event.sse.SseEmitterService;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 
@@ -29,10 +32,14 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true) // 기본 조회 최적화
 public class ProjectService {
 
-	private final ProjectRepository projectRepository;
 	private final MemberService memberService;
+	private final SseEmitterService sseEmitterService;
+
+	private final ProjectRepository projectRepository;
 	private final TeamRepository teamRepository;
 	private final TeamMemberRepository teamMemberRepository;
+
+	private final ChannelTopic channelTopic;
 
 	final ProjectDto testProjectDTO = ProjectDto.builder().title("테스트 project").build();
 
@@ -59,6 +66,17 @@ public class ProjectService {
 		teamMemberRepository.save(ownerMembership);
 
 		return ProjectDto.from(savedProject);
+	}
+
+	/**
+	 * SSE 연결
+	 *
+	 * @param projectId 프로젝트 Id
+	 * @param user 사용자 정보
+	 * @return SseEmitter
+	 */
+	public SseEmitter connect(Long projectId, String lastEventId, String user) {
+		return sseEmitterService.subscribe(channelTopic, projectId, lastEventId, user);
 	}
 
 	public List<ProjectDto> find() {
