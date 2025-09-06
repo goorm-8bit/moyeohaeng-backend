@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.domain.selection.controller.swagger;
 
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockLikeSummaryResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
+import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,6 +25,6 @@ public interface PlaceBlockLikeApi {
 	SuccessResponse<PlaceBlockLikeSummaryResponse> toggleLike(
 		@Parameter(description = "프로젝트 ID", required = true, example = "1") Long projectId,
 		@Parameter(description = "장소 블록 ID", required = true, example = "10") Long placeBlockId,
-		@Parameter(description = "회원 ID", required = true, example = "5") Long memberId
+		CustomUserDetails currentUser
 	);
 }
