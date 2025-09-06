@@ -40,7 +40,14 @@ public class SseEventCacheRepository {
 	public List<MessageBody> getMissedEvents(SseEmitterId id, String lastEventId) {
 		String key = getKey(id);
 
-		long timestamp = MessageBody.parseTimestamp(lastEventId);
+		long timestamp;
+		try {
+			timestamp = MessageBody.parseTimestamp(id.eventId(), lastEventId);
+		} catch (Exception e) {
+			GlobalLogger.error("[SSE] Last-Event-ID 파싱 실패:", e.getMessage());
+			return List.of();
+		}
+
 		Set<Object> events = redisTemplate.opsForZSet()
 			.rangeByScore(key, timestamp + 1, Double.POSITIVE_INFINITY);
 

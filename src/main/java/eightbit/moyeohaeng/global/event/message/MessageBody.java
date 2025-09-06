@@ -15,12 +15,16 @@ public record MessageBody(
 		return new MessageBody(eventId, eventName, payload, timestamp);
 	}
 
-	public static long parseTimestamp(String id) {
+	public static long parseTimestamp(Long eventId, String id) {
 		try {
 			String[] parts = id.split(":");
+			if (Long.parseLong(parts[1]) != eventId) {
+				throw new IllegalArgumentException("id가 일치하지 않습니다. eventId=" + eventId + ", id=" + id);
+			}
+
 			return Long.parseLong(parts[parts.length - 1]);
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("유효하지 않은 Last-Event-Id: " + id);
+			throw new IllegalArgumentException("유효하지 않은 Last-Event-ID (" + id + ")");
 		}
 	}
 
