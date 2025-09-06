@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "PlaceBlockLike", description = "장소 블록 좋아요 API - 좋아요 on/off")
+@Tag(name = "장소 블록 좋아요 API", description = "좋아요 on/off")
 public interface PlaceBlockLikeApi {
 
 	@Operation(summary = "장소 블록 좋아요 토글", description = "해당 장소 블록에 좋아요를 누르거나 취소합니다.")
