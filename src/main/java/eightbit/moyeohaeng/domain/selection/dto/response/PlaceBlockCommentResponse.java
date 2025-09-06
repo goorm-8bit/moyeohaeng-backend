@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.domain.selection.dto.response;
 
 import java.time.LocalDateTime;
 
+import eightbit.moyeohaeng.domain.selection.entity.PlaceBlockComment;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "장소 블록 댓글 응답 DTO")
@@ -25,4 +26,14 @@ public record PlaceBlockCommentResponse(
 	@Schema(description = "수정 시각")
 	LocalDateTime modifiedAt
 ) {
+	public static PlaceBlockCommentResponse of(PlaceBlockComment comment) {
+		return new PlaceBlockCommentResponse(
+			comment.getId(),
+			comment.getContent(),
+			comment.getMember().getName(),
+			comment.getMember().getProfileImage(),
+			comment.getCreatedAt(),
+			comment.getModifiedAt()
+		);
+	}
 }
