@@ -25,8 +25,10 @@ public class RedisSubscriber implements MessageListener {
 	public void onMessage(@NonNull Message message, byte[] pattern) {
 		try {
 			String channel = new String(message.getChannel(), StandardCharsets.UTF_8);
-			MessageBody messageBody = objectMapper.readValue(message.getBody(), MessageBody.class);
-			sseEmitterService.sendEvent(channel, messageBody);
+			MessageBody body = objectMapper.readValue(message.getBody(), MessageBody.class);
+			GlobalLogger.info("[REDIS] 메시지 수신: id =", body.getId());
+
+			sseEmitterService.sendEvent(channel, body);
 		} catch (Exception e) {
 			GlobalLogger.error("Redis 메시지 처리 중 예외 발생", e);
 		}
