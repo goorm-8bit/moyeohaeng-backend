@@ -9,8 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import eightbit.moyeohaeng.domain.itinerary.common.exception.TimeBlockErrorCode;
 import eightbit.moyeohaeng.domain.itinerary.common.exception.TimeBlockException;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockCreateRequest;
+import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockResponse;
+import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockUpdateResponse;
 import eightbit.moyeohaeng.domain.itinerary.entity.TimeBlock;
 import eightbit.moyeohaeng.domain.itinerary.repository.TimeBlockRepository;
@@ -70,6 +72,16 @@ public class TimeBlockService {
 		timeBlock.update(request.day(), request.startTime(), request.endTime(), request.memo());
 
 		return TimeBlockUpdateResponse.of(timeBlock);
+	}
+
+	@Transactional
+	public TimeBlockUpdateMemoResponse updateMemo(Long projectId, Long timeBlockId,
+		TimeBlockUpdateMemoRequest request) {
+		// 시간 블록 조회 및 프로젝트에 속해있는지 검증
+		TimeBlock timeBlock = getTimeBlock(projectId, timeBlockId);
+		timeBlock.updateMemo(request.memo());
+
+		return TimeBlockUpdateMemoResponse.of(timeBlockId, request.memo());
 	}
 
 	public List<TimeBlockResponse> getTimeBlocks(Long projectId, Integer day) {

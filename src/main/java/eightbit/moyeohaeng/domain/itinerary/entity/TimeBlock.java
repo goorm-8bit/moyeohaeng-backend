@@ -85,6 +85,10 @@ public class TimeBlock extends BaseEntity {
 		this.memo = memo;
 	}
 
+	public void updateMemo(String memo) {
+		this.memo = memo;
+	}
+
 	private void validateTimeRange(LocalTime startTime, LocalTime endTime) {
 		if (startTime == null || endTime == null) {
 			return;

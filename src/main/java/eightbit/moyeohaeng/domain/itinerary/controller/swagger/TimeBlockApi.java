@@ -3,8 +3,10 @@ package eightbit.moyeohaeng.domain.itinerary.controller.swagger;
 import java.util.List;
 
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockCreateRequest;
+import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockResponse;
+import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockUpdateResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
@@ -46,6 +48,20 @@ public interface TimeBlockApi {
 		@Parameter(description = "시간 블록 ID", required = true)
 		Long timeBlockId,
 		TimeBlockUpdateRequest request
+	);
+
+	@Operation(summary = "메모 수정", description = "시간 블록에 메모를 작성합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "메모 수정 성공"),
+		@ApiResponse(responseCode = "404", description = "시간 블록을 찾을 수 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+	})
+	SuccessResponse<TimeBlockUpdateMemoResponse> updateMemo(
+		@Parameter(description = "프로젝트 ID", required = true)
+		Long projectId,
+		@Parameter(description = "시간 블록 ID", required = true)
+		Long timeBlockId,
+		TimeBlockUpdateMemoRequest request
 	);
 
 	@Operation(summary = "시간 블록 목록 조회", description = "시간 블록 목록을 조회합니다.")
