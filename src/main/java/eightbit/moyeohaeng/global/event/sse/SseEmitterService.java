@@ -52,7 +52,8 @@ public class SseEmitterService {
 
 		// 이벤트 전송
 		sendToClient(emitter, MessageBody.of("CONNECT", "hello"));
-		eventPublisher.publishEvent(new SseSubscribeEvent(uuid, user));
+		eventPublisher.publishEvent(new SseSubscribeEvent(id, uuid, user));
+		GlobalLogger.info("[SSE]", id.channel(), "구독:", "id =", id.eventId(), ", uuid =", uuid);
 
 		return emitter;
 	}
@@ -79,6 +80,7 @@ public class SseEmitterService {
 
 	private void unsubscribe(SseEmitterId id, UUID uuid) {
 		sseEmitterRepository.delete(id, uuid);
-		eventPublisher.publishEvent(new SseUnsubscribeEvent(uuid));
+		eventPublisher.publishEvent(new SseUnsubscribeEvent(id, uuid));
+		GlobalLogger.info("[SSE]", id.channel(), "구독 해제:", "id =", id.eventId(), ", uuid =", uuid);
 	}
 }
