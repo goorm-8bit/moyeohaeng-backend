@@ -11,6 +11,7 @@ import eightbit.moyeohaeng.domain.itinerary.common.exception.TimeBlockException;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockCreateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateRequest;
+import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockDeleteResponse;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockResponse;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockUpdateResponse;
@@ -89,6 +90,15 @@ public class TimeBlockService {
 		// TODO: day에 대한 검증 추가
 
 		return timeBlockRepository.findTimeBlocks(projectId, day);
+	}
+
+	@Transactional
+	public TimeBlockDeleteResponse delete(Long projectId, Long timeBlockId) {
+		// 시간 블록 조회 및 프로젝트에 속해있는지 검증
+		TimeBlock timeBlock = getTimeBlock(projectId, timeBlockId);
+		timeBlockRepository.delete(timeBlock);
+
+		return TimeBlockDeleteResponse.from(timeBlock);
 	}
 
 	private TimeBlock getTimeBlock(Long projectId, Long timeBlockId) {
