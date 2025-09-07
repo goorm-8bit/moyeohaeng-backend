@@ -5,12 +5,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eightbit.moyeohaeng.domain.place.common.exception.PlaceErrorCode;
+import eightbit.moyeohaeng.domain.place.common.exception.PlaceException;
+import eightbit.moyeohaeng.domain.place.entity.Place;
+import eightbit.moyeohaeng.domain.place.repository.PlaceRepository;
+import eightbit.moyeohaeng.domain.project.common.exception.ProjectErrorCode;
+import eightbit.moyeohaeng.domain.project.common.exception.ProjectException;
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockErrorCode;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockUpdateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
 import eightbit.moyeohaeng.domain.selection.repository.PlaceBlockRepository;
@@ -30,32 +37,26 @@ public class PlaceBlockService {
 
 	private final PlaceBlockRepository placeBlockRepository;
 	private final ProjectRepository projectRepository;
+	private final PlaceRepository placeRepository;
 
-	/**
-	 * 새로운 장소 블록을 생성합니다.
-	 * 최대 개수(100개) 제한과 사용자 권한을 검사합니다.
-	 *
-	 * @param projectId 프로젝트 ID
-	 * @param userId    요청 사용자 ID
-	 * @param userRole  요청 사용자 역할(OWNER/EDITOR/VIEWER)
-	 * @param request   생성 요청 DTO
-	 * @return 생성된 장소 블록 응답 DTO
-	 * @throws PlaceBlockException 권한 부족(FORBIDDEN) 또는 개수 제한 초과(LIMIT_EXCEEDED) 시
-	 */
 	@Transactional
-	public PlaceBlockResponse create(Long projectId, Long userId, String userRole, PlaceBlockCreateRequest request) {
-		if (!canEdit(userRole))
-			throw new PlaceBlockException(PlaceBlockErrorCode.FORBIDDEN);
+	public PlaceBlockCreateResponse create(Long projectId, PlaceBlockCreateRequest request) {
+		Project project = projectRepository.findById(projectId)
+			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND));
 
-		if (placeBlockRepository.countByProjectIdWithLock(projectId) >= MAX_PER_PROJECT) {
+		// 원자적으로 카운터를 증가시킨다. 증가하지 않으면 예외를 발생시킨다.
+		int updated = projectRepository.incrementBlockCountIfLessThan(projectId, MAX_PER_PROJECT);
+		if (updated == 0) {
 			throw new PlaceBlockException(PlaceBlockErrorCode.LIMIT_EXCEEDED, MAX_PER_PROJECT);
 		}
 
-		Project project = projectRepository.findById(projectId)
-			.orElseThrow();
+		Place place = placeRepository.findById(request.placeId())
+			.orElseThrow(() -> new PlaceException(PlaceErrorCode.PLACE_NOT_FOUND));
 
-		// PlaceBlock saved = placeBlockRepository.save(request.toEntity(project));
-		return null;
+		PlaceBlock placeBlock = PlaceBlock.of(project, place);
+
+		placeBlockRepository.save(placeBlock);
+		return PlaceBlockCreateResponse.of(placeBlock, place);
 	}
 
 	/**

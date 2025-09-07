@@ -10,14 +10,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
+import eightbit.moyeohaeng.domain.selection.common.success.PlaceBlockSuccessCode;
 import eightbit.moyeohaeng.domain.selection.controller.swagger.PlaceBlockApi;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockUpdateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.domain.selection.service.PlaceBlockService;
 import eightbit.moyeohaeng.global.dto.PageResponse;
+import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/v1/projects/{projectId}/place-blocks")
 public class PlaceBlockController implements PlaceBlockApi {
 
-	private final PlaceBlockService service;
+	private final PlaceBlockService placeBlockService;
 
 	// TODO: Security 연동 시 교체
 	private Long currentUserId() {
@@ -43,27 +45,26 @@ public class PlaceBlockController implements PlaceBlockApi {
 
 	@Override
 	@PostMapping
-	public ResponseEntity<PlaceBlockResponse> create(@PathVariable("projectId") Long projectId,
-		@Valid @RequestBody PlaceBlockCreateRequest request) {
-		var res = service.create(projectId, currentUserId(), currentUserRole(projectId), request);
-		var location = UriComponentsBuilder.fromPath("/v1/projects/{projectId}/place-blocks/{id}")
-			.buildAndExpand(projectId, res.id())
-			.toUri();
-		return ResponseEntity.created(location).body(res);
+	public SuccessResponse<PlaceBlockCreateResponse> create(
+		@PathVariable Long projectId,
+		@Valid @RequestBody PlaceBlockCreateRequest request
+	) {
+		PlaceBlockCreateResponse response = placeBlockService.create(projectId, request);
+		return SuccessResponse.of(PlaceBlockSuccessCode.CREATE_PLACE_BLOCK, response);
 	}
 
 	@Override
 	@GetMapping("/{placeBlockId}")
 	public ResponseEntity<PlaceBlockResponse> get(@PathVariable("projectId") Long projectId,
 		@PathVariable("placeBlockId") Long placeBlockId) {
-		return ResponseEntity.ok(service.get(projectId, placeBlockId));
+		return ResponseEntity.ok(placeBlockService.get(projectId, placeBlockId));
 	}
 
 	@Override
 	@GetMapping
 	public ResponseEntity<PageResponse<PlaceBlockResponse>> list(@PathVariable("projectId") Long projectId,
 		Pageable pageable) {
-		return ResponseEntity.ok(service.getPages(projectId, pageable));
+		return ResponseEntity.ok(placeBlockService.getPages(projectId, pageable));
 	}
 
 	@Override
@@ -71,7 +72,8 @@ public class PlaceBlockController implements PlaceBlockApi {
 	public ResponseEntity<PlaceBlockResponse> update(@PathVariable("projectId") Long projectId,
 		@PathVariable("placeBlockId") Long placeBlockId,
 		@Valid @RequestBody PlaceBlockUpdateRequest request) {
-		var res = service.update(projectId, placeBlockId, currentUserId(), currentUserRole(projectId), request);
+		var res = placeBlockService.update(projectId, placeBlockId, currentUserId(), currentUserRole(projectId),
+			request);
 		return ResponseEntity.ok(res);
 	}
 
@@ -79,7 +81,7 @@ public class PlaceBlockController implements PlaceBlockApi {
 	@DeleteMapping("/{placeBlockId}")
 	public ResponseEntity<Void> delete(@PathVariable("projectId") Long projectId,
 		@PathVariable("placeBlockId") Long placeBlockId) {
-		service.delete(projectId, placeBlockId, currentUserId(), currentUserRole(projectId));
+		placeBlockService.delete(projectId, placeBlockId, currentUserId(), currentUserRole(projectId));
 		return ResponseEntity.noContent().build();
 	}
 }
