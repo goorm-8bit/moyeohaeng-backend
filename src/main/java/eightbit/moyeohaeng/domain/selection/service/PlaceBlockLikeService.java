@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.domain.selection.service;
 
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,23 +46,42 @@ public class PlaceBlockLikeService {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-		PlaceBlock placeBlock = placeBlockRepository.findByIdAndProjectId(placeBlockId, projectId)
+		PlaceBlock placeBlock = placeBlockRepository.findByIdAndProjectIdAndDeletedAtIsNull(placeBlockId, projectId)
 			.orElseThrow(() -> new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND));
 
+		// 1. 활성 좋아요 → 언라이크
 		return placeBlockLikeRepository.findByMemberAndPlaceBlockAndDeletedAtIsNull(member, placeBlock)
-			.map(existingLike -> {
-				placeBlockLikeRepository.delete(existingLike);
-				return buildLikeSummary(placeBlock, member);
-			})
-			.orElseGet(() -> {
-				// 없으면 새로 생성
-				PlaceBlockLike newLike = PlaceBlockLike.builder()
+			.map(existingLike -> handleUnlike(existingLike, placeBlock, member))
+			// 2. 비활성 좋아요 → 복구
+			.orElseGet(() -> placeBlockLikeRepository.findByMemberAndPlaceBlock(member, placeBlock)
+				.map(inactive -> handleRestore(inactive, placeBlock, member))
+				// 3. 아예 없음 → 새 INSERT
+				.orElseGet(() -> handleInsert(member, placeBlock))
+			);
+	}
+
+	private PlaceBlockLikeSummaryResponse handleUnlike(PlaceBlockLike like, PlaceBlock placeBlock, Member member) {
+		placeBlockLikeRepository.delete(like); // @SQLDelete로 soft delete
+		return buildLikeSummary(placeBlock, member);
+	}
+
+	private PlaceBlockLikeSummaryResponse handleRestore(PlaceBlockLike like, PlaceBlock placeBlock, Member member) {
+		placeBlockLikeRepository.restoreById(like.getId());
+		return buildLikeSummary(placeBlock, member);
+	}
+
+	private PlaceBlockLikeSummaryResponse handleInsert(Member member, PlaceBlock placeBlock) {
+		try {
+			placeBlockLikeRepository.save(
+				PlaceBlockLike.builder()
 					.member(member)
 					.placeBlock(placeBlock)
-					.build();
-				placeBlockLikeRepository.save(newLike);
-				return buildLikeSummary(placeBlock, member);
-			});
+					.build()
+			);
+		} catch (DataIntegrityViolationException ignore) {
+			// 동시 요청이 INSERT race condition 일으킬 경우 → 그냥 요약만 재계산
+		}
+		return buildLikeSummary(placeBlock, member);
 	}
 
 	/**

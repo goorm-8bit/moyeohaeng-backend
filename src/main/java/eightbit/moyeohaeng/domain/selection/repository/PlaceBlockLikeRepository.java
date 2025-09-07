@@ -3,6 +3,9 @@ package eightbit.moyeohaeng.domain.selection.repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
@@ -14,7 +17,18 @@ public interface PlaceBlockLikeRepository extends JpaRepository<PlaceBlockLike, 
 
 	Optional<PlaceBlockLike> findByMemberAndPlaceBlockAndDeletedAtIsNull(Member member, PlaceBlock placeBlock);
 
+	Optional<PlaceBlockLike> findByMemberAndPlaceBlock(Member member, PlaceBlock placeBlock);
+
 	Long countByPlaceBlockAndDeletedAtIsNull(PlaceBlock placeBlock);
 
 	java.util.List<PlaceBlockLike> findAllByPlaceBlockAndDeletedAtIsNull(PlaceBlock placeBlock);
+
+	// 소프트 삭제된 레코드 복구
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Query("UPDATE PlaceBlockLike p SET p.deletedAt = null WHERE p.id = :id")
+	int restoreById(@Param("id") Long id);
+
+	// 성능 최적화를 위한 이메일 프로젝션
+	@Query("SELECT p.member.email FROM PlaceBlockLike p WHERE p.placeBlock = :placeBlock AND p.deletedAt IS NULL")
+	java.util.List<String> findAllEmailsByPlaceBlockAndDeletedAtIsNull(@Param("placeBlock") PlaceBlock placeBlock);
 }
