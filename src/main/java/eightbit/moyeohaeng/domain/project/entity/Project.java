@@ -79,6 +79,10 @@ public class Project extends BaseEntity {
 	@JoinColumn(name = "creator_id", nullable = false)
 	private Member creator;
 
+	// 블록 개수
+	@Column(name = "block_count", nullable = false)
+	private int blockCount = 0;
+
 	// 프로젝트 생성자 설정 메소드
 	public void setCreator(Member creator) {
 		this.creator = Objects.requireNonNull(creator, "creator는 null일 수 없습니다.");
