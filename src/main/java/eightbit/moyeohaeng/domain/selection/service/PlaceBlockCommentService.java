@@ -9,6 +9,10 @@ import eightbit.moyeohaeng.domain.member.common.exception.MemberErrorCode;
 import eightbit.moyeohaeng.domain.member.common.exception.MemberException;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
+import eightbit.moyeohaeng.domain.project.common.annotation.ActionType;
+import eightbit.moyeohaeng.domain.project.common.annotation.EventType;
+import eightbit.moyeohaeng.domain.project.common.annotation.ProjectEvent;
+import eightbit.moyeohaeng.domain.project.common.annotation.ProjectId;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockErrorCode;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCommentCreateRequest;
@@ -34,8 +38,10 @@ public class PlaceBlockCommentService {
 	 * 댓글 생성
 	 */
 	@Transactional
-	public PlaceBlockCommentResponse create(Long projectId, Long placeBlockId, Long memberId,
-		PlaceBlockCommentCreateRequest request) {
+	@ProjectEvent(eventType = EventType.PLACE_BLOCK_COMMENT, actionType = ActionType.CREATED)
+	public PlaceBlockCommentResponse create(
+		@ProjectId Long projectId,
+		Long placeBlockId, Long memberId, PlaceBlockCommentCreateRequest request) {
 
 		Member member = getMember(memberId);
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
@@ -55,8 +61,10 @@ public class PlaceBlockCommentService {
 	 * 댓글 수정
 	 */
 	@Transactional
-	public PlaceBlockCommentResponse update(Long projectId, Long placeBlockId, Long commentId, Long memberId,
-		PlaceBlockCommentUpdateRequest request) {
+	@ProjectEvent(eventType = EventType.PLACE_BLOCK_COMMENT, actionType = ActionType.UPDATED)
+	public PlaceBlockCommentResponse update(
+		@ProjectId Long projectId,
+		Long placeBlockId, Long commentId, Long memberId, PlaceBlockCommentUpdateRequest request) {
 
 		Member member = getMember(memberId);
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
@@ -78,7 +86,9 @@ public class PlaceBlockCommentService {
 	 * 댓글 삭제
 	 */
 	@Transactional
-	public void delete(Long projectId, Long placeBlockId, Long commentId, Long memberId) {
+	@ProjectEvent(eventType = EventType.PLACE_BLOCK_COMMENT, actionType = ActionType.DELETED)
+	public Long delete(@ProjectId Long projectId,
+		Long placeBlockId, Long commentId, Long memberId) {
 
 		Member member = getMember(memberId);
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
@@ -91,6 +101,8 @@ public class PlaceBlockCommentService {
 		}
 
 		commentRepository.delete(comment);
+
+		return commentId;
 	}
 
 	/**
@@ -122,7 +134,7 @@ public class PlaceBlockCommentService {
 			))
 			.orElse(new PlaceBlockCommentSummaryResponse(totalCount, null));
 	}
-	
+
 	private Member getMember(Long memberId) {
 		return memberRepository.findById(memberId)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
