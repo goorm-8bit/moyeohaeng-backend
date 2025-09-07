@@ -1,7 +1,9 @@
 package eightbit.moyeohaeng.domain.itinerary.repository;
 
 import java.time.LocalTime;
+import java.util.List;
 
+import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockResponse;
 import eightbit.moyeohaeng.domain.itinerary.entity.TimeBlock;
 
 public interface TimeBlockRepositoryCustom {
@@ -19,4 +21,13 @@ public interface TimeBlockRepositoryCustom {
 	 */
 	boolean existsOverlappingTimeBlock(Long projectId, Long excludeId, Integer day, LocalTime startTime,
 		LocalTime endTime);
+
+	/**
+	 * 시간 블록 목록을 조회한다.
+	 *
+	 * @param projectId 프로젝트 ID
+	 * @param day 일차
+	 * @return 시간 블록 목록
+	 */
+	List<TimeBlockResponse> findTimeBlocks(Long projectId, Integer day);
 }

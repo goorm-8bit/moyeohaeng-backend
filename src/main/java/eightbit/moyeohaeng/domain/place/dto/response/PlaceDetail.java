@@ -1,5 +1,7 @@
 package eightbit.moyeohaeng.domain.place.dto.response;
 
+import com.querydsl.core.annotations.QueryProjection;
+
 import eightbit.moyeohaeng.domain.place.entity.Place;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -27,6 +29,10 @@ public record PlaceDetail(
 	@Schema(description = "카테고리", example = "해변")
 	String category
 ) {
+	@QueryProjection
+	public PlaceDetail {
+	}
+
 	public static PlaceDetail from(Place place) {
 		return new PlaceDetail(
 			place.getId(),

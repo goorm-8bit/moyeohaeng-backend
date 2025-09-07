@@ -11,7 +11,8 @@ import lombok.RequiredArgsConstructor;
 public enum TimeBlockSuccessCode implements SuccessCode {
 
 	CREATE_TIME_BLOCK(HttpStatus.CREATED, "시간 블록 생성에 성공했습니다."),
-	UPDATE_TIME_BLOCK(HttpStatus.OK, "시간 블록 수정에 성공했습니다.");
+	UPDATE_TIME_BLOCK(HttpStatus.OK, "시간 블록 수정에 성공했습니다."),
+	GET_LIST(HttpStatus.OK, "시간 블록 목록을 조회했습니다.");
 
 	private final HttpStatus status;
 	private final String message;

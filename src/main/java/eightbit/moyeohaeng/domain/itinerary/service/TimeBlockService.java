@@ -1,6 +1,7 @@
 package eightbit.moyeohaeng.domain.itinerary.service;
 
 import java.time.LocalTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +68,13 @@ public class TimeBlockService {
 		timeBlock.update(request.day(), request.startTime(), request.endTime(), request.memo());
 
 		return TimeBlockResponse.from(timeBlock);
+	}
+
+	public List<TimeBlockResponse> getTimeBlocks(Long projectId, Integer day) {
+
+		// TODO: day에 대한 검증 추가
+
+		return timeBlockRepository.findTimeBlocks(projectId, day);
 	}
 
 	private TimeBlock getTimeBlock(Long projectId, Long timeBlockId) {

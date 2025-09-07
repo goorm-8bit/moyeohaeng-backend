@@ -2,7 +2,10 @@ package eightbit.moyeohaeng.domain.itinerary.dto.response;
 
 import java.time.LocalTime;
 
+import com.querydsl.core.annotations.QueryProjection;
+
 import eightbit.moyeohaeng.domain.itinerary.entity.TimeBlock;
+import eightbit.moyeohaeng.domain.place.dto.response.PlaceDetail;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "시간 블록 응답 DTO")
@@ -22,9 +25,13 @@ public record TimeBlockResponse(
 	@Schema(description = "메모", example = "야경이 아름다운 곳")
 	String memo,
 
-	@Schema(description = "장소 ID", example = "1")
-	Long placeId
+	@Schema(description = "장소 정보")
+	PlaceDetail placeDetail
 ) {
+	@QueryProjection
+	public TimeBlockResponse {
+	}
+
 	public static TimeBlockResponse from(TimeBlock timeBlock) {
 		return new TimeBlockResponse(
 			timeBlock.getId(),
@@ -32,7 +39,7 @@ public record TimeBlockResponse(
 			timeBlock.getStartTime(),
 			timeBlock.getEndTime(),
 			timeBlock.getMemo(),
-			timeBlock.getPlace().getId()
+			PlaceDetail.from(timeBlock.getPlace())
 		);
 	}
 }

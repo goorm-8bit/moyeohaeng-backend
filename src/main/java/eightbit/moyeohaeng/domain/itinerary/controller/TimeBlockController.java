@@ -1,10 +1,14 @@
 package eightbit.moyeohaeng.domain.itinerary.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import eightbit.moyeohaeng.domain.itinerary.common.success.TimeBlockSuccessCode;
@@ -43,5 +47,15 @@ public class TimeBlockController implements TimeBlockApi {
 	) {
 		TimeBlockResponse response = timeBlockService.update(projectId, timeBlockId, request);
 		return SuccessResponse.of(TimeBlockSuccessCode.UPDATE_TIME_BLOCK, response);
+	}
+
+	@Override
+	@GetMapping
+	public SuccessResponse<List<TimeBlockResponse>> getTimeBlocks(
+		@PathVariable Long projectId,
+		@RequestParam(required = false) Integer day
+	) {
+		List<TimeBlockResponse> responses = timeBlockService.getTimeBlocks(projectId, day);
+		return SuccessResponse.of(TimeBlockSuccessCode.GET_LIST, responses);
 	}
 }
