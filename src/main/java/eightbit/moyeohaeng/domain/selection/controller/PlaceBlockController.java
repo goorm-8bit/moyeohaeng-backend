@@ -4,7 +4,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import eightbit.moyeohaeng.domain.selection.common.success.PlaceBlockSuccessCode;
 import eightbit.moyeohaeng.domain.selection.controller.swagger.PlaceBlockApi;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
-import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.domain.selection.service.PlaceBlockService;
@@ -54,27 +52,10 @@ public class PlaceBlockController implements PlaceBlockApi {
 	}
 
 	@Override
-	@GetMapping("/{placeBlockId}")
-	public ResponseEntity<PlaceBlockResponse> get(@PathVariable("projectId") Long projectId,
-		@PathVariable("placeBlockId") Long placeBlockId) {
-		return ResponseEntity.ok(placeBlockService.get(projectId, placeBlockId));
-	}
-
-	@Override
 	@GetMapping
 	public ResponseEntity<PageResponse<PlaceBlockResponse>> list(@PathVariable("projectId") Long projectId,
 		Pageable pageable) {
 		return ResponseEntity.ok(placeBlockService.getPages(projectId, pageable));
-	}
-
-	@Override
-	@PatchMapping("/{placeBlockId}")
-	public ResponseEntity<PlaceBlockResponse> update(@PathVariable("projectId") Long projectId,
-		@PathVariable("placeBlockId") Long placeBlockId,
-		@Valid @RequestBody PlaceBlockUpdateRequest request) {
-		var res = placeBlockService.update(projectId, placeBlockId, currentUserId(), currentUserRole(projectId),
-			request);
-		return ResponseEntity.ok(res);
 	}
 
 	@Override

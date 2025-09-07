@@ -16,7 +16,6 @@ import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockErrorCode;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
-import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
@@ -60,33 +59,11 @@ public class PlaceBlockService {
 	}
 
 	/**
-	 * 주어진 프로젝트 내에서 특정 장소 블록을 조회합니다.
-	 */
-	public PlaceBlockResponse get(Long projectId, Long placeBlockId) {
-		return PlaceBlockResponse.from(getOrThrow(projectId, placeBlockId));
-	}
-
-	/**
 	 * 주어진 프로젝트 내의 모든 장소 블록을 페이지로 조회합니다.
 	 */
 	public PageResponse<PlaceBlockResponse> getPages(Long projectId, Pageable pageable) {
 		Page<PlaceBlock> page = placeBlockRepository.findByProjectId(projectId, pageable);
 		return PageResponse.from(page, PlaceBlockResponse::from);
-	}
-
-	/**
-	 * 특정 장소 블록의 정보를 수정합니다.
-	 * null이 아닌 필드만 업데이트하며, 권한을 검사합니다.
-	 */
-	@Transactional
-	public PlaceBlockResponse update(Long projectId, Long placeBlockId, Long userId, String userRole,
-		PlaceBlockUpdateRequest request) {
-		if (!canEdit(userRole))
-			throw new PlaceBlockException(PlaceBlockErrorCode.FORBIDDEN);
-
-		PlaceBlock placeBlock = getOrThrow(projectId, placeBlockId);
-
-		return PlaceBlockResponse.from(placeBlock);
 	}
 
 	/**
