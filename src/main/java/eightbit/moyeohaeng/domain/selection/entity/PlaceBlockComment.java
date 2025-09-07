@@ -55,6 +55,22 @@ public class PlaceBlockComment extends BaseEntity {
 	private PlaceBlock placeBlock;
 
 	/**
+	 * 댓글 생성 팩토리 메서드
+	 *
+	 * @param content    댓글 내용
+	 * @param member     작성자
+	 * @param placeBlock 대상 장소 블록
+	 * @return 생성된 댓글 엔티티
+	 */
+	public static PlaceBlockComment of(String content, Member member, PlaceBlock placeBlock) {
+		return PlaceBlockComment.builder()
+			.content(content)
+			.member(member)
+			.placeBlock(placeBlock)
+			.build();
+	}
+
+	/**
 	 * 댓글 내용 수정
 	 *
 	 * @param newContent 새로운 댓글 내용
