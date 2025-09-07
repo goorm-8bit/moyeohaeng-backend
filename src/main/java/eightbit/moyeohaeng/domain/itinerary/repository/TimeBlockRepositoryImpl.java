@@ -80,7 +80,10 @@ public class TimeBlockRepositoryImpl implements TimeBlockRepositoryCustom {
 			.selectOne()
 			.from(timeBlock)
 			.join(timeBlock.project, project)
-			.where(builder)
+			.where(
+				timeBlock.deletedAt.isNull(),
+				builder
+			)
 			.fetchFirst() != null;
 	}
 
