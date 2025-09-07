@@ -56,5 +56,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
 	@Modifying
 	@Query("UPDATE Project p SET p.blockCount = p.blockCount + 1 WHERE p.id = :projectId AND p.blockCount < :max")
-	int incrementBlockCountIfLessThan(Long projectId, int max);
+	int incrementBlockCount(Long projectId, int max);
+
+	@Modifying
+	@Query("UPDATE Project p SET p.blockCount = p.blockCount - 1 WHERE p.id = :projectId AND p.blockCount > 0")
+	int decrementBlockCount(Long projectId);
 }

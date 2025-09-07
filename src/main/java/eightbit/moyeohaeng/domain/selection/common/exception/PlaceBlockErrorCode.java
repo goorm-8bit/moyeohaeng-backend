@@ -12,9 +12,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PlaceBlockErrorCode implements ErrorCode {
-	
+
 	PLACE_BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "장소 블록을 찾을 수 없습니다.", "PB1001"),
-	LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "프로젝트의 장소 블록 최대 개수를 초과했습니다.(max=%d)", "PB1002");
+	LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "프로젝트의 장소 블록 최대 개수를 초과했습니다.(max=%d)", "PB1002"),
+	COUNTER_DECREMENT_FAILED(HttpStatus.CONFLICT, "장소 블록 삭제 작업을 처리할 수 없습니다.", "PB1003");
 
 	private final HttpStatus status;
 	private final String message;

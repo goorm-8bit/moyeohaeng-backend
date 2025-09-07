@@ -26,10 +26,6 @@ import eightbit.moyeohaeng.domain.selection.repository.PlaceBlockRepository;
 import eightbit.moyeohaeng.global.dto.PageResponse;
 import lombok.RequiredArgsConstructor;
 
-/**
- * PlaceBlock 도메인 서비스.
- * 생성/조회/수정/삭제 및 프로젝트 범위 내 권한 검사를 담당한다.
- */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -47,7 +43,7 @@ public class PlaceBlockService {
 			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND));
 
 		// 원자적으로 카운터를 증가시킨다. 증가하지 않으면 예외를 발생시킨다.
-		int updated = projectRepository.incrementBlockCountIfLessThan(projectId, MAX_PER_PROJECT);
+		int updated = projectRepository.incrementBlockCount(projectId, MAX_PER_PROJECT);
 		if (updated == 0) {
 			throw new PlaceBlockException(PlaceBlockErrorCode.LIMIT_EXCEEDED, MAX_PER_PROJECT);
 		}
@@ -83,8 +79,14 @@ public class PlaceBlockService {
 	public PlaceBlockDeleteResponse delete(Long projectId, Long placeBlockId) {
 		// 장소 블록 조회 및 프로젝트에 속해있는지 검증
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
-		placeBlockRepository.delete(placeBlock);
 
+		// 원자적으로 카운터를 감소시킨다. 감소하지 않으면 예외를 발생시킨다.
+		int updated = projectRepository.decrementBlockCount(projectId);
+		if (updated == 0) {
+			throw new PlaceBlockException(PlaceBlockErrorCode.COUNTER_DECREMENT_FAILED);
+		}
+
+		placeBlockRepository.delete(placeBlock);
 		return PlaceBlockDeleteResponse.of(placeBlockId);
 	}
 
