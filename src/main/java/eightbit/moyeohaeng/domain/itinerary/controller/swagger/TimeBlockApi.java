@@ -5,6 +5,7 @@ import java.util.List;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockCreateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockResponse;
+import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockUpdateResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +40,7 @@ public interface TimeBlockApi {
 		@ApiResponse(responseCode = "409", description = "다른 일정과 시간이 겹침",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	SuccessResponse<TimeBlockResponse> update(
+	SuccessResponse<TimeBlockUpdateResponse> update(
 		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
 		@Parameter(description = "시간 블록 ID", required = true)

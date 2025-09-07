@@ -16,6 +16,7 @@ import eightbit.moyeohaeng.domain.itinerary.controller.swagger.TimeBlockApi;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockCreateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockResponse;
+import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockUpdateResponse;
 import eightbit.moyeohaeng.domain.itinerary.service.TimeBlockService;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
@@ -40,12 +41,12 @@ public class TimeBlockController implements TimeBlockApi {
 
 	@Override
 	@PutMapping("/{timeBlockId}")
-	public SuccessResponse<TimeBlockResponse> update(
+	public SuccessResponse<TimeBlockUpdateResponse> update(
 		@PathVariable Long projectId,
 		@PathVariable Long timeBlockId,
 		@Valid @RequestBody TimeBlockUpdateRequest request
 	) {
-		TimeBlockResponse response = timeBlockService.update(projectId, timeBlockId, request);
+		TimeBlockUpdateResponse response = timeBlockService.update(projectId, timeBlockId, request);
 		return SuccessResponse.of(TimeBlockSuccessCode.UPDATE_TIME_BLOCK, response);
 	}
 

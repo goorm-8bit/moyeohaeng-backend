@@ -11,6 +11,7 @@ import eightbit.moyeohaeng.domain.itinerary.common.exception.TimeBlockException;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockCreateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockResponse;
+import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockUpdateResponse;
 import eightbit.moyeohaeng.domain.itinerary.entity.TimeBlock;
 import eightbit.moyeohaeng.domain.itinerary.repository.TimeBlockRepository;
 import eightbit.moyeohaeng.domain.place.common.exception.PlaceErrorCode;
@@ -55,19 +56,20 @@ public class TimeBlockService {
 		);
 
 		timeBlockRepository.save(timeBlock);
-		return TimeBlockResponse.from(timeBlock);
+		return TimeBlockResponse.of(timeBlock, place);
 	}
 
 	@Transactional
-	public TimeBlockResponse update(Long projectId, Long targetTimeBlockId, TimeBlockUpdateRequest request) {
+	public TimeBlockUpdateResponse update(Long projectId, Long targetTimeBlockId, TimeBlockUpdateRequest request) {
+		// 시간 블록 조회 및 프로젝트에 속해있는지 검증
+		TimeBlock timeBlock = getTimeBlock(projectId, targetTimeBlockId);
+
 		// 다른 시간 블록과 겹치는 시간이 있는지 확인
 		validateTimeBlockExists(projectId, targetTimeBlockId, request.day(), request.startTime(), request.endTime());
 
-		// 시간 블록 조회 및 프로젝트에 속해있는지 검증
-		TimeBlock timeBlock = getTimeBlock(projectId, targetTimeBlockId);
 		timeBlock.update(request.day(), request.startTime(), request.endTime(), request.memo());
 
-		return TimeBlockResponse.from(timeBlock);
+		return TimeBlockUpdateResponse.of(timeBlock);
 	}
 
 	public List<TimeBlockResponse> getTimeBlocks(Long projectId, Integer day) {
