@@ -9,8 +9,8 @@ public class SseSubscribeEvent extends SseEvent {
 
 	private final String user;
 
-	public SseSubscribeEvent(UUID uuid, String user) {
-		super(uuid);
+	public SseSubscribeEvent(SseEmitterId id, UUID uuid, String user) {
+		super(id, uuid);
 		this.user = user;
 	}
 }

@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class SseUnsubscribeEvent extends SseEvent {
 
-	public SseUnsubscribeEvent(UUID uuid) {
-		super(uuid);
+	public SseUnsubscribeEvent(SseEmitterId id, UUID uuid) {
+		super(id, uuid);
 	}
 }
