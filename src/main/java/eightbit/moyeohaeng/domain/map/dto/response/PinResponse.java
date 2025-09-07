@@ -1,7 +1,7 @@
 package eightbit.moyeohaeng.domain.map.dto.response;
 
 import eightbit.moyeohaeng.domain.map.entity.Pin;
-import eightbit.moyeohaeng.domain.place.dto.response.PlaceDetailResponse;
+import eightbit.moyeohaeng.domain.place.dto.response.PlaceDetail;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "핀 응답 DTO")
@@ -17,14 +17,14 @@ public record PinResponse(
 	String author,
 
 	@Schema(description = "장소 상세 정보")
-	PlaceDetailResponse place
+	PlaceDetail place
 ) {
 	public static PinResponse from(Pin pin) {
 		return new PinResponse(
 			pin.getId(),
 			pin.getProject().getId(),
 			pin.getAuthor(),
-			PlaceDetailResponse.from(pin.getPlace())
+			PlaceDetail.from(pin.getPlace())
 		);
 	}
 }
