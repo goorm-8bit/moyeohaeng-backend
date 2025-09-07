@@ -13,6 +13,8 @@ import eightbit.moyeohaeng.domain.project.common.annotation.ActionType;
 import eightbit.moyeohaeng.domain.project.common.annotation.EventType;
 import eightbit.moyeohaeng.domain.project.common.annotation.ProjectEvent;
 import eightbit.moyeohaeng.domain.project.common.annotation.ProjectId;
+import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockCommentErrorCode;
+import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockCommentException;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockErrorCode;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCommentCreateRequest;
@@ -46,12 +48,7 @@ public class PlaceBlockCommentService {
 		Member member = getMember(memberId);
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 
-		PlaceBlockComment comment = PlaceBlockComment.builder()
-			.content(request.content())
-			.member(member)
-			.placeBlock(placeBlock)
-			.build();
-
+		PlaceBlockComment comment = PlaceBlockComment.of(request.content(), member, placeBlock);
 		commentRepository.save(comment);
 
 		return PlaceBlockCommentResponse.of(comment);
@@ -70,11 +67,11 @@ public class PlaceBlockCommentService {
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 
 		PlaceBlockComment comment = commentRepository.findByIdAndPlaceBlockAndDeletedAtIsNull(commentId, placeBlock)
-			.orElseThrow(() -> new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND));
+			.orElseThrow(() -> new PlaceBlockCommentException(PlaceBlockCommentErrorCode.COMMENT_NOT_FOUND));
 
 		// 권한 확인
 		if (!comment.getMember().getId().equals(member.getId())) {
-			throw new PlaceBlockException(PlaceBlockErrorCode.FORBIDDEN);
+			throw new PlaceBlockCommentException(PlaceBlockCommentErrorCode.FORBIDDEN);
 		}
 
 		comment.updateContent(request.content());
@@ -87,22 +84,21 @@ public class PlaceBlockCommentService {
 	 */
 	@Transactional
 	@ProjectEvent(eventType = EventType.PLACE_BLOCK_COMMENT, actionType = ActionType.DELETED)
-	public Long delete(@ProjectId Long projectId,
+	public void delete(@ProjectId Long projectId,
 		Long placeBlockId, Long commentId, Long memberId) {
 
 		Member member = getMember(memberId);
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 
 		PlaceBlockComment comment = commentRepository.findByIdAndPlaceBlockAndDeletedAtIsNull(commentId, placeBlock)
-			.orElseThrow(() -> new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND));
+			.orElseThrow(() -> new PlaceBlockCommentException(PlaceBlockCommentErrorCode.COMMENT_NOT_FOUND));
 
+		// 권한 확인
 		if (!comment.getMember().getId().equals(member.getId())) {
-			throw new PlaceBlockException(PlaceBlockErrorCode.FORBIDDEN);
+			throw new PlaceBlockCommentException(PlaceBlockCommentErrorCode.FORBIDDEN);
 		}
 
 		commentRepository.delete(comment);
-
-		return commentId;
 	}
 
 	/**

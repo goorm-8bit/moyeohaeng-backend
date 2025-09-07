@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.domain.selection.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import eightbit.moyeohaeng.domain.selection.common.success.PlaceBlockCommentSuccessCode;
@@ -20,7 +22,6 @@ import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentRespon
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentSummaryResponse;
 import eightbit.moyeohaeng.domain.selection.service.PlaceBlockCommentService;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
-import eightbit.moyeohaeng.global.success.CommonSuccessCode;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,15 +61,15 @@ public class PlaceBlockCommentController implements PlaceBlockCommentApi {
 	}
 
 	@DeleteMapping("/{commentId}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@Override
-	public SuccessResponse<Void> delete(
+	public void delete(
 		@PathVariable Long projectId,
 		@PathVariable Long placeBlockId,
 		@PathVariable Long commentId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
 		commentService.delete(projectId, placeBlockId, commentId, currentUser.getMemberId());
-		return SuccessResponse.from(CommonSuccessCode.DELETE_SUCCESS);
 	}
 
 	@GetMapping

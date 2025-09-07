@@ -84,7 +84,7 @@ public interface PlaceBlockCommentApi {
 		@ApiResponse(responseCode = "404", description = "프로젝트/장소블록/댓글 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	SuccessResponse<Void> delete(
+	void delete(
 		@Parameter(description = "프로젝트 ID", required = true, example = "1")
 		Long projectId,
 		@Parameter(description = "장소블록 ID", required = true, example = "10")
