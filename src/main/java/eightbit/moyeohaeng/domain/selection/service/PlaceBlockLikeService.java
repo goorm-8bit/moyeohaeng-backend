@@ -9,6 +9,10 @@ import eightbit.moyeohaeng.domain.member.common.exception.MemberErrorCode;
 import eightbit.moyeohaeng.domain.member.common.exception.MemberException;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
+import eightbit.moyeohaeng.domain.project.common.annotation.ActionType;
+import eightbit.moyeohaeng.domain.project.common.annotation.EventType;
+import eightbit.moyeohaeng.domain.project.common.annotation.ProjectEvent;
+import eightbit.moyeohaeng.domain.project.common.annotation.ProjectId;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockErrorCode;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockLikeSummaryResponse;
@@ -36,7 +40,8 @@ public class PlaceBlockLikeService {
 	 * @return 최신 좋아요 요약 응답 DTO
 	 */
 	@Transactional
-	public PlaceBlockLikeSummaryResponse toggleLike(Long projectId, Long placeBlockId, Long memberId) {
+	@ProjectEvent(eventType = EventType.PLACE_BLOCK_LIKE, actionType = ActionType.UPDATED)
+	public PlaceBlockLikeSummaryResponse toggleLike(@ProjectId Long projectId, Long placeBlockId, Long memberId) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
