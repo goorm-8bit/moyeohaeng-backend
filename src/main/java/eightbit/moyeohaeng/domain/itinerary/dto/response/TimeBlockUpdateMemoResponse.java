@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "시간 블록 메모 수정 응답 DTO")
 public record TimeBlockUpdateMemoResponse(
-	@Schema(description = "장소 그룹 ID", example = "1")
+	@Schema(description = "시간 블록 ID", example = "1")
 	Long id,
 
 	@Schema(description = "메모", example = "숙소에서 도보 15분 정도")
