@@ -171,7 +171,7 @@ public class PlaceGroupService {
 	/**
 	 * 장소 그룹을 조회하고, 프로젝트에 속한 장소 그룹인지 검증 후 반환하는 메서드
 	 *
-	 * @param projectId    프로젝트 Id
+	 * @param projectId    프로젝트 ID
 	 * @param placeGroupId 장소 그룹 ID
 	 * @return 장소 그룹
 	 */

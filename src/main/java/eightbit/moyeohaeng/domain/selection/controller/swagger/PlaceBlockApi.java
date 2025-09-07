@@ -8,9 +8,12 @@ import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.global.dto.PageResponse;
+import eightbit.moyeohaeng.global.exception.ErrorResponse;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,14 +46,16 @@ public interface PlaceBlockApi {
 		@org.springdoc.core.annotations.ParameterObject Pageable pageable
 	);
 
-	@Operation(summary = "장소블록 삭제")
+	@Operation(summary = "장소 블록 삭제")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "204", description = "장소블록 삭제 성공"),
-		@ApiResponse(responseCode = "403", description = "권한 없음"),
-		@ApiResponse(responseCode = "404", description = "장소블록을 찾을 수 없음")
+		@ApiResponse(responseCode = "204", description = "장소 블록 삭제 성공"),
+		@ApiResponse(responseCode = "404", description = "장소 블록을 찾을 수 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	ResponseEntity<Void> delete(
+	SuccessResponse<Void> delete(
+		@Parameter(description = "프로젝트 ID", required = true)
 		@PathVariable Long projectId,
+		@Parameter(description = "장소 블록 ID", required = true)
 		@PathVariable Long placeBlockId
 	);
 }

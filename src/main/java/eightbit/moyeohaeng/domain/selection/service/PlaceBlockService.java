@@ -17,6 +17,7 @@ import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockErrorCode
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockDeleteResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
 import eightbit.moyeohaeng.domain.selection.repository.PlaceBlockRepository;
@@ -66,24 +67,24 @@ public class PlaceBlockService {
 		return PageResponse.from(page, PlaceBlockResponse::from);
 	}
 
-	/**
-	 * 특정 장소 블록을 삭제합니다.
-	 * 권한을 검사한 후 소프트 삭제를 실행합니다.
-	 */
 	@Transactional
-	public void delete(Long projectId, Long placeBlockId, Long userId, String userRole) {
-		if (!canEdit(userRole))
-			throw new PlaceBlockException(PlaceBlockErrorCode.FORBIDDEN);
-		PlaceBlock placeBlock = getOrThrow(projectId, placeBlockId);
+	public PlaceBlockDeleteResponse delete(Long projectId, Long placeBlockId) {
+		// 장소 블록 조회 및 프로젝트에 속해있는지 검증
+		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 		placeBlockRepository.delete(placeBlock);
+
+		return PlaceBlockDeleteResponse.of(placeBlockId);
 	}
 
-	private PlaceBlock getOrThrow(Long projectId, Long placeBlockId) {
+	/**
+	 * 장소 블록을 조회하고, 프로젝트에 속한 장소 블록인지 검증 후 반환하는 메서드
+	 *
+	 * @param projectId 프로젝트 ID
+	 * @param placeBlockId 장소 블록 ID
+	 * @return 장소 블록
+	 */
+	private PlaceBlock getPlaceBlock(Long projectId, Long placeBlockId) {
 		return placeBlockRepository.findByIdAndProjectId(placeBlockId, projectId)
 			.orElseThrow(() -> new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND));
-	}
-
-	private boolean canEdit(String role) {
-		return "OWNER".equals(role) || "EDITOR".equals(role);
 	}
 }

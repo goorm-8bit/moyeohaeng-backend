@@ -17,29 +17,17 @@ import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateRespons
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.domain.selection.service.PlaceBlockService;
 import eightbit.moyeohaeng.global.dto.PageResponse;
+import eightbit.moyeohaeng.global.success.CommonSuccessCode;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * PlaceBlock REST 컨트롤러.
- * 인터페이스(PlaceBlockApi) 구현 + 보안 연동 전 임시 사용자 컨텍스트 제공.
- */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/projects/{projectId}/place-blocks")
 public class PlaceBlockController implements PlaceBlockApi {
 
 	private final PlaceBlockService placeBlockService;
-
-	// TODO: Security 연동 시 교체
-	private Long currentUserId() {
-		return 1L;
-	}
-
-	private String currentUserRole(Long projectId) {
-		return "OWNER";
-	}
 
 	@Override
 	@PostMapping
@@ -60,9 +48,8 @@ public class PlaceBlockController implements PlaceBlockApi {
 
 	@Override
 	@DeleteMapping("/{placeBlockId}")
-	public ResponseEntity<Void> delete(@PathVariable("projectId") Long projectId,
-		@PathVariable("placeBlockId") Long placeBlockId) {
-		placeBlockService.delete(projectId, placeBlockId, currentUserId(), currentUserRole(projectId));
-		return ResponseEntity.noContent().build();
+	public SuccessResponse<Void> delete(@PathVariable Long projectId, @PathVariable Long placeBlockId) {
+		placeBlockService.delete(projectId, placeBlockId);
+		return SuccessResponse.from(CommonSuccessCode.DELETE_SUCCESS);
 	}
 }
