@@ -16,9 +16,11 @@ import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockErrorCode;
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockDeleteResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
 import eightbit.moyeohaeng.domain.selection.repository.PlaceBlockRepository;
 import eightbit.moyeohaeng.global.dto.PageResponse;
@@ -57,6 +59,16 @@ public class PlaceBlockService {
 
 		placeBlockRepository.save(placeBlock);
 		return PlaceBlockCreateResponse.of(placeBlock, place);
+	}
+
+	@Transactional
+	public PlaceBlockUpdateMemoResponse updateMemo(Long projectId, Long placeBlockId,
+		PlaceBlockUpdateMemoRequest request) {
+		// 장소 블록 조회 및 프로젝트에 속해있는지 검증
+		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
+		placeBlock.updateMemo(request.memo());
+
+		return PlaceBlockUpdateMemoResponse.of(placeBlockId, request.memo());
 	}
 
 	/**

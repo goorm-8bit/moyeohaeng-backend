@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import eightbit.moyeohaeng.domain.selection.common.success.PlaceBlockSuccessCode;
 import eightbit.moyeohaeng.domain.selection.controller.swagger.PlaceBlockApi;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.selection.service.PlaceBlockService;
 import eightbit.moyeohaeng.global.dto.PageResponse;
 import eightbit.moyeohaeng.global.success.CommonSuccessCode;
@@ -37,6 +40,17 @@ public class PlaceBlockController implements PlaceBlockApi {
 	) {
 		PlaceBlockCreateResponse response = placeBlockService.create(projectId, request);
 		return SuccessResponse.of(PlaceBlockSuccessCode.CREATE_PLACE_BLOCK, response);
+	}
+
+	@Override
+	@PutMapping("/{placeBlockId}/memo")
+	public SuccessResponse<PlaceBlockUpdateMemoResponse> updateMemo(
+		@PathVariable Long projectId,
+		@PathVariable Long placeBlockId,
+		@Valid @RequestBody PlaceBlockUpdateMemoRequest request
+	) {
+		PlaceBlockUpdateMemoResponse response = placeBlockService.updateMemo(projectId, placeBlockId, request);
+		return SuccessResponse.of(PlaceBlockSuccessCode.UPDATE_MEMO, response);
 	}
 
 	@Override

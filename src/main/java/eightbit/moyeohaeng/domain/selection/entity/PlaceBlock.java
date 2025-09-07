@@ -39,7 +39,7 @@ public class PlaceBlock extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "memo", length = 50)
+	@Column(name = "memo", length = 14)
 	private String memo;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -50,9 +50,9 @@ public class PlaceBlock extends BaseEntity {
 	@JoinColumn(name = "place_id", nullable = false)
 	private Place place;
 
-	public static PlaceBlock of(String memo, Project project, Place place) {
+	public static PlaceBlock of(Project project, Place place) {
 		return builder()
-			.memo(memo)
+			.memo("")
 			.project(project)
 			.place(place)
 			.build();

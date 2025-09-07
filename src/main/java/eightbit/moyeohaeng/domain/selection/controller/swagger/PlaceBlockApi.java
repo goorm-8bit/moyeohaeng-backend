@@ -5,8 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockUpdateMemoResponse;
 import eightbit.moyeohaeng.global.dto.PageResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
@@ -35,6 +37,20 @@ public interface PlaceBlockApi {
 		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
 		PlaceBlockCreateRequest request
+	);
+
+	@Operation(summary = "메모 수정", description = "장소 블록에 메모를 작성합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "메모 수정 성공"),
+		@ApiResponse(responseCode = "404", description = "장소 블록을 찾을 수 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+	})
+	SuccessResponse<PlaceBlockUpdateMemoResponse> updateMemo(
+		@Parameter(description = "프로젝트 ID", required = true)
+		Long projectId,
+		@Parameter(description = "장소 블록 ID", required = true)
+		Long placeBlockId,
+		PlaceBlockUpdateMemoRequest request
 	);
 
 	@Operation(summary = "장소블록 목록 조회(페이지)")
