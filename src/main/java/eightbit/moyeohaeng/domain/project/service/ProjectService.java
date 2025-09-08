@@ -24,6 +24,7 @@ import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.repository.TeamMemberRepository;
 import eightbit.moyeohaeng.domain.team.repository.TeamRepository;
+import eightbit.moyeohaeng.global.dto.UserInfo;
 import eightbit.moyeohaeng.global.event.sse.SseEmitterService;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -67,11 +68,11 @@ public class ProjectService {
 	 * SSE 연결
 	 *
 	 * @param projectId 프로젝트 Id
-	 * @param user 사용자 정보
+	 * @param userInfo 사용자 정보
 	 * @return SseEmitter
 	 */
-	public SseEmitter connect(Long projectId, String lastEventId, String user) {
-		return sseEmitterService.subscribe(channelTopic, projectId, lastEventId, user);
+	public SseEmitter connect(Long projectId, String lastEventId, UserInfo userInfo) {
+		return sseEmitterService.subscribe(channelTopic, projectId, lastEventId, userInfo);
 	}
 
 	/**
@@ -173,7 +174,7 @@ public class ProjectService {
 	public ProjectDto update(Long projectId, ProjectUpdateRequest request, CustomUserDetails currentUser) {
 		// findById로 프로젝트 조회 및 접근 권한 검사 (접근 권한 없으면 예외 발생)
 		Project project = findMyProjectById(projectId, currentUser);
-		if (!project.getCreator().getId().equals(currentUser.getId())) {
+		if (!project.getCreator().getId().equals(currentUser.getMemberId())) {
 			throw new ProjectException(ProjectErrorCode.NOT_PROJECT_OWNER);
 		}
 		project.update(request.title(), request.color(), request.startDate(), request.endDate());

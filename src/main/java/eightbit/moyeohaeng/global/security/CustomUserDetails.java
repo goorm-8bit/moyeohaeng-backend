@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
+import eightbit.moyeohaeng.global.dto.UserInfo;
 import lombok.Getter;
 
 /**
@@ -28,21 +29,12 @@ import lombok.Getter;
 @Getter
 public class CustomUserDetails implements UserDetails {
 
-	private final Long id;
-	private final String name;
-	private final String email;
-	private final String profileImage;
+	private final UserInfo userInfo;
 	private final Collection<? extends GrantedAuthority> authorities;
-	private final UserType userType;
 
-	private CustomUserDetails(Long id, String name, String email, String profileImage,
-		Collection<? extends GrantedAuthority> authorities, UserType userType) {
-		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.profileImage = profileImage;
+	private CustomUserDetails(UserInfo userInfo, Collection<? extends GrantedAuthority> authorities) {
+		this.userInfo = userInfo;
 		this.authorities = authorities;
-		this.userType = userType;
 	}
 
 	/**
@@ -55,12 +47,8 @@ public class CustomUserDetails implements UserDetails {
 	public static CustomUserDetails from(Member member) {
 		Objects.requireNonNull(member, "Member는 null일 수 없습니다.");
 		return new CustomUserDetails(
-			member.getId(),
-			member.getName(),
-			member.getEmail(),
-			member.getProfileImage(),
-			Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-			UserType.MEMBER
+			UserInfo.member(member),
+			Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"))
 		);
 	}
 
@@ -69,12 +57,8 @@ public class CustomUserDetails implements UserDetails {
 	 */
 	public static CustomUserDetails guestOf(UserType userType) {
 		return new CustomUserDetails(
-			null,
-			null,
-			null,
-			null,
-			Collections.singleton(new SimpleGrantedAuthority("ROLE_" + userType.name())),
-			userType
+			UserInfo.guest(userType),
+			Collections.singleton(new SimpleGrantedAuthority("ROLE_" + userType.name()))
 		);
 	}
 
@@ -91,9 +75,9 @@ public class CustomUserDetails implements UserDetails {
 	@Override
 	public String getUsername() {
 		if (isGuest()) {
-			return userType.name();
+			return userInfo.userType().name();
 		}
-		return email;
+		return userInfo.email();
 	}
 
 	@Override
@@ -117,10 +101,26 @@ public class CustomUserDetails implements UserDetails {
 	}
 
 	public Long getMemberId() {
-		return id;
+		return userInfo.id();
+	}
+
+	public String getEmail() {
+		return userInfo.email();
+	}
+
+	public String getName() {
+		return userInfo.name();
+	}
+
+	public String getProfileImage() {
+		return userInfo.profileImage();
+	}
+
+	public UserType getUserType() {
+		return userInfo.userType();
 	}
 
 	public boolean isGuest() {
-		return UserType.MEMBER != userType;
+		return UserType.MEMBER != userInfo.userType();
 	}
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import eightbit.moyeohaeng.global.dto.UserInfo;
 import eightbit.moyeohaeng.global.event.message.MessageBody;
 import eightbit.moyeohaeng.global.utils.GlobalLogger;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +32,10 @@ public class SseEmitterService {
 	 * @param channel 구독할 채널 (ex. PROJECT)
 	 * @param eventId 구독할 특정 이벤트의 Id (ex. 프로젝트 Id)
 	 * @param lastEventId 클라이언트가 마지막으로 수신한 이벤트 Id
-	 * @param user    사용자 정보
+	 * @param userInfo 사용자 정보
 	 * @return SseEmitter
 	 */
-	public SseEmitter subscribe(ChannelTopic channel, Long eventId, String lastEventId, String user) {
+	public SseEmitter subscribe(ChannelTopic channel, Long eventId, String lastEventId, UserInfo userInfo) {
 		SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT.toMillis());
 		SseEmitterId id = SseEmitterId.of(channel.getTopic(), eventId);
 		UUID uuid = sseEmitterRepository.save(id, emitter);
@@ -52,7 +53,7 @@ public class SseEmitterService {
 
 		// 이벤트 전송
 		sendToClient(emitter, MessageBody.of("CONNECT", "hello"));
-		eventPublisher.publishEvent(new SseSubscribeEvent(id, uuid, user));
+		eventPublisher.publishEvent(new SseSubscribeEvent(id, uuid, userInfo));
 		GlobalLogger.info("[SSE]", id.channel(), "구독:", "id =", id.eventId(), ", uuid =", uuid);
 
 		return emitter;

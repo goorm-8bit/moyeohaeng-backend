@@ -107,9 +107,7 @@ public class ProjectController implements ProjectApi {
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
 
-		// TODO: guest에 대한 처리 필요함
-		String user = currentUser.getEmail();
-		return projectService.connect(projectId, lastEventId, user);
+		return projectService.connect(projectId, lastEventId, currentUser.getUserInfo());
 	}
 
 	@Override
