@@ -52,11 +52,19 @@ public class TeamMember extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role", nullable = false)
 	private TeamRole teamRole;
-	
+
 	@Builder
 	private TeamMember(Team team, Member member, TeamRole teamRole) {
 		this.team = team;
 		this.member = member;
 		this.teamRole = teamRole;
+	}
+
+	public static TeamMember of(Team team, Member member) {
+		return TeamMember.builder()
+			.team(team)
+			.member(member)
+			.teamRole(TeamRole.OWNER)
+			.build();
 	}
 }
