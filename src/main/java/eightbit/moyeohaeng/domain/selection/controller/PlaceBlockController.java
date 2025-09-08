@@ -1,7 +1,8 @@
 package eightbit.moyeohaeng.domain.selection.controller;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
+import java.util.List;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,10 +17,10 @@ import eightbit.moyeohaeng.domain.selection.controller.swagger.PlaceBlockApi;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateResponse;
-import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockSearchResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.selection.service.PlaceBlockService;
-import eightbit.moyeohaeng.global.dto.PageResponse;
+import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.CommonSuccessCode;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
@@ -55,9 +56,13 @@ public class PlaceBlockController implements PlaceBlockApi {
 
 	@Override
 	@GetMapping
-	public ResponseEntity<PageResponse<PlaceBlockResponse>> list(@PathVariable("projectId") Long projectId,
-		Pageable pageable) {
-		return ResponseEntity.ok(placeBlockService.getPages(projectId, pageable));
+	public SuccessResponse<List<PlaceBlockSearchResponse>> searchPlaceBlocks(
+		@PathVariable Long projectId,
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
+		String username = currentUser.getUsername();
+		List<PlaceBlockSearchResponse> responses = placeBlockService.searchPlaceBlocks(projectId, username);
+		return SuccessResponse.of(PlaceBlockSuccessCode.SEARCH_LIST, responses);
 	}
 
 	@Override

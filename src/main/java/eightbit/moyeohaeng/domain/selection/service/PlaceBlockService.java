@@ -1,7 +1,8 @@
 package eightbit.moyeohaeng.domain.selection.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,13 +18,15 @@ import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockErrorCode
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockUpdateMemoRequest;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentSummary;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockDeleteResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockLikeSummary;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockSearchResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
 import eightbit.moyeohaeng.domain.selection.repository.PlaceBlockRepository;
-import eightbit.moyeohaeng.global.dto.PageResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -67,12 +70,26 @@ public class PlaceBlockService {
 		return PlaceBlockUpdateMemoResponse.of(placeBlockId, request.memo());
 	}
 
-	/**
-	 * 주어진 프로젝트 내의 모든 장소 블록을 페이지로 조회합니다.
-	 */
-	public PageResponse<PlaceBlockResponse> getPages(Long projectId, Pageable pageable) {
-		Page<PlaceBlock> page = placeBlockRepository.findByProjectId(projectId, pageable);
-		return PageResponse.from(page, PlaceBlockResponse::from);
+	public List<PlaceBlockSearchResponse> searchPlaceBlocks(Long projectId, String username) {
+		// 장소 블록 조회
+		List<PlaceBlockResponse> placeBlocks = placeBlockRepository.findPlaceBlocks(projectId);
+		List<Long> placeBlockIds = placeBlocks.stream()
+			.map(PlaceBlockResponse::id)
+			.toList();
+
+		// 좋아요 조회
+		Map<Long, PlaceBlockLikeSummary> likes = placeBlockRepository.findPlaceBlockLikes(placeBlockIds, username);
+
+		// 댓글 요약 조회
+		Map<Long, PlaceBlockCommentSummary> comments = placeBlockRepository.findPlaceBlockComments(placeBlockIds);
+
+		return placeBlocks.stream()
+			.map(placeBlock -> PlaceBlockSearchResponse.of(
+				placeBlock,
+				likes.getOrDefault(placeBlock.id(), PlaceBlockLikeSummary.empty()),
+				comments.getOrDefault(placeBlock.id(), PlaceBlockCommentSummary.empty())
+			))
+			.toList();
 	}
 
 	@Transactional

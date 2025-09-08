@@ -1,16 +1,14 @@
 package eightbit.moyeohaeng.domain.selection.controller.swagger;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import java.util.List;
 
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCreateResponse;
-import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockSearchResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockUpdateMemoResponse;
-import eightbit.moyeohaeng.global.dto.PageResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
+import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -53,13 +51,14 @@ public interface PlaceBlockApi {
 		PlaceBlockUpdateMemoRequest request
 	);
 
-	@Operation(summary = "장소블록 목록 조회(페이지)")
+	@Operation(summary = "장소 블록 목록 조회", description = "장소 블록 목록을 조회합니다.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "장소블록 목록 조회 성공")
+		@ApiResponse(responseCode = "200", description = "장소 블록 목록 조회 성공")
 	})
-	ResponseEntity<PageResponse<PlaceBlockResponse>> list(
-		@PathVariable Long projectId,
-		@org.springdoc.core.annotations.ParameterObject Pageable pageable
+	SuccessResponse<List<PlaceBlockSearchResponse>> searchPlaceBlocks(
+		@Parameter(description = "프로젝트 ID", required = true)
+		Long projectId,
+		CustomUserDetails currentUser
 	);
 
 	@Operation(summary = "장소 블록 삭제")
@@ -70,8 +69,8 @@ public interface PlaceBlockApi {
 	})
 	SuccessResponse<Void> delete(
 		@Parameter(description = "프로젝트 ID", required = true)
-		@PathVariable Long projectId,
+		Long projectId,
 		@Parameter(description = "장소 블록 ID", required = true)
-		@PathVariable Long placeBlockId
+		Long placeBlockId
 	);
 }
