@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@RestController
+/**
+ * swagger 예시용 나중에 이름 변경
+ */
 public class TeamController implements TeamApi {
 	
 	/**

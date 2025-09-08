@@ -61,7 +61,7 @@ public class ProjectService {
 		TeamMember ownerMembership = TeamMember.builder()
 			.team(team)
 			.member(member)
-			.role(TeamRole.OWNER)
+			.teamRole(TeamRole.OWNER)
 			.build();
 		teamMemberRepository.save(ownerMembership);
 
@@ -99,7 +99,7 @@ public class ProjectService {
 	// TODO RequiredUserRole 이름 변경
 
 	/**
-	 * 프로젝트가 외부 공유를 허용하는지 검사합니다. 
+	 * 프로젝트가 외부 공유를 허용하는지 검사합니다.
 	 * 허용되지 않으면 예외를 던집니다.
 	 * @return UserRole {GUEST, VIEWER}
 	 */
