@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "teams")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @SQLDelete(sql = "UPDATE teams SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 public class Team extends BaseEntity {
 
@@ -30,9 +31,4 @@ public class Team extends BaseEntity {
 	@Column(name = "team_name", nullable = false, length = 100)
 	private String name;
 
-
-	@Builder
-	private Team(String name) {
-		this.name = name;
-	}
 }

@@ -67,9 +67,11 @@ public class Project extends BaseEntity {
 	private LocalDate endDate;
 
 	@Column(name = "is_allow_guest", nullable = false)
+	@Builder.Default
 	private boolean isAllowGuest = false;
 
 	@Column(name = "is_allow_viewer", nullable = false)
+	@Builder.Default
 	private boolean isAllowViewer = false;
 
 	// 프로젝트 생성자 (소유자)
