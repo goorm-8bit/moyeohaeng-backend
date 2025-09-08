@@ -100,7 +100,7 @@ public class CustomUserDetails implements UserDetails {
 		return true;
 	}
 
-	public Long getMemberId() {
+	public Long getId() {
 		return userInfo.id();
 	}
 

@@ -45,7 +45,7 @@ public class UserAuthorizationService {
 			}
 
 			// Logged-in member
-			Long memberId = user.getMemberId();
+			Long memberId = user.getId();
 			// OWNER
 			if (project.getCreator() != null && project.getCreator().getId() != null
 				&& project.getCreator().getId().equals(memberId)) {
@@ -71,7 +71,7 @@ public class UserAuthorizationService {
 	public UserRole resolveTeamRole(Long teamId, HttpServletRequest request) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null && auth.getPrincipal() instanceof CustomUserDetails user) {
-			Long memberId = user.getMemberId();
+			Long memberId = user.getId();
 			boolean isTeamMember = teamMemberRepository.existsByTeam_IdAndMember_Id(teamId, memberId);
 			return isTeamMember ? UserRole.MEMBER : UserRole.VIEWER;
 		}

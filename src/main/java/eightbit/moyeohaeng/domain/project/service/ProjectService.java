@@ -53,7 +53,7 @@ public class ProjectService {
 	 */
 	@Transactional
 	public ProjectDto create(ProjectCreateRequest request, CustomUserDetails currentUser) {
-		Member member = memberService.findById(currentUser.getMemberId());
+		Member member = memberService.findById(currentUser.getId());
 		Team team = teamRepository.findById(request.teamId())
 			.orElseThrow(() -> new ProjectException(ProjectErrorCode.TEAM_NOT_FOUND));
 
@@ -174,7 +174,7 @@ public class ProjectService {
 	public ProjectDto update(Long projectId, ProjectUpdateRequest request, CustomUserDetails currentUser) {
 		// findById로 프로젝트 조회 및 접근 권한 검사 (접근 권한 없으면 예외 발생)
 		Project project = findMyProjectById(projectId, currentUser);
-		if (!project.getCreator().getId().equals(currentUser.getMemberId())) {
+		if (!project.getCreator().getId().equals(currentUser.getId())) {
 			throw new ProjectException(ProjectErrorCode.NOT_PROJECT_OWNER);
 		}
 		project.update(request.title(), request.color(), request.startDate(), request.endDate());
@@ -207,7 +207,7 @@ public class ProjectService {
 	 * @throws ProjectException 프로젝트가 존재하지 않거나 접근 권한이 없는 경우
 	 */
 	protected Project findMyProjectById(Long projectId, CustomUserDetails currentUser) {
-		return projectRepository.findByIdWithAccessCheck(projectId, currentUser.getMemberId())
+		return projectRepository.findByIdWithAccessCheck(projectId, currentUser.getId())
 			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND, projectId));
 	}
 
