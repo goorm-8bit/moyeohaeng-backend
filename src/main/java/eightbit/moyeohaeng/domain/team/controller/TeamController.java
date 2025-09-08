@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import eightbit.moyeohaeng.domain.team.dto.TeamDto;
 import eightbit.moyeohaeng.domain.team.dto.request.CreateTeamRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.request.InviteMemberRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.request.UpdateMemberRoleRequestDto;
@@ -28,6 +29,7 @@ import eightbit.moyeohaeng.domain.team.dto.response.UpdateTeamSettingsResponseDt
 import eightbit.moyeohaeng.domain.team.service.TeamMemberService;
 import eightbit.moyeohaeng.domain.team.service.TeamService;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,11 +57,12 @@ public class TeamController implements TeamApi {
 	@PostMapping
 	public ResponseEntity<CreateTeamResponseDto> createTeam(
 		@AuthenticationPrincipal CustomUserDetails user,
-		@RequestBody CreateTeamRequestDto requestDto
+		@RequestBody @Valid CreateTeamRequestDto requestDto
 	) {
 
-		user.getId();
-		requestDto.newTeamName();
+		TeamDto teamDto = teamService.createTeam(requestDto.newTeamName(), user.getId());
+
+		CreateTeamResponseDto dto = CreateTeamResponseDto.from(teamDto);
 
 		return null;
 	}
@@ -143,6 +146,18 @@ public class TeamController implements TeamApi {
 	) {
 
 		// find teamMember by teamId
+
+		return null;
+	}
+
+	@Override
+	@GetMapping("/{teamId}")
+	public ResponseEntity<TeamDto> getTeam(@AuthenticationPrincipal CustomUserDetails user,
+		@PathVariable("teamId") Long teamId) {
+
+		teamService.checkTeamMember(user.getId(), teamId);
+
+		teamService.getTeam(teamId);
 
 		return null;
 	}
