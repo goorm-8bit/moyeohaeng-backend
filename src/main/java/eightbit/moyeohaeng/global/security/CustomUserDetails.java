@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import eightbit.moyeohaeng.domain.auth.UserRole;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.global.dto.UserInfo;
 import lombok.Getter;
@@ -30,10 +31,13 @@ import lombok.Getter;
 public class CustomUserDetails implements UserDetails {
 
 	private final UserInfo userInfo;
+	private final UserType userType;
 	private final Collection<? extends GrantedAuthority> authorities;
 
-	private CustomUserDetails(UserInfo userInfo, Collection<? extends GrantedAuthority> authorities) {
+	private CustomUserDetails(UserInfo userInfo, UserType userType,
+		Collection<? extends GrantedAuthority> authorities) {
 		this.userInfo = userInfo;
+		this.userType = userType;
 		this.authorities = authorities;
 	}
 
@@ -48,6 +52,7 @@ public class CustomUserDetails implements UserDetails {
 		Objects.requireNonNull(member, "Member는 null일 수 없습니다.");
 		return new CustomUserDetails(
 			UserInfo.member(member),
+			UserType.MEMBER,
 			Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"))
 		);
 	}
@@ -55,10 +60,12 @@ public class CustomUserDetails implements UserDetails {
 	/**
 	 * Create a guest/viewer principal from share token context.
 	 */
-	public static CustomUserDetails guestOf(UserType userType) {
+	public static CustomUserDetails guestOf(UserRole userRole) {
+		UserType type = UserRole.GUEST == userRole ? UserType.GUEST : UserType.VIEWER;
 		return new CustomUserDetails(
-			UserInfo.guest(userType),
-			Collections.singleton(new SimpleGrantedAuthority("ROLE_" + userType.name()))
+			UserInfo.guest(type.name()),
+			type,
+			Collections.singleton(new SimpleGrantedAuthority("ROLE_" + type.name()))
 		);
 	}
 
@@ -75,7 +82,7 @@ public class CustomUserDetails implements UserDetails {
 	@Override
 	public String getUsername() {
 		if (isGuest()) {
-			return userInfo.userType().name();
+			return userType.name();
 		}
 		return userInfo.email();
 	}
@@ -116,11 +123,7 @@ public class CustomUserDetails implements UserDetails {
 		return userInfo.profileImage();
 	}
 
-	public UserType getUserType() {
-		return userInfo.userType();
-	}
-
 	public boolean isGuest() {
-		return UserType.MEMBER != userInfo.userType();
+		return UserType.MEMBER != userType;
 	}
 }

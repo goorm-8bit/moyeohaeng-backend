@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import eightbit.moyeohaeng.domain.auth.UserRole;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectException;
 import eightbit.moyeohaeng.domain.project.service.ProjectService;
 import jakarta.servlet.FilterChain;
@@ -83,10 +84,10 @@ public class ShareGuestAuthenticationFilter extends OncePerRequestFilter {
 	private void allowGuestAccess(Long projectId) {
 		try {
 			// 해당 프로젝트가 공유 허용 상태인지 검사
-			projectService.ensureShareAllowed(projectId);
+			UserRole userRole = projectService.ensureShareAllowed(projectId);
 
 			// 비로그인 접근을 나타내는 최소한의 게스트 Principal 생성
-			CustomUserDetails guest = CustomUserDetails.guestOf(UserType.VIEWER);
+			CustomUserDetails guest = CustomUserDetails.guestOf(userRole);
 			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 				guest, null, guest.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(authentication);
