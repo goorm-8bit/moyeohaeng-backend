@@ -29,4 +29,12 @@ public interface TeamService {
 	Boolean deleteTeam(Long teamId, Long memberId);
 
 	Boolean checkTeamMember(Long teamId, Long memberId);
+
+	/**
+	 * @param teamId          초대가 이루어질 팀의 ID
+	 * @param inviterMemberId 초대하는 회원(초대자)의 ID
+	 * @param inviteeMemberId 초대받는 회원(피초대자)의 ID
+	 */
+	void inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId);
+
 }
