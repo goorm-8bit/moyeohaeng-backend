@@ -50,6 +50,7 @@ public class PlaceBlockRepositoryImpl implements PlaceBlockRepositoryCustom {
 				placeBlock.deletedAt.isNull(),
 				placeBlock.project.id.eq(projectId)
 			)
+			.orderBy(placeBlock.createdAt.desc())
 			.fetch();
 	}
 
