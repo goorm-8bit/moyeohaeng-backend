@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.global.utils;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 public class TimeUtils {
 
@@ -9,7 +10,11 @@ public class TimeUtils {
 		if (startDate == null || endDate == null) {
 			return null;
 		}
-		return (int) (endDate.toEpochDay() - startDate.toEpochDay() + 1);
+		long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+		if (days < 1) {
+			throw new IllegalArgumentException("종료 날짜는 시작 날짜보다 같거나 이후여야 합니다.");
+		}
+		return (int)days;
 	}
 
 	public static void validateTimeRange(LocalTime startTime, LocalTime endTime) {
