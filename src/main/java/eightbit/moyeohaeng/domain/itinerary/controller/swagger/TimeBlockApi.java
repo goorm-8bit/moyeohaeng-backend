@@ -1,9 +1,9 @@
 package eightbit.moyeohaeng.domain.itinerary.controller.swagger;
 
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockCreateRequest;
+import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
-import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,7 +27,21 @@ public interface TimeBlockApi {
 	SuccessResponse<TimeBlockResponse> create(
 		@Parameter(description = "프로젝트 ID", required = true)
 		Long projectId,
-		TimeBlockCreateRequest request,
-		CustomUserDetails currentUser
+		TimeBlockCreateRequest request
+	);
+
+	@Operation(summary = "시간 블록 수정", description = "시간 블록의 일차, 시작 시간, 종료 시간, 메모를 수정합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "시간 블록 수정 성공"),
+		@ApiResponse(responseCode = "404", description = "시간 블록을 찾을 수 없음"),
+		@ApiResponse(responseCode = "409", description = "다른 일정과 시간이 겹침",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	})
+	SuccessResponse<TimeBlockResponse> update(
+		@Parameter(description = "프로젝트 ID", required = true)
+		Long projectId,
+		@Parameter(description = "시간 블록 ID", required = true)
+		Long timeBlockId,
+		TimeBlockUpdateRequest request
 	);
 }

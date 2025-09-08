@@ -1,6 +1,7 @@
 package eightbit.moyeohaeng.domain.selection.entity;
 
-import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import eightbit.moyeohaeng.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
@@ -26,13 +27,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
 	name = "place_group_blocks",
-	uniqueConstraints = @UniqueConstraint(columnNames = {"place_block_id", "place_group_id"}),
+	uniqueConstraints = @UniqueConstraint(
+		name = "uk_place_group_place_block",
+		columnNames = {"place_group_id", "place_block_id"}
+	),
 	indexes = {
-		@Index(name = "idx_pgb_place_block_id", columnList = "place_block_id"),
-		@Index(name = "idx_pgb_place_group_id", columnList = "place_group_id")
+		@Index(name = "idx_pgb_place_group_id", columnList = "place_group_id"),
+		@Index(name = "idx_pgb_place_block_id", columnList = "place_block_id")
 	}
 )
-@SQLDelete(sql = "UPDATE place_group_blocks SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 public class PlaceGroupBlock extends BaseEntity {
 
 	@Id
@@ -40,10 +43,18 @@ public class PlaceGroupBlock extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "place_group_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private PlaceGroup placeGroup;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "place_block_id", nullable = false)
 	private PlaceBlock placeBlock;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "place_group_id", nullable = false)
-	private PlaceGroup placeGroup;
+	public static PlaceGroupBlock of(PlaceGroup placeGroup, PlaceBlock placeBlock) {
+		return builder()
+			.placeGroup(placeGroup)
+			.placeBlock(placeBlock)
+			.build();
+	}
 }

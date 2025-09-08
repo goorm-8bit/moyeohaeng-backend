@@ -14,6 +14,7 @@ public enum GlobalErrorCode implements ErrorCode {
 	FORBIDDEN(HttpStatus.FORBIDDEN, "접근이 금지되었습니다.", "G1004"),
 	INVALID_PATH_VARIABLE_FORMAT(HttpStatus.BAD_REQUEST, "요청 경로 파라미터의 형식이 올바르지 않습니다.", "G1005"),
 	INVALID_INPUT(HttpStatus.BAD_REQUEST, "입력값이 올바르지 않습니다.", "G1006"),
+	INVALID_DATA_ACCESS_API_USAGE(HttpStatus.BAD_REQUEST, "잘못된 데이터 접근 API 호출입니다.", "G1007"),
 
 	// 5xx
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.", "G1007");
