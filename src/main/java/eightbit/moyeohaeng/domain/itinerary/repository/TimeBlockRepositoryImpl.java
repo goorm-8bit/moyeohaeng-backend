@@ -106,6 +106,7 @@ public class TimeBlockRepositoryImpl implements TimeBlockRepositoryCustom {
 			.from(timeBlock)
 			.join(timeBlock.place, place)
 			.where(
+				timeBlock.deletedAt.isNull(),
 				timeBlock.project.id.eq(projectId),
 				eqDay(day)
 			)
