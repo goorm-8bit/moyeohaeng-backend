@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eightbit.moyeohaeng.domain.selection.common.success.PlaceBlockLikeSuccessCode;
 import eightbit.moyeohaeng.domain.selection.controller.swagger.PlaceBlockLikeApi;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockLikeResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockLikeSummaryResponse;
 import eightbit.moyeohaeng.domain.selection.service.PlaceBlockLikeService;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
@@ -23,15 +24,16 @@ public class PlaceBlockLikeController implements PlaceBlockLikeApi {
 
 	@PostMapping
 	@Override
-	public SuccessResponse<PlaceBlockLikeSummaryResponse> toggleLike(
+	public SuccessResponse<PlaceBlockLikeResponse> toggleLike(
 		@PathVariable Long projectId,
 		@PathVariable Long placeBlockId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
-		Long memberId = currentUser.getMemberId();
+		PlaceBlockLikeSummaryResponse summary =
+			placeBlockLikeService.toggleLike(projectId, placeBlockId, currentUser);
 
-		PlaceBlockLikeSummaryResponse response =
-			placeBlockLikeService.toggleLike(projectId, placeBlockId, memberId);
+		PlaceBlockLikeResponse response =
+			PlaceBlockLikeResponse.of(placeBlockId, currentUser.getUsername(), summary.liked());
 
 		return SuccessResponse.of(PlaceBlockLikeSuccessCode.TOGGLE_LIKE, response);
 	}

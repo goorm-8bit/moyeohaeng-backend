@@ -1,6 +1,6 @@
 package eightbit.moyeohaeng.domain.selection.controller.swagger;
 
-import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockLikeSummaryResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockLikeResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
@@ -18,11 +18,11 @@ public interface PlaceBlockLikeApi {
 	@Operation(summary = "장소 블록 좋아요 토글", description = "해당 장소 블록에 좋아요를 누르거나 취소합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "좋아요 토글 성공",
-			content = @Content(schema = @Schema(implementation = PlaceBlockLikeSummaryResponse.class))),
+			content = @Content(schema = @Schema(implementation = PlaceBlockLikeResponse.class))),
 		@ApiResponse(responseCode = "404", description = "회원 또는 장소 블록을 찾을 수 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	SuccessResponse<PlaceBlockLikeSummaryResponse> toggleLike(
+	SuccessResponse<PlaceBlockLikeResponse> toggleLike(
 		@Parameter(description = "프로젝트 ID", required = true, example = "1") Long projectId,
 		@Parameter(description = "장소 블록 ID", required = true, example = "10") Long placeBlockId,
 		CustomUserDetails currentUser
