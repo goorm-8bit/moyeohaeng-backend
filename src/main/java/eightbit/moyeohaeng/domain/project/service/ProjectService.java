@@ -3,8 +3,10 @@ package eightbit.moyeohaeng.domain.project.service;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import eightbit.moyeohaeng.domain.auth.UserRole;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
@@ -20,6 +22,7 @@ import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.repository.TeamRepository;
+import eightbit.moyeohaeng.global.event.sse.SseEmitterService;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 
@@ -28,9 +31,13 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true) // 기본 조회 최적화
 public class ProjectService {
 
-	private final ProjectRepository projectRepository;
 	private final MemberService memberService;
+	private final SseEmitterService sseEmitterService;
+
+	private final ProjectRepository projectRepository;
 	private final TeamRepository teamRepository;
+
+	private final ChannelTopic channelTopic;
 
 	/**
 	 * 새로운 프로젝트 생성
@@ -51,6 +58,17 @@ public class ProjectService {
 		Project savedProject = projectRepository.save(project);
 
 		return ProjectDto.from(savedProject);
+	}
+
+	/**
+	 * SSE 연결
+	 *
+	 * @param projectId 프로젝트 Id
+	 * @param user 사용자 정보
+	 * @return SseEmitter
+	 */
+	public SseEmitter connect(Long projectId, String lastEventId, String user) {
+		return sseEmitterService.subscribe(channelTopic, projectId, lastEventId, user);
 	}
 
 	/**
