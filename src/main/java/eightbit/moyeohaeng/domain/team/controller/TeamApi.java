@@ -38,6 +38,7 @@ public interface TeamApi {
 	@Operation(
 		summary = "API 엔드 포인트에 대한 요약 정보",
 		description = "API 엔드 포인트에 대한 자세한 설명",
+		// @PathVariable 같은 것 설명 용도 body 를 Dto 로 받으면 Dto 에 @Schema 가 있어야 함
 		parameters = {
 			@Parameter(
 				name = "testParameter",
@@ -58,7 +59,12 @@ public interface TeamApi {
 		@RequestBody CreateTeamRequestDto requestDto);
 
 	@Operation(
-		summary = "이 부분 오래 걸릴 것 같아서 일단 스킵"
+		summary = "초대 URL 을 보내서 초대하면 좋겠지만 시간이 없는 관계로 초대 할 대상 memberId 를 받는 것으로 구현",
+		description = """
+			초대할 대상의 memberId 를 받음
+			현재 초대의 수락/거절 은 없고 memberId 입력시 바로 초대되는 형태로 구현 
+			추후 수정 필요함
+			"""
 	)
 	ResponseEntity<InviteMemberResponseDto> inviteMember(@AuthenticationPrincipal CustomUserDetails user,
 		@RequestBody InviteMemberRequestDto requestDto);
@@ -102,7 +108,7 @@ public interface TeamApi {
 		@PathVariable("teamId") Long teamId);
 
 	@Operation(
-		summary = "팀 id 를 이용해서 팀원 단건 출력"
+		summary = "팀 id 를 이용해서 팀 단건 출력"
 	)
 	ResponseEntity<TeamDto> getTeam(@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable Long teamId);

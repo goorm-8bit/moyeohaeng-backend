@@ -1,7 +1,11 @@
 package eightbit.moyeohaeng.domain.team.controller;
 
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
 import eightbit.moyeohaeng.domain.team.dto.request.CreateTeamRequestDto;
@@ -43,12 +48,13 @@ public class TeamController implements TeamApi {
 	private final TeamMemberService teamMemberService;
 
 	@Override
+	@PostMapping("/members/invite/send")
 	public ResponseEntity<InviteMemberResponseDto> inviteMember(
 		@AuthenticationPrincipal CustomUserDetails user,
-		@RequestBody InviteMemberRequestDto requestDto
+		@RequestBody @Valid InviteMemberRequestDto requestDto
 	) {
 
-		user.getId();
+		teamService.inviteMember();
 
 		return null;
 	}
@@ -62,9 +68,16 @@ public class TeamController implements TeamApi {
 
 		TeamDto teamDto = teamService.createTeam(requestDto.newTeamName(), user.getId());
 
-		CreateTeamResponseDto dto = CreateTeamResponseDto.from(teamDto);
+		CreateTeamResponseDto responseDto = CreateTeamResponseDto.from(teamDto);
 
-		return null;
+		// 3) Location 헤더 (현재 요청 URL 뒤에 /{id})
+		URI location = ServletUriComponentsBuilder
+			.fromCurrentRequest()
+			.path("/{teamId}")
+			.buildAndExpand(Map.of("teamId", teamDto.teamId()))
+			.toUri();
+
+		return ResponseEntity.created(location).body(responseDto);
 	}
 
 	@Override
@@ -78,7 +91,7 @@ public class TeamController implements TeamApi {
 
 		}
 
-		// delete member in team by memberid need role = owner
+		// delete member in team by memberId need role = owner
 
 		return null;
 	}
@@ -133,10 +146,14 @@ public class TeamController implements TeamApi {
 
 		// find my-teams by memberId
 		if (Objects.equals(user.getId(), memberId)) {
+			List<TeamDto> myTeams = teamService.getMyTeams(memberId);
 
+			GetMyTeamsResponseDto responseDto = GetMyTeamsResponseDto.of(memberId, myTeams);
+
+			return ResponseEntity.ok(responseDto);
+		} else {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
-
-		return null;
 	}
 
 	@GetMapping("{teamId}/members")
@@ -155,10 +172,20 @@ public class TeamController implements TeamApi {
 	public ResponseEntity<TeamDto> getTeam(@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable("teamId") Long teamId) {
 
-		teamService.checkTeamMember(user.getId(), teamId);
+		// 1) 인증 주체 확인 (선택: 스프링 시큐리티가 이미 인증 보장하면 생략 가능)
+		if (user == null || user.getId() == null) {
+			// 스프링 시큐리티 필터가 보통 401로 막지만, 방어적으로 한 번 더
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
 
-		teamService.getTeam(teamId);
+		if (teamService.checkTeamMember(user.getId(), teamId)) {
 
-		return null;
+			TeamDto teamDto = teamService.getTeamDto(teamId);
+
+			return ResponseEntity.ok(teamDto);
+
+		} else {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
 	}
 }

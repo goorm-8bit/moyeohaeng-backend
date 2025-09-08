@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eightbit.moyeohaeng.domain.member.common.exception.MemberErrorCode;
+import eightbit.moyeohaeng.domain.member.common.exception.MemberException;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.domain.team.dto.MemberDto;
@@ -26,19 +28,40 @@ public class TeamServiceImpl implements TeamService {
 	private final TeamMemberRepository teamMemberRepository;
 	private final MemberRepository memberRepository;
 
+	@Override
+	@Transactional
+	public void inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId) {
+
+		// 1) 팀 존재 여부
+		Team team = teamRepository.findById(teamId)
+			.orElseThrow(() -> new TeamException(TeamErrorCode.TEAM_NOT_FOUND));
+
+		// 2) 초대자 & 초대 받을 사람 존재 여부
+		Member inviter = memberRepository.findById(inviterMemberId)
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+		Member invitee = memberRepository.findById(inviteeMemberId)
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+		// 3) 초대자의 팀 소속 여부 & 초대 권한 여부
+		TeamRole teamRole = teamMemberRepository.findRoleByTeamIdAndMemberId(teamId, inviterMemberId)
+			.orElseThrow(() -> new TeamException(TeamErrorCode.NOT_HAVE_RIGHT));
+
+	}
+
 	// 멤버를 찾아서 teamName 으로 팀 이름을 만들고 만든 사람을 teamMember 이자 OWNER 권한으로 생성
 	@Override
 	@Transactional
 	public TeamDto createTeam(String teamName, Long memberId) {
+
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
 		Team team = Team.builder()
 			.name(teamName)
 			.build();
 
 		teamRepository.save(team);
-
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
 		// 생성한 사람이 처음 OWNER 권한
 		TeamMember teamMember = TeamMember.builder()
