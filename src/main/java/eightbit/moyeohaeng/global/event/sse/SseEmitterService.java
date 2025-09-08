@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import eightbit.moyeohaeng.global.dto.UserInfo;
@@ -63,6 +64,7 @@ public class SseEmitterService {
 		SseEmitterId id = SseEmitterId.of(channel, messageBody.eventId());
 		Map<UUID, SseEmitter> emittersById = sseEmitterRepository.findAllById(id);
 		emittersById.forEach((uuid, emitter) -> sendToClient(emitter, messageBody));
+		GlobalLogger.info("[SSE] 이벤트 전송: id =", id, ", targetSize =", emittersById.size());
 
 		// 캐시에 이벤트 저장
 		sseEventCacheRepository.cacheEvent(id, messageBody);
@@ -75,7 +77,10 @@ public class SseEmitterService {
 				.name(messageBody.eventName())
 				.data(messageBody.payload()));
 		} catch (Exception e) {
-			GlobalLogger.error("[SSE] 이벤트 전송 실패", e);
+			// 연결 종료 예외가 아니라면 로그 출력
+			if (!(e instanceof AsyncRequestNotUsableException)) {
+				GlobalLogger.error("[SSE] 이벤트 전송 실패", e.toString());
+			}
 		}
 	}
 
