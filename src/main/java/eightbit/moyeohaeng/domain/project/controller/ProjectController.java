@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import eightbit.moyeohaeng.domain.auth.UserRole;
+import eightbit.moyeohaeng.domain.auth.common.annotation.CurrentUserRole;
 import eightbit.moyeohaeng.domain.auth.common.annotation.RequiredAccessRole;
 import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
 import eightbit.moyeohaeng.domain.project.common.success.ProjectSuccessCode;
@@ -32,6 +33,7 @@ import eightbit.moyeohaeng.domain.project.dto.response.ProjectGetResponse;
 import eightbit.moyeohaeng.domain.project.dto.response.ProjectSearchResponse;
 import eightbit.moyeohaeng.domain.project.dto.response.ProjectUpdateResponse;
 import eightbit.moyeohaeng.domain.project.service.ProjectService;
+import eightbit.moyeohaeng.global.dto.UserInfo;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.CommonSuccessCode;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
@@ -104,10 +106,11 @@ public class ProjectController implements ProjectApi {
 	public SseEmitter connectProject(
 		@PathVariable Long projectId,
 		@RequestHeader(value = "Last-Event-ID", required = false) String lastEventId,
-		@AuthenticationPrincipal CustomUserDetails currentUser
+		@AuthenticationPrincipal CustomUserDetails currentUser,
+		@CurrentUserRole UserRole userRole
 	) {
-
-		return projectService.connect(projectId, lastEventId, currentUser.getUserInfo());
+		UserInfo userInfo = currentUser.getUserInfo().withRole(userRole);
+		return projectService.connect(projectId, lastEventId, userInfo);
 	}
 
 	@Override

@@ -2,8 +2,8 @@ package eightbit.moyeohaeng.domain.project.dto.response;
 
 import java.util.UUID;
 
+import eightbit.moyeohaeng.domain.auth.UserRole;
 import eightbit.moyeohaeng.global.dto.UserInfo;
-import eightbit.moyeohaeng.global.security.UserType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "실시간 접속 상태 응답 DTO")
@@ -20,8 +20,8 @@ public record PresenceResponse(
 	@Schema(description = "프로필 이미지")
 	String profileImage,
 
-	@Schema(description = "사용자 타입", example = "MEMBER")
-	UserType userType
+	@Schema(description = "사용자 권한", example = "MEMBER")
+	UserRole userRole
 ) {
 	public static PresenceResponse of(UUID uuid, UserInfo userInfo) {
 		return new PresenceResponse(
@@ -29,7 +29,7 @@ public record PresenceResponse(
 			userInfo.email(),
 			userInfo.name(),
 			userInfo.profileImage(),
-			userInfo.userType()
+			userInfo.userRole()
 		);
 	}
 }

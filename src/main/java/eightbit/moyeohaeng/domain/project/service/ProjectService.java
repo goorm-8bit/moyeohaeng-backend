@@ -68,6 +68,7 @@ public class ProjectService {
 	 * SSE 연결
 	 *
 	 * @param projectId 프로젝트 Id
+	 * @param lastEventId 클라이언트가 마지막으로 수신한 이벤트 Id
 	 * @param userInfo 사용자 정보
 	 * @return SseEmitter
 	 */

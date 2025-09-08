@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import eightbit.moyeohaeng.domain.auth.UserRole;
 import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectSortType;
@@ -138,7 +139,9 @@ public interface ProjectApi {
 		Long projectId,
 		@Parameter(description = "클라이언트가 마지막으로 수신한 이벤트 ID")
 		String lastEventId,
-		@AuthenticationPrincipal CustomUserDetails currentUser
+		@AuthenticationPrincipal CustomUserDetails currentUser,
+		@Schema(description = "사용자 권한", hidden = true)
+		UserRole userRole
 	);
 
 	@Operation(
