@@ -32,7 +32,7 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 	Optional<TeamRole> findRoleByTeamIdAndMemberId(@Param("teamId") Long teamId,
 		@Param("memberId") Long memberId);
 
-	@Query("SELECT m FROM TeamMember tm JOIN FETCH tm.member m WHERE tm.team.id = :teamId")
+	@Query("SELECT m FROM TeamMember tm JOIN tm.member m WHERE tm.team.id = :teamId AND tm.deletedAt IS NULL")
 	List<Member> findMembersByTeamId(@Param("teamId") Long teamId);
 
 	@Modifying(clearAutomatically = true, flushAutomatically = true)
