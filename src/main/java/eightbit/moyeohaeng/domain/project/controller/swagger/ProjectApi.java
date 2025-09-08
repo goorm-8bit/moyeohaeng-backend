@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
-import eightbit.moyeohaeng.domain.project.dto.ProjectDto;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectSortType;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
@@ -41,7 +40,7 @@ public interface ProjectApi {
 		@ApiResponse(
 			responseCode = "201",
 			description = "프로젝트 생성 성공",
-			content = @Content(schema = @Schema(implementation = ProjectDto.class))
+			content = @Content(schema = @Schema(implementation = ProjectCreateResponse.class))
 		),
 		@ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -62,7 +61,7 @@ public interface ProjectApi {
 		@ApiResponse(
 			responseCode = "200",
 			description = "수정 성공",
-			content = @Content(schema = @Schema(implementation = ProjectDto.class))
+			content = @Content(schema = @Schema(implementation = ProjectUpdateResponse.class))
 		),
 		@ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -80,10 +79,10 @@ public interface ProjectApi {
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	);
 
-	@Operation(summary = "프로젝트 목록 조회", description = "프로젝트 목록을 조회합니다. 팀 ID나 멤버 ID로 필터링하고 수정일시나 생성일시로 정렬할 수 있습니다.")
+	@Operation(summary = "프로젝트 목록 조회", description = "프로젝트 목록을 조회합니다. 팀 ID로 필터링하거나, 내가 접근 가능한 프로젝트를 수정일시/생성일시 기준으로 정렬하여 조회할 수 있습니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "프로젝트 목록 조회 성공",
-			content = @Content(schema = @Schema(implementation = SuccessResponse.class))),
+			content = @Content(schema = @Schema(implementation = ProjectSearchResponse.class))),
 		@ApiResponse(responseCode = "401", description = "인증되지 않은 사용자",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
 		@ApiResponse(responseCode = "403", description = "권한이 없는 사용자",
@@ -104,7 +103,7 @@ public interface ProjectApi {
 		@ApiResponse(
 			responseCode = "200",
 			description = "조회 성공",
-			content = @Content(schema = @Schema(implementation = ProjectDto.class))
+			content = @Content(schema = @Schema(implementation = ProjectGetResponse.class))
 		),
 		@ApiResponse(responseCode = "401", description = "인증 실패",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),

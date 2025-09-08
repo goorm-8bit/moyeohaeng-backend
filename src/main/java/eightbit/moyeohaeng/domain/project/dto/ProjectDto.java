@@ -23,7 +23,7 @@ public record ProjectDto(
 	@JsonProperty("isAllowGuest") boolean isAllowGuest,
 	@JsonProperty("isAllowViewer") boolean isAllowViewer,
 	LocalDateTime modifiedAt,
-	Team team
+	Team team // TODO 직력화 방어 추가
 
 ) {
 	public static ProjectDto from(Project project) {

@@ -58,7 +58,7 @@ public class Project extends BaseEntity {
 	private String color;
 
 	@Column(name = "travel_days")
-	private int travelDays;
+	private Integer travelDays;
 
 	@Column(name = "start_date")
 	private LocalDate startDate;
