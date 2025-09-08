@@ -2,6 +2,10 @@ package eightbit.moyeohaeng.domain.selection.dto.response;
 
 import java.time.LocalDateTime;
 
+import eightbit.moyeohaeng.domain.member.common.exception.MemberErrorCode;
+import eightbit.moyeohaeng.domain.member.common.exception.MemberException;
+import eightbit.moyeohaeng.domain.member.entity.member.Member;
+import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlockComment;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -26,12 +30,16 @@ public record PlaceBlockCommentResponse(
 	@Schema(description = "수정 시각")
 	LocalDateTime modifiedAt
 ) {
-	public static PlaceBlockCommentResponse of(PlaceBlockComment comment) {
+	public static PlaceBlockCommentResponse of(PlaceBlockComment comment, MemberRepository memberRepository) {
+		// author(email) 기반으로 Member 찾아오기
+		Member member = memberRepository.findByEmail(comment.getAuthor())
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
 		return new PlaceBlockCommentResponse(
 			comment.getId(),
 			comment.getContent(),
-			comment.getMember().getName(),
-			comment.getMember().getProfileImage(),
+			member.getName(),
+			member.getProfileImage(),
 			comment.getCreatedAt(),
 			comment.getModifiedAt()
 		);
