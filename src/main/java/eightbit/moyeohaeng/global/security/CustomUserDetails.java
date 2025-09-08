@@ -29,30 +29,20 @@ import lombok.Getter;
 public class CustomUserDetails implements UserDetails {
 
 	private final Long id;
+	private final String name;
 	private final String email;
+	private final String profileImage;
 	private final Collection<? extends GrantedAuthority> authorities;
-	// 비로그인 context
-	private final boolean guest;                 // true when authenticated via share token
-	private final String guestType;              // "Guest" | "viewer"
-	private final String shareOwnerEmail;        // owner email encoded in share token
+	private final UserType userType;
 
-	private CustomUserDetails(Long id, String email, Collection<? extends GrantedAuthority> authorities,
-		boolean guest, String guestType, String shareOwnerEmail) {
+	private CustomUserDetails(Long id, String name, String email, String profileImage,
+		Collection<? extends GrantedAuthority> authorities, UserType userType) {
 		this.id = id;
+		this.name = name;
 		this.email = email;
+		this.profileImage = profileImage;
 		this.authorities = authorities;
-		this.guest = guest;
-		this.guestType = guestType;
-		this.shareOwnerEmail = shareOwnerEmail;
-	}
-
-	private CustomUserDetails(Long id, String email, Collection<? extends GrantedAuthority> authorities) {
-		this.id = id;
-		this.email = email;
-		this.authorities = authorities;
-		this.guest = false;
-		this.guestType = null;
-		this.shareOwnerEmail = null;
+		this.userType = userType;
 	}
 
 	/**
@@ -66,30 +56,25 @@ public class CustomUserDetails implements UserDetails {
 		Objects.requireNonNull(member, "Member는 null일 수 없습니다.");
 		return new CustomUserDetails(
 			member.getId(),
+			member.getName(),
 			member.getEmail(),
+			member.getProfileImage(),
 			Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-			false,
-			null,
-			null
+			UserType.MEMBER
 		);
 	}
 
 	/**
 	 * Create a guest/viewer principal from share token context.
 	 */
-	public static CustomUserDetails guestOf(String userType, String ownerEmail) {
-		String normalized = userType == null ? "viewer" : userType.toLowerCase();
-		String role = switch (normalized) {
-			case "guest" -> "ROLE_GUEST";
-			default -> "ROLE_VIEWER";
-		};
+	public static CustomUserDetails guestOf(UserType userType) {
 		return new CustomUserDetails(
-			null,                    // no member id
-			null,                    // no email for anonymous user
-			Collections.singleton(new SimpleGrantedAuthority(role)),
-			true,
-			normalized,
-			ownerEmail
+			null,
+			null,
+			null,
+			null,
+			Collections.singleton(new SimpleGrantedAuthority("ROLE_" + userType.name())),
+			userType
 		);
 	}
 
@@ -105,6 +90,9 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public String getUsername() {
+		if (isGuest()) {
+			return userType.name();
+		}
 		return email;
 	}
 
@@ -133,14 +121,6 @@ public class CustomUserDetails implements UserDetails {
 	}
 
 	public boolean isGuest() {
-		return guest;
-	}
-
-	public String getGuestType() {
-		return guestType;
-	}
-
-	public String getShareOwnerEmail() {
-		return shareOwnerEmail;
+		return UserType.MEMBER != userType;
 	}
 }
