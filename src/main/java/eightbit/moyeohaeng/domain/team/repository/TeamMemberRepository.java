@@ -25,9 +25,9 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 	boolean existsByTeam_IdAndMember_Id(Long teamId, Long memberId);
 
 	@Query("""
-		   select tm.teamRole
-		   from TeamMember tm
-		   where tm.team.id = :teamId and tm.member.id = :memberId
+		  select tm.teamRole
+		  from TeamMember tm
+		  where tm.team.id = :teamId and tm.member.id = :memberId
 		""")
 	Optional<TeamRole> findRoleByTeamIdAndMemberId(@Param("teamId") Long teamId,
 		@Param("memberId") Long memberId);

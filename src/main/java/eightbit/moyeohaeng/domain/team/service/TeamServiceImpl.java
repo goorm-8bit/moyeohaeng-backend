@@ -47,6 +47,16 @@ public class TeamServiceImpl implements TeamService {
 		TeamRole teamRole = teamMemberRepository.findRoleByTeamIdAndMemberId(teamId, inviterMemberId)
 			.orElseThrow(() -> new TeamException(TeamErrorCode.NOT_HAVE_RIGHT));
 
+		if (teamRole == TeamRole.OWNER) {
+
+			TeamMember teamMember = TeamMember.builder()
+				.team(team)
+				.member(invitee)
+				.teamRole(TeamRole.MEMBER)
+				.build();
+
+			teamMemberRepository.save(teamMember);
+		}
 	}
 
 	// 멤버를 찾아서 teamName 으로 팀 이름을 만들고 만든 사람을 teamMember 이자 OWNER 권한으로 생성
