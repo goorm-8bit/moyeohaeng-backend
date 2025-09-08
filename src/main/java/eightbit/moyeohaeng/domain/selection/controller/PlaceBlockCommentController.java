@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import eightbit.moyeohaeng.domain.auth.UserRole;
+import eightbit.moyeohaeng.domain.auth.common.annotation.RequiredAccessRole;
 import eightbit.moyeohaeng.domain.selection.common.success.PlaceBlockCommentSuccessCode;
 import eightbit.moyeohaeng.domain.selection.controller.swagger.PlaceBlockCommentApi;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCommentCreateRequest;
@@ -34,6 +36,7 @@ public class PlaceBlockCommentController implements PlaceBlockCommentApi {
 
 	@PostMapping
 	@Override
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<PlaceBlockCommentResponse> create(
 		@PathVariable Long projectId,
 		@PathVariable Long placeBlockId,
@@ -47,6 +50,7 @@ public class PlaceBlockCommentController implements PlaceBlockCommentApi {
 
 	@PutMapping("/{commentId}")
 	@Override
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<PlaceBlockCommentResponse> update(
 		@PathVariable Long projectId,
 		@PathVariable Long placeBlockId,
@@ -61,6 +65,7 @@ public class PlaceBlockCommentController implements PlaceBlockCommentApi {
 
 	@DeleteMapping("/{commentId}")
 	@Override
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<PlaceBlockCommentDeleteResponse> delete(
 		@PathVariable Long projectId,
 		@PathVariable Long placeBlockId,
@@ -74,6 +79,7 @@ public class PlaceBlockCommentController implements PlaceBlockCommentApi {
 
 	@GetMapping
 	@Override
+	@RequiredAccessRole(UserRole.VIEWER)
 	public SuccessResponse<List<PlaceBlockCommentResponse>> getComments(
 		@PathVariable Long projectId,
 		@PathVariable Long placeBlockId
@@ -85,6 +91,7 @@ public class PlaceBlockCommentController implements PlaceBlockCommentApi {
 
 	@GetMapping("/summary")
 	@Override
+	@RequiredAccessRole(UserRole.VIEWER)
 	public SuccessResponse<PlaceBlockCommentSummaryResponse> getCommentSummary(
 		@PathVariable Long projectId,
 		@PathVariable Long placeBlockId

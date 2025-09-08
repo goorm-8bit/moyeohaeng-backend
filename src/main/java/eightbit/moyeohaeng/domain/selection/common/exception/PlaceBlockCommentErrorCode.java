@@ -11,8 +11,7 @@ import lombok.RequiredArgsConstructor;
 public enum PlaceBlockCommentErrorCode implements ErrorCode {
 
 	COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다.", "PBC1001"),
-	FORBIDDEN(HttpStatus.FORBIDDEN, "댓글에 대한 권한이 없습니다.", "PBC1002"),
-	;
+	FORBIDDEN(HttpStatus.FORBIDDEN, "댓글에 대한 권한이 없습니다.", "PBC1002");
 
 	private final HttpStatus status;
 	private final String message;
