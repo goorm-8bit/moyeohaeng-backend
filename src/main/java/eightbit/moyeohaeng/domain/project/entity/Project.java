@@ -9,6 +9,7 @@ import org.hibernate.annotations.SQLDelete;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.global.domain.BaseEntity;
+import eightbit.moyeohaeng.global.utils.TimeUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -53,8 +54,11 @@ public class Project extends BaseEntity {
 	@Column(name = "project_access", nullable = false)
 	private ProjectAccess projectAccess;
 
-	@Column(name = "location", length = 50)
-	private String location;
+	@Column(name = "color", length = 7)
+	private String color;
+
+	@Column(name = "travel_days")
+	private Integer travelDays;
 
 	@Column(name = "start_date")
 	private LocalDate startDate;
@@ -63,9 +67,11 @@ public class Project extends BaseEntity {
 	private LocalDate endDate;
 
 	@Column(name = "is_allow_guest", nullable = false)
+	@Builder.Default
 	private boolean isAllowGuest = false;
 
 	@Column(name = "is_allow_viewer", nullable = false)
+	@Builder.Default
 	private boolean isAllowViewer = false;
 
 	// 프로젝트 생성자 (소유자)
@@ -99,7 +105,27 @@ public class Project extends BaseEntity {
 			.endDate(endDate)
 			.projectAccess(ProjectAccess.PRIVATE)
 			.externalId(UUID.randomUUID().toString())
+			.color("#ffffff")
+			.travelDays(TimeUtils.calculateTravelDays(startDate, endDate))
 			.build();
+	}
+
+	public void update(String title, String color, LocalDate startDate, LocalDate endDate) {
+
+		// startDate와 endDate 검증
+		TimeUtils.validateDateRange(startDate, endDate);
+
+		this.title = Objects.requireNonNull(title, "title은 null일 수 없습니다.");
+		this.color = color;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.travelDays = TimeUtils.calculateTravelDays(startDate, endDate);
+	}
+
+	public void updateShareOption(boolean isAllowGuest, boolean isAllowViewer) {
+		this.isAllowGuest = isAllowGuest;
+		this.isAllowViewer = isAllowViewer;
+
 	}
 
 }

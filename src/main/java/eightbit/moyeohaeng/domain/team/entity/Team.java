@@ -20,23 +20,15 @@ import lombok.NoArgsConstructor;
 @Table(name = "teams")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @SQLDelete(sql = "UPDATE teams SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 public class Team extends BaseEntity {
 
 	@Id
-	//	@Column(name = "team_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name = "team_name", nullable = false, length = 100)
 	private String name;
 
-	//	@Builder.Default
-	//	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	//	private List<TeamMember> teamMembers = new ArrayList<>();
-	
-	@Builder
-	private Team(String name) {
-		this.name = name;
-	}
 }

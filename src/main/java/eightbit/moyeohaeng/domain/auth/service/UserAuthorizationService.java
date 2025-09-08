@@ -74,7 +74,7 @@ public class UserAuthorizationService {
 			boolean isTeamMember = teamMemberRepository.existsByTeam_IdAndMember_Id(teamId, memberId);
 			return isTeamMember ? UserRole.MEMBER : UserRole.VIEWER;
 		}
-		return UserRole.VIEWER;
+		return UserRole.ANY;
 	}
 
 	public static boolean isAllowed(UserRole actual, UserRole required) {
