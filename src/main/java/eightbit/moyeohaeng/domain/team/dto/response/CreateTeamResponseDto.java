@@ -9,4 +9,8 @@ public record CreateTeamResponseDto(
 	@NotNull
 	TeamDto newTeam
 ) {
+
+	public static CreateTeamResponseDto from(TeamDto dto) {
+		return new CreateTeamResponseDto(dto);
+	}
 }

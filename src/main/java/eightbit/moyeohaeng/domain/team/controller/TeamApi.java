@@ -5,6 +5,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import eightbit.moyeohaeng.domain.team.dto.TeamDto;
 import eightbit.moyeohaeng.domain.team.dto.request.CreateTeamRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.request.InviteMemberRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.request.UpdateMemberRoleRequestDto;
@@ -99,4 +100,10 @@ public interface TeamApi {
 	)
 	ResponseEntity<TeamMembersResponseDto> getTeamMembers(@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable("teamId") Long teamId);
+
+	@Operation(
+		summary = "팀 id 를 이용해서 팀원 단건 출력"
+	)
+	ResponseEntity<TeamDto> getTeam(@AuthenticationPrincipal CustomUserDetails user,
+		@PathVariable Long teamId);
 }

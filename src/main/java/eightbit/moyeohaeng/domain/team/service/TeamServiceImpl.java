@@ -27,8 +27,9 @@ public class TeamServiceImpl implements TeamService {
 	private final MemberRepository memberRepository;
 
 	// 멤버를 찾아서 teamName 으로 팀 이름을 만들고 만든 사람을 teamMember 이자 OWNER 권한으로 생성
+	@Override
 	@Transactional
-	public TeamDto creationTeam(String teamName, Long memberId) {
+	public TeamDto createTeam(String teamName, Long memberId) {
 
 		Team team = Team.builder()
 			.name(teamName)
@@ -53,11 +54,14 @@ public class TeamServiceImpl implements TeamService {
 
 	// 수정 필요함
 	// 외부에 teamid 로 팀 조회가 필요한 경우
+	@Override
 	@Transactional(readOnly = true)
 	public TeamDto getTeamDto(Long teamId) {
-		return teamRepository.findById(teamId)
-			.map(team -> TeamDto.from(team))
-			.orElseThrow(() -> new TeamException(TeamErrorCode.TEAM_NOT_FOUND));
+		// return teamRepository.findById(teamId)
+		// 	.map(team -> TeamDto.from(team))
+		// 	.orElseThrow(() -> new TeamException(TeamErrorCode.TEAM_NOT_FOUND));
+
+		return TeamDto.from(getTeam(teamId));
 	}
 
 	/**
@@ -67,12 +71,14 @@ public class TeamServiceImpl implements TeamService {
 	 *
 	 * @return Team
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Team getTeam(Long teamId) {
 		return teamRepository.findById(teamId)
 			.orElseThrow(() -> new TeamException(TeamErrorCode.TEAM_NOT_FOUND));
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<TeamDto> getMyTeams(Long memberId) {
 
@@ -83,10 +89,11 @@ public class TeamServiceImpl implements TeamService {
 			.toList();
 	}
 
+	@Override
 	@Transactional(readOnly = true)
-	public List<MemberDto> getTeamMembers(Long teamId, Long userId) {
+	public List<MemberDto> getTeamMembers(Long teamId, Long memberId) {
 
-		boolean b = teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, userId);
+		boolean b = teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, memberId);
 
 		if (b == true) {
 			List<Member> members = teamMemberRepository.findMembersByTeamId(teamId);
@@ -99,6 +106,7 @@ public class TeamServiceImpl implements TeamService {
 		}
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public TeamRole findMyRole(Long teamId, Long memberId) {
 
@@ -108,8 +116,9 @@ public class TeamServiceImpl implements TeamService {
 		);
 	}
 
+	@Override
 	@Transactional
-	public boolean deleteTeam(Long teamId, Long memberId) {
+	public Boolean deleteTeam(Long teamId, Long memberId) {
 
 		TeamRole memberRole = findMyRole(teamId, memberId);
 
@@ -126,5 +135,11 @@ public class TeamServiceImpl implements TeamService {
 			// 권한 없음
 			throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
 		}
+	}
+
+	@Override
+	public Boolean checkTeamMember(Long teamId, Long memberId) {
+
+		return teamMemberRepository.existsByTeam_IdAndMember_Id(teamId, memberId);
 	}
 }
