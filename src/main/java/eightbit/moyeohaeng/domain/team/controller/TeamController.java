@@ -54,7 +54,7 @@ public class TeamController implements TeamApi {
 		@RequestBody @Valid InviteMemberRequestDto requestDto
 	) {
 
-		teamService.inviteMember();
+		// teamService.inviteMember();
 
 		return null;
 	}
