@@ -6,7 +6,7 @@ import eightbit.moyeohaeng.domain.place.entity.Place;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "장소 블록 생성 요청 DTO")
+@Schema(description = "장소 블록 생성 응답 DTO")
 public record PlaceBlockCreateResponse(
 	@Schema(description = "장소 블록 ID", example = "1")
 	Long id,
