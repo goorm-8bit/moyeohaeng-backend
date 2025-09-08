@@ -8,20 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlockLike;
 
 @Repository
 public interface PlaceBlockLikeRepository extends JpaRepository<PlaceBlockLike, Long> {
 
-	Optional<PlaceBlockLike> findByMemberAndPlaceBlockAndDeletedAtIsNull(Member member, PlaceBlock placeBlock);
+	Optional<PlaceBlockLike> findByAuthorAndPlaceBlockAndDeletedAtIsNull(String author, PlaceBlock placeBlock);
 
-	Optional<PlaceBlockLike> findByMemberAndPlaceBlock(Member member, PlaceBlock placeBlock);
+	Optional<PlaceBlockLike> findByAuthorAndPlaceBlock(String author, PlaceBlock placeBlock);
 
 	Long countByPlaceBlockAndDeletedAtIsNull(PlaceBlock placeBlock);
-
-	java.util.List<PlaceBlockLike> findAllByPlaceBlockAndDeletedAtIsNull(PlaceBlock placeBlock);
 
 	// 소프트 삭제된 레코드 복구
 	@Modifying(clearAutomatically = true, flushAutomatically = true)
@@ -29,6 +26,6 @@ public interface PlaceBlockLikeRepository extends JpaRepository<PlaceBlockLike, 
 	int restoreById(@Param("id") Long id);
 
 	// 성능 최적화를 위한 이메일 프로젝션
-	@Query("SELECT p.member.email FROM PlaceBlockLike p WHERE p.placeBlock = :placeBlock AND p.deletedAt IS NULL")
+	@Query("SELECT p.author FROM PlaceBlockLike p WHERE p.placeBlock = :placeBlock AND p.deletedAt IS NULL")
 	java.util.List<String> findAllEmailsByPlaceBlockAndDeletedAtIsNull(@Param("placeBlock") PlaceBlock placeBlock);
 }

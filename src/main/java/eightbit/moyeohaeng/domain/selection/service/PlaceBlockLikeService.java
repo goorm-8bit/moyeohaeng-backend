@@ -6,10 +6,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import eightbit.moyeohaeng.domain.member.common.exception.MemberErrorCode;
-import eightbit.moyeohaeng.domain.member.common.exception.MemberException;
-import eightbit.moyeohaeng.domain.member.entity.member.Member;
-import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.domain.project.common.annotation.ActionType;
 import eightbit.moyeohaeng.domain.project.common.annotation.EventType;
 import eightbit.moyeohaeng.domain.project.common.annotation.ProjectEvent;
@@ -21,6 +17,7 @@ import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlockLike;
 import eightbit.moyeohaeng.domain.selection.repository.PlaceBlockLikeRepository;
 import eightbit.moyeohaeng.domain.selection.repository.PlaceBlockRepository;
+import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,75 +27,66 @@ public class PlaceBlockLikeService {
 
 	private final PlaceBlockLikeRepository placeBlockLikeRepository;
 	private final PlaceBlockRepository placeBlockRepository;
-	private final MemberRepository memberRepository;
 
 	/**
 	 * 장소 블록 좋아요 토글
 	 *
 	 * @param projectId    프로젝트 ID
 	 * @param placeBlockId 장소 블록 ID
-	 * @param memberId     좋아요 요청한 회원 ID
 	 * @return 최신 좋아요 요약 응답 DTO
 	 */
 	@Transactional
 	@ProjectEvent(eventType = EventType.PLACE_BLOCK_LIKE, actionType = ActionType.UPDATED)
-	public PlaceBlockLikeSummaryResponse toggleLike(@ProjectId Long projectId, Long placeBlockId, Long memberId) {
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-
+	public PlaceBlockLikeSummaryResponse toggleLike(
+		@ProjectId Long projectId,
+		Long placeBlockId,
+		CustomUserDetails currentUser
+	) {
+		String author = currentUser.getUsername(); // email
 		PlaceBlock placeBlock = placeBlockRepository.findByIdAndProjectIdAndDeletedAtIsNull(placeBlockId, projectId)
 			.orElseThrow(() -> new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND));
 
 		// 1. 활성 좋아요 → 언라이크
-		return placeBlockLikeRepository.findByMemberAndPlaceBlockAndDeletedAtIsNull(member, placeBlock)
-			.map(existingLike -> handleUnlike(existingLike, placeBlock, member))
+		return placeBlockLikeRepository.findByAuthorAndPlaceBlockAndDeletedAtIsNull(author, placeBlock)
+			.map(existingLike -> handleUnlike(existingLike, placeBlock, author))
 			// 2. 비활성 좋아요 → 복구
-			.orElseGet(() -> placeBlockLikeRepository.findByMemberAndPlaceBlock(member, placeBlock)
-				.map(inactive -> handleRestore(inactive, placeBlock, member))
+			.orElseGet(() -> placeBlockLikeRepository.findByAuthorAndPlaceBlock(author, placeBlock)
+				.map(inactive -> handleRestore(inactive, placeBlock, author))
 				// 3. 아예 없음 → 새 INSERT
-				.orElseGet(() -> handleInsert(member, placeBlock))
+				.orElseGet(() -> handleInsert(author, placeBlock))
 			);
 	}
 
-	private PlaceBlockLikeSummaryResponse handleUnlike(PlaceBlockLike like, PlaceBlock placeBlock, Member member) {
-		placeBlockLikeRepository.delete(like); // @SQLDelete로 soft delete
-		return buildLikeSummary(placeBlock, member);
+	private PlaceBlockLikeSummaryResponse handleUnlike(PlaceBlockLike like, PlaceBlock placeBlock, String author) {
+		placeBlockLikeRepository.delete(like); // soft delete
+		return buildLikeSummary(placeBlock, author);
 	}
 
-	private PlaceBlockLikeSummaryResponse handleRestore(PlaceBlockLike like, PlaceBlock placeBlock, Member member) {
+	private PlaceBlockLikeSummaryResponse handleRestore(PlaceBlockLike like, PlaceBlock placeBlock, String author) {
 		placeBlockLikeRepository.restoreById(like.getId());
-		return buildLikeSummary(placeBlock, member);
+		return buildLikeSummary(placeBlock, author);
 	}
 
-	private PlaceBlockLikeSummaryResponse handleInsert(Member member, PlaceBlock placeBlock) {
+	private PlaceBlockLikeSummaryResponse handleInsert(String author, PlaceBlock placeBlock) {
 		try {
-			placeBlockLikeRepository.save(
-				PlaceBlockLike.builder()
-					.member(member)
-					.placeBlock(placeBlock)
-					.build()
-			);
+			placeBlockLikeRepository.save(PlaceBlockLike.of(author, placeBlock));
 		} catch (DataIntegrityViolationException ignore) {
-			// 동시 요청이 INSERT race condition 일으킬 경우 → 그냥 요약만 재계산
+			// 동시 요청으로 인한 race condition → 무시하고 요약만 갱신
 		}
-		return buildLikeSummary(placeBlock, member);
+		return buildLikeSummary(placeBlock, author);
 	}
 
 	/**
 	 * 장소 블록 좋아요 요약 정보 생성
 	 *
 	 * @param placeBlock 대상 장소 블록
-	 * @param member     요청한 회원
 	 * @return PlaceBlockLikeSummaryResponse
 	 */
-	private PlaceBlockLikeSummaryResponse buildLikeSummary(PlaceBlock placeBlock, Member member) {
+	private PlaceBlockLikeSummaryResponse buildLikeSummary(PlaceBlock placeBlock, String author) {
 		Long totalCount = placeBlockLikeRepository.countByPlaceBlockAndDeletedAtIsNull(placeBlock);
-		List<String> likedMembers = placeBlockLikeRepository.findAllByPlaceBlockAndDeletedAtIsNull(placeBlock)
-			.stream()
-			.map(like -> like.getMember().getEmail())
-			.toList();
+		List<String> likedMembers = placeBlockLikeRepository.findAllEmailsByPlaceBlockAndDeletedAtIsNull(placeBlock);
 
-		boolean liked = placeBlockLikeRepository.findByMemberAndPlaceBlockAndDeletedAtIsNull(member, placeBlock)
+		boolean liked = placeBlockLikeRepository.findByAuthorAndPlaceBlockAndDeletedAtIsNull(author, placeBlock)
 			.isPresent();
 
 		return PlaceBlockLikeSummaryResponse.of(totalCount, liked, likedMembers);
