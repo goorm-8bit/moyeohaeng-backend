@@ -65,7 +65,7 @@ public class UserAuthorizationService {
 		}
 
 		// No authentication principal
-		return UserRole.VIEWER;
+		return UserRole.ANY;
 	}
 
 	public UserRole resolveTeamRole(Long teamId, HttpServletRequest request) {
