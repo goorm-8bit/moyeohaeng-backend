@@ -2,7 +2,6 @@ package eightbit.moyeohaeng.domain.selection.controller;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,13 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import eightbit.moyeohaeng.domain.selection.common.success.PlaceBlockCommentSuccessCode;
 import eightbit.moyeohaeng.domain.selection.controller.swagger.PlaceBlockCommentApi;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCommentCreateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCommentUpdateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentDeleteResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentSummaryResponse;
 import eightbit.moyeohaeng.domain.selection.service.PlaceBlockCommentService;
@@ -42,7 +41,7 @@ public class PlaceBlockCommentController implements PlaceBlockCommentApi {
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
 		PlaceBlockCommentResponse response =
-			commentService.create(projectId, placeBlockId, currentUser.getMemberId(), request);
+			commentService.create(projectId, placeBlockId, currentUser, request);
 		return SuccessResponse.of(PlaceBlockCommentSuccessCode.CREATE_COMMENT, response);
 	}
 
@@ -56,20 +55,21 @@ public class PlaceBlockCommentController implements PlaceBlockCommentApi {
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
 		PlaceBlockCommentResponse response =
-			commentService.update(projectId, placeBlockId, commentId, currentUser.getMemberId(), request);
+			commentService.update(projectId, placeBlockId, commentId, currentUser, request);
 		return SuccessResponse.of(PlaceBlockCommentSuccessCode.UPDATE_COMMENT, response);
 	}
 
 	@DeleteMapping("/{commentId}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@Override
-	public void delete(
+	public SuccessResponse<PlaceBlockCommentDeleteResponse> delete(
 		@PathVariable Long projectId,
 		@PathVariable Long placeBlockId,
 		@PathVariable Long commentId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
-		commentService.delete(projectId, placeBlockId, commentId, currentUser.getMemberId());
+		PlaceBlockCommentDeleteResponse response =
+			commentService.delete(projectId, placeBlockId, commentId, currentUser);
+		return SuccessResponse.of(PlaceBlockCommentSuccessCode.DELETE_COMMENT, response);
 	}
 
 	@GetMapping

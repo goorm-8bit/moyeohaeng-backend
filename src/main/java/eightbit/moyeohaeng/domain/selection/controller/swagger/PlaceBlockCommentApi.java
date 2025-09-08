@@ -6,6 +6,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCommentCreateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCommentUpdateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentDeleteResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentSummaryResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
@@ -84,7 +85,7 @@ public interface PlaceBlockCommentApi {
 		@ApiResponse(responseCode = "404", description = "프로젝트/장소블록/댓글 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	void delete(
+	SuccessResponse<PlaceBlockCommentDeleteResponse> delete(
 		@Parameter(description = "프로젝트 ID", required = true, example = "1")
 		Long projectId,
 		@Parameter(description = "장소블록 ID", required = true, example = "10")
