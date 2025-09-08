@@ -19,12 +19,14 @@ import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockErrorCode
 import eightbit.moyeohaeng.domain.selection.common.exception.PlaceBlockException;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCommentCreateRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCommentUpdateRequest;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentDeleteResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentSummaryResponse;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlockComment;
 import eightbit.moyeohaeng.domain.selection.repository.PlaceBlockCommentRepository;
 import eightbit.moyeohaeng.domain.selection.repository.PlaceBlockRepository;
+import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -43,15 +45,14 @@ public class PlaceBlockCommentService {
 	@ProjectEvent(eventType = EventType.PLACE_BLOCK_COMMENT, actionType = ActionType.CREATED)
 	public PlaceBlockCommentResponse create(
 		@ProjectId Long projectId,
-		Long placeBlockId, Long memberId, PlaceBlockCommentCreateRequest request) {
+		Long placeBlockId, CustomUserDetails currentUser, PlaceBlockCommentCreateRequest request) {
 
-		Member member = getMember(memberId);
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 
-		PlaceBlockComment comment = PlaceBlockComment.of(request.content(), member, placeBlock);
+		PlaceBlockComment comment = PlaceBlockComment.of(request.content(), currentUser.getUsername(), placeBlock);
 		commentRepository.save(comment);
 
-		return PlaceBlockCommentResponse.of(comment);
+		return PlaceBlockCommentResponse.of(comment, memberRepository);
 	}
 
 	/**
@@ -61,22 +62,21 @@ public class PlaceBlockCommentService {
 	@ProjectEvent(eventType = EventType.PLACE_BLOCK_COMMENT, actionType = ActionType.UPDATED)
 	public PlaceBlockCommentResponse update(
 		@ProjectId Long projectId,
-		Long placeBlockId, Long commentId, Long memberId, PlaceBlockCommentUpdateRequest request) {
+		Long placeBlockId, Long commentId, CustomUserDetails currentUser, PlaceBlockCommentUpdateRequest request) {
 
-		Member member = getMember(memberId);
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 
 		PlaceBlockComment comment = commentRepository.findByIdAndPlaceBlockAndDeletedAtIsNull(commentId, placeBlock)
 			.orElseThrow(() -> new PlaceBlockCommentException(PlaceBlockCommentErrorCode.COMMENT_NOT_FOUND));
 
 		// 권한 확인
-		if (!comment.getMember().getId().equals(member.getId())) {
+		if (!comment.getAuthor().equals(currentUser.getUsername())) {
 			throw new PlaceBlockCommentException(PlaceBlockCommentErrorCode.FORBIDDEN);
 		}
 
 		comment.updateContent(request.content());
 
-		return PlaceBlockCommentResponse.of(comment);
+		return PlaceBlockCommentResponse.of(comment, memberRepository);
 	}
 
 	/**
@@ -84,21 +84,23 @@ public class PlaceBlockCommentService {
 	 */
 	@Transactional
 	@ProjectEvent(eventType = EventType.PLACE_BLOCK_COMMENT, actionType = ActionType.DELETED)
-	public void delete(@ProjectId Long projectId,
-		Long placeBlockId, Long commentId, Long memberId) {
+	public PlaceBlockCommentDeleteResponse delete(@ProjectId Long projectId,
+		Long placeBlockId, Long commentId, CustomUserDetails currentUser) {
 
-		Member member = getMember(memberId);
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 
-		PlaceBlockComment comment = commentRepository.findByIdAndPlaceBlockAndDeletedAtIsNull(commentId, placeBlock)
+		PlaceBlockComment comment = commentRepository
+			.findByIdAndPlaceBlockAndDeletedAtIsNull(commentId, placeBlock)
 			.orElseThrow(() -> new PlaceBlockCommentException(PlaceBlockCommentErrorCode.COMMENT_NOT_FOUND));
 
 		// 권한 확인
-		if (!comment.getMember().getId().equals(member.getId())) {
+		if (!comment.getAuthor().equals(currentUser.getUsername())) {
 			throw new PlaceBlockCommentException(PlaceBlockCommentErrorCode.FORBIDDEN);
 		}
 
 		commentRepository.delete(comment);
+
+		return PlaceBlockCommentDeleteResponse.from(comment);
 	}
 
 	/**
@@ -110,7 +112,7 @@ public class PlaceBlockCommentService {
 
 		return commentRepository.findAllByPlaceBlockAndDeletedAtIsNullOrderByCreatedAtAsc(placeBlock)
 			.stream()
-			.map(PlaceBlockCommentResponse::of)
+			.map(comment -> PlaceBlockCommentResponse.of(comment, memberRepository))
 			.toList();
 	}
 
@@ -124,16 +126,15 @@ public class PlaceBlockCommentService {
 		int totalCount = commentRepository.countByPlaceBlockAndDeletedAtIsNull(placeBlock).intValue();
 
 		return commentRepository.findTop1ByPlaceBlockAndDeletedAtIsNullOrderByCreatedAtDesc(placeBlock)
-			.map(last -> new PlaceBlockCommentSummaryResponse(
-				totalCount,
-				new PlaceBlockCommentSummaryResponse.LastComment(last.getContent(), last.getMember().getName())
-			))
+			.map(last -> {
+				Member member = memberRepository.findByEmail(last.getAuthor())
+					.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+				return new PlaceBlockCommentSummaryResponse(
+					totalCount,
+					new PlaceBlockCommentSummaryResponse.LastComment(last.getContent(), member.getName())
+				);
+			})
 			.orElse(new PlaceBlockCommentSummaryResponse(totalCount, null));
-	}
-
-	private Member getMember(Long memberId) {
-		return memberRepository.findById(memberId)
-			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 	}
 
 	private PlaceBlock getPlaceBlock(Long projectId, Long placeBlockId) {
