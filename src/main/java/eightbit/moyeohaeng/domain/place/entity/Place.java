@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "places")
-@Check(constraints = "latitude BETWEEN -90 AND 90 AND longitude BETWEEN -180 AND 180")
+@Check(constraints = "latitude BETWEEN 33.0 AND 43.0 AND longitude BETWEEN 124.0 AND 132.0")
 public class Place extends BaseEntity {
 
 	@Id
@@ -34,10 +34,10 @@ public class Place extends BaseEntity {
 	@Column(name = "address")
 	private String address;
 
-	@Column(name = "latitude", nullable = false)
+	@Column(name = "latitude", nullable = false, precision = 10)
 	private Double latitude;
 
-	@Column(name = "longitude", nullable = false)
+	@Column(name = "longitude", nullable = false, precision = 10)
 	private Double longitude;
 
 	@Column(name = "detail_link")

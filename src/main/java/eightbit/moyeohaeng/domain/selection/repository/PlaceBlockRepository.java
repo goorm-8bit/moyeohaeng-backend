@@ -1,5 +1,7 @@
 package eightbit.moyeohaeng.domain.selection.repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -29,4 +31,6 @@ public interface PlaceBlockRepository extends JpaRepository<PlaceBlock, Long> {
 	boolean existsByIdAndProjectId(Long id, Long projectId);
 
 	Optional<PlaceBlock> findByIdAndProjectId(Long id, Long projectId);
+
+	List<PlaceBlock> findByIdInAndProjectId(Collection<Long> ids, Long projectId);
 }
