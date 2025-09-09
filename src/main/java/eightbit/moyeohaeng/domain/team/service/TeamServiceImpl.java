@@ -11,6 +11,7 @@ import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.domain.team.dto.MemberDto;
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
+import eightbit.moyeohaeng.domain.team.dto.response.InviteMemberResponseDto;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.entity.TeamMember;
 import eightbit.moyeohaeng.domain.team.entity.TeamRole;
@@ -30,7 +31,7 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public void inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId) {
+	public InviteMemberResponseDto inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId) {
 
 		// 1) 팀 존재 여부
 		Team team = teamRepository.findById(teamId)
@@ -55,7 +56,15 @@ public class TeamServiceImpl implements TeamService {
 				.teamRole(TeamRole.MEMBER)
 				.build();
 
-			teamMemberRepository.save(teamMember);
+			TeamMember saved = teamMemberRepository.save(teamMember);
+
+			return InviteMemberResponseDto.builder()
+				.teamId(teamId)
+				.memberId(inviteeMemberId)
+				.build();
+
+		} else {
+			throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
 		}
 	}
 
