@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import eightbit.moyeohaeng.domain.member.common.exception.MemberErrorCode;
 import eightbit.moyeohaeng.domain.member.common.exception.MemberException;
+import eightbit.moyeohaeng.domain.member.dto.MemberDto;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
-import eightbit.moyeohaeng.domain.team.dto.MemberDto;
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.entity.TeamMember;
