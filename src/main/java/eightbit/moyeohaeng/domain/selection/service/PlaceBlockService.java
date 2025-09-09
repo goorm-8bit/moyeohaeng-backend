@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import eightbit.moyeohaeng.domain.place.common.exception.PlaceErrorCode;
 import eightbit.moyeohaeng.domain.place.common.exception.PlaceException;
@@ -76,6 +77,10 @@ public class PlaceBlockService {
 		List<Long> placeBlockIds = placeBlocks.stream()
 			.map(PlaceBlockResponse::id)
 			.toList();
+
+		if (ObjectUtils.isEmpty(placeBlockIds)) {
+			return List.of();
+		}
 
 		// 좋아요 조회
 		Map<Long, PlaceBlockLikeSummary> likes = placeBlockRepository.findPlaceBlockLikes(placeBlockIds, username);

@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
+import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLSubQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentSummary;
@@ -118,7 +118,7 @@ public class PlaceBlockRepositoryImpl implements PlaceBlockRepositoryCustom {
 			));
 
 		// 각 장소 블록의 가장 최신 댓글 ID 조회 서브 쿼리
-		JPQLSubQuery<Long> latestCommentIds = JPAExpressions
+		SubQueryExpression<Long> latestCommentIds = JPAExpressions
 			.select(latestComment.id.max())
 			.from(latestComment)
 			.where(
