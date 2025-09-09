@@ -31,8 +31,6 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class PlaceBlockCommentService {
 
-	private static final String GUEST_IDENTIFIER = "guest";
-
 	private final PlaceBlockCommentRepository commentRepository;
 	private final PlaceBlockRepository placeBlockRepository;
 	private final MemberRepository memberRepository;
@@ -41,23 +39,9 @@ public class PlaceBlockCommentService {
 	}
 
 	private AuthorView resolveAuthor(String authorIdentifier) {
-		if (authorIdentifier == null || authorIdentifier.isBlank()
-			|| GUEST_IDENTIFIER.equalsIgnoreCase(authorIdentifier)) {
-			return new AuthorView("게스트", null);
-		}
 		return memberRepository.findByEmail(authorIdentifier)
-			.map(member -> new AuthorView(member.getName(), member.getProfileImage()))
+			.map(m -> new AuthorView(m.getName(), m.getProfileImage()))
 			.orElse(new AuthorView("게스트", null));
-	}
-
-	private String resolveAuthorIdentifier(CustomUserDetails currentUser) {
-		if (currentUser == null) {
-			return GUEST_IDENTIFIER;
-		}
-		if (currentUser.isGuest()) {
-			return GUEST_IDENTIFIER;
-		}
-		return currentUser.getUsername();
 	}
 
 	private PlaceBlockCommentResponse toResponse(PlaceBlockComment comment) {
@@ -76,9 +60,12 @@ public class PlaceBlockCommentService {
 		CustomUserDetails currentUser,
 		PlaceBlockCommentCreateRequest request
 	) {
+		if (currentUser == null) {
+			throw new PlaceBlockCommentException(PlaceBlockCommentErrorCode.FORBIDDEN);
+		}
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 
-		String authorIdentifier = resolveAuthorIdentifier(currentUser);
+		String authorIdentifier = currentUser.getUsername(); // 회원=email, 게스트=uuid
 		PlaceBlockComment comment = PlaceBlockComment.of(request.content(), authorIdentifier, placeBlock);
 		commentRepository.save(comment);
 
@@ -97,14 +84,17 @@ public class PlaceBlockCommentService {
 		CustomUserDetails currentUser,
 		PlaceBlockCommentUpdateRequest request
 	) {
+		if (currentUser == null) {
+			throw new PlaceBlockCommentException(PlaceBlockCommentErrorCode.FORBIDDEN);
+		}
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 
 		PlaceBlockComment comment = commentRepository
 			.findByIdAndPlaceBlockAndDeletedAtIsNull(commentId, placeBlock)
 			.orElseThrow(() -> new PlaceBlockCommentException(PlaceBlockCommentErrorCode.COMMENT_NOT_FOUND));
 
-		String authorIdentifier = resolveAuthorIdentifier(currentUser);
-		if (!comment.getAuthor().equals(authorIdentifier)) {
+		// 소유자 검증: 이메일(email) 또는 게스트 uuid
+		if (!comment.getAuthor().equals(currentUser.getUsername())) {
 			throw new PlaceBlockCommentException(PlaceBlockCommentErrorCode.FORBIDDEN);
 		}
 
@@ -123,14 +113,16 @@ public class PlaceBlockCommentService {
 		Long commentId,
 		CustomUserDetails currentUser
 	) {
+		if (currentUser == null) {
+			throw new PlaceBlockCommentException(PlaceBlockCommentErrorCode.FORBIDDEN);
+		}
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 
 		PlaceBlockComment comment = commentRepository
 			.findByIdAndPlaceBlockAndDeletedAtIsNull(commentId, placeBlock)
 			.orElseThrow(() -> new PlaceBlockCommentException(PlaceBlockCommentErrorCode.COMMENT_NOT_FOUND));
 
-		String authorIdentifier = resolveAuthorIdentifier(currentUser);
-		if (!comment.getAuthor().equals(authorIdentifier)) {
+		if (!comment.getAuthor().equals(currentUser.getUsername())) {
 			throw new PlaceBlockCommentException(PlaceBlockCommentErrorCode.FORBIDDEN);
 		}
 
