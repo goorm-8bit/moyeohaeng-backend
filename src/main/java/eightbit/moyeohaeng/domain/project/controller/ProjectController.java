@@ -41,7 +41,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping({"/v1/projects", "/sub/v1/projects"})
+@RequestMapping("/v1/projects")
 public class ProjectController implements ProjectApi {
 
 	private final ProjectService projectService;
@@ -114,7 +114,7 @@ public class ProjectController implements ProjectApi {
 
 	@Override
 	@GetMapping("/{projectId}/members")
-	@RequiredAccessRole(UserRole.MEMBER)
+	@RequiredAccessRole(UserRole.VIEWER)
 	public SuccessResponse<List<PresenceResponse>> getConnectedMembers(
 		@PathVariable Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser

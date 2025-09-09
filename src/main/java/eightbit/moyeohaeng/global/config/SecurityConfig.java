@@ -12,6 +12,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import eightbit.moyeohaeng.domain.member.service.MemberService;
+import eightbit.moyeohaeng.domain.project.service.ProjectService;
 import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;
 import eightbit.moyeohaeng.global.security.JwtAuthenticationFilter;
 import eightbit.moyeohaeng.global.security.ShareGuestAuthenticationFilter;
@@ -19,7 +21,6 @@ import eightbit.moyeohaeng.global.security.handler.CustomAccessDeniedHandler;
 import eightbit.moyeohaeng.global.security.handler.CustomAuthenticationEntryPoint;
 import eightbit.moyeohaeng.domain.member.service.MemberService;
 import eightbit.moyeohaeng.domain.project.service.ProjectService;
-
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -51,7 +52,6 @@ public class SecurityConfig {
             .formLogin(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/sub/v1/**").permitAll()
                 .requestMatchers("/v1/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
@@ -59,9 +59,8 @@ public class SecurityConfig {
             .exceptionHandling(handler -> handler
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .accessDeniedHandler(new CustomAccessDeniedHandler()))
-            // 공유가 허용된 경우 /sub/** 요청에 대해 게스트 Principal을 설정
-            .addFilterBefore(shareGuestAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+			.addFilterAfter(shareGuestAuthenticationFilter(), jwtAuthenticationFilter().getClass())
             .build();
     }
 
