@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -54,6 +55,17 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated())
+            .exceptionHandling(handler -> handler
+                .authenticationEntryPoint((request, response, e) -> {
+                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"status\": 401, \"error\": {\"code\": \"UNAUTHORIZED\", \"message\": \"인증이 필요합니다.\"}}");
+                })
+                .accessDeniedHandler((request, response, e) -> {
+                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"status\": 401, \"error\": {\"code\": \"UNAUTHORIZED\", \"message\": \"인증이 필요합니다.\"}}");
+                }))
             // 공유가 허용된 경우 /sub/** 요청에 대해 게스트 Principal을 설정
             .addFilterBefore(shareGuestAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
