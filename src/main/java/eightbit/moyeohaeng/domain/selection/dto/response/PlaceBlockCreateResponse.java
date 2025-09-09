@@ -2,14 +2,12 @@ package eightbit.moyeohaeng.domain.selection.dto.response;
 
 import java.time.LocalDateTime;
 
-import com.querydsl.core.annotations.QueryProjection;
-
+import eightbit.moyeohaeng.domain.place.entity.Place;
+import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 
-@Schema(description = "장소 블록 응답 DTO")
-@Builder
-public record PlaceBlockResponse(
+@Schema(description = "장소 블록 생성 응답 DTO")
+public record PlaceBlockCreateResponse(
 	@Schema(description = "장소 블록 ID", example = "1")
 	Long id,
 
@@ -37,7 +35,17 @@ public record PlaceBlockResponse(
 	@Schema(description = "생성 시각", example = "2025-09-05T10:50:03.3834426")
 	LocalDateTime createdAt
 ) {
-	@QueryProjection
-	public PlaceBlockResponse {
+	public static PlaceBlockCreateResponse of(PlaceBlock placeBlock, Place place) {
+		return new PlaceBlockCreateResponse(
+			placeBlock.getId(),
+			place.getName(),
+			place.getAddress(),
+			place.getLatitude(),
+			place.getLongitude(),
+			place.getDetailLink(),
+			place.getCategory(),
+			placeBlock.getMemo(),
+			placeBlock.getCreatedAt()
+		);
 	}
 }

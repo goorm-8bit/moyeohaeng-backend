@@ -41,7 +41,7 @@ public class PlaceGroup extends BaseEntity {
 	@Column(name = "color", nullable = false, length = 7)
 	private String color;
 
-	@Column(name = "memo")
+	@Column(name = "memo", length = 14)
 	private String memo;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
