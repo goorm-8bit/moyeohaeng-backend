@@ -50,7 +50,7 @@ public class TimeBlock extends BaseEntity {
 	@Column(name = "end_time")
 	private LocalTime endTime;
 
-	@Column(name = "memo", length = 50)
+	@Column(name = "memo", length = 14)
 	private String memo;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
