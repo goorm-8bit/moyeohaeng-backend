@@ -39,7 +39,6 @@ public class MemberSignupListener {
 			createPersonalTeamWithOwner(member);
 		} catch (Exception e) {
 			log.error("회원의 개인 팀 생성 실패. 회원 ID: {}", event.memberId(), e);
-			throw e;
 		}
 	}
 
