@@ -43,6 +43,10 @@ public class PresenceRepository {
 
 		// 삭제 전에 값 조회
 		Object value = redisTemplate.opsForHash().get(key, uuid.toString());
+		if (value == null) {
+			return null;
+		}
+
 		UserInfo userInfo = convertUserInfo(value);
 
 		// 삭제

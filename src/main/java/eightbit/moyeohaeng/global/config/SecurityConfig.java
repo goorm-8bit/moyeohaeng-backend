@@ -19,8 +19,6 @@ import eightbit.moyeohaeng.global.security.JwtAuthenticationFilter;
 import eightbit.moyeohaeng.global.security.ShareGuestAuthenticationFilter;
 import eightbit.moyeohaeng.global.security.handler.CustomAccessDeniedHandler;
 import eightbit.moyeohaeng.global.security.handler.CustomAuthenticationEntryPoint;
-import eightbit.moyeohaeng.domain.member.service.MemberService;
-import eightbit.moyeohaeng.domain.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -60,7 +58,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .accessDeniedHandler(new CustomAccessDeniedHandler()))
 			.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-			.addFilterAfter(shareGuestAuthenticationFilter(), jwtAuthenticationFilter().getClass())
+			.addFilterAfter(shareGuestAuthenticationFilter(), JwtAuthenticationFilter.class)
             .build();
     }
 
