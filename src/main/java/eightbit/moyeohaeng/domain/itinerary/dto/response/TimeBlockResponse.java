@@ -1,0 +1,46 @@
+package eightbit.moyeohaeng.domain.itinerary.dto.response;
+
+import java.time.LocalTime;
+
+import com.querydsl.core.annotations.QueryProjection;
+
+import eightbit.moyeohaeng.domain.itinerary.entity.TimeBlock;
+import eightbit.moyeohaeng.domain.place.dto.response.PlaceDetail;
+import eightbit.moyeohaeng.domain.place.entity.Place;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "시간 블록 응답 DTO")
+public record TimeBlockResponse(
+	@Schema(description = "시간 블록 ID", example = "1")
+	Long id,
+
+	@Schema(description = "일차", example = "1")
+	Integer day,
+
+	@Schema(description = "시작 시간", example = "20:30:00")
+	LocalTime startTime,
+
+	@Schema(description = "종료 시간", example = "22:00:00")
+	LocalTime endTime,
+
+	@Schema(description = "메모", example = "야경이 아름다운 곳")
+	String memo,
+
+	@Schema(description = "장소 정보")
+	PlaceDetail placeDetail
+) {
+	@QueryProjection
+	public TimeBlockResponse {
+	}
+
+	public static TimeBlockResponse of(TimeBlock timeBlock, Place place) {
+		return new TimeBlockResponse(
+			timeBlock.getId(),
+			timeBlock.getDay(),
+			timeBlock.getStartTime(),
+			timeBlock.getEndTime(),
+			timeBlock.getMemo(),
+			PlaceDetail.from(place)
+		);
+	}
+}

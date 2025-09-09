@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: moyeohaeng-test
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        highlight_sql: true
+    open-in-view: false
+    show-sql: false
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+
+jwt:
+  secret:
+    key: VEVTVFNFUkVUQ09ERUZPUk1PWUVPSEFFTkdURVNURU5WSVJPTk1FTlRET05PVFVTRVRISU5QUk9EVUNUSU9O
+  access-token:
+    expire-length: 60000 # 1분 (테스트용으로 짧게 설정)
+  refresh-token:
+    expire-length: 300000 # 5분 (테스트용으로 짧게 설정)
+
+cors:
+  allowed-origins: http://localhost:3000,http://localhost:5173
+  allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
+  allowed-headers: '*'
+
+logging:
+  level:
+    eightbit.moyeohaeng: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+server:
+  port: 0
