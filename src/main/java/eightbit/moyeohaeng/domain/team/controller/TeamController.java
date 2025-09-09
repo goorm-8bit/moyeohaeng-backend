@@ -138,12 +138,11 @@ public class TeamController implements TeamApi {
 		return null;
 	}
 
-	@GetMapping("/me/{memberId}")
+	@GetMapping("/me")
 	public ResponseEntity<GetMyTeamsResponseDto> getMyTeams(
-		@AuthenticationPrincipal CustomUserDetails user,
-		@PathVariable("memberId") Long memberId
+		@AuthenticationPrincipal CustomUserDetails user
 	) {
-
+		Long memberId = user.getId();
 		// find my-teams by memberId
 		if (Objects.equals(user.getId(), memberId)) {
 			List<TeamDto> myTeams = teamService.getMyTeams(memberId);
