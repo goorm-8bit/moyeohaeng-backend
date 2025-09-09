@@ -9,5 +9,5 @@ public enum EventType {
 	PROJECT,
 	TIME_BLOCK,
 	SCRAP_BOOK,
-	MEMBER_PRESENCE
+	PRESENCE
 }

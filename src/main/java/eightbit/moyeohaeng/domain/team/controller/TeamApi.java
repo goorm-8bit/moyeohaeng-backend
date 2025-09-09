@@ -110,8 +110,7 @@ public interface TeamApi {
 	@Operation(
 		summary = "현재 로그인 유저의 id 를 이용해서 속한 팀 목록 출력"
 	)
-	ResponseEntity<GetMyTeamsResponseDto> getMyTeams(@AuthenticationPrincipal CustomUserDetails user,
-		@PathVariable("memberId") Long memberId);
+	ResponseEntity<GetMyTeamsResponseDto> getMyTeams(@AuthenticationPrincipal CustomUserDetails user);
 
 	@Operation(
 		summary = "팀 id 를 이용해서 팀원 목록 출력"

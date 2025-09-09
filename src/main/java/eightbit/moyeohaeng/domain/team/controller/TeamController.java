@@ -142,12 +142,11 @@ public class TeamController implements TeamApi {
 		return null;
 	}
 
-	@GetMapping("/me/{memberId}")
+	@GetMapping("/me")
 	public ResponseEntity<GetMyTeamsResponseDto> getMyTeams(
-		@AuthenticationPrincipal CustomUserDetails user,
-		@PathVariable("memberId") Long memberId
+		@AuthenticationPrincipal CustomUserDetails user
 	) {
-
+		Long memberId = user.getId();
 		// find my-teams by memberId
 		if (Objects.equals(user.getId(), memberId)) {
 			List<TeamDto> myTeams = teamService.getMyTeams(memberId);
@@ -177,13 +176,7 @@ public class TeamController implements TeamApi {
 	public ResponseEntity<TeamDto> getTeam(@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable("teamId") Long teamId) {
 
-		// 1) 인증 주체 확인 (선택: 스프링 시큐리티가 이미 인증 보장하면 생략 가능)
-		if (user == null || user.getId() == null) {
-			// 스프링 시큐리티 필터가 보통 401로 막지만, 방어적으로 한 번 더
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
-
-		if (teamService.checkTeamMember(user.getId(), teamId)) {
+		if (teamService.checkTeamMember(teamId, user.getId())) {
 
 			TeamDto teamDto = teamService.getTeamDto(teamId);
 

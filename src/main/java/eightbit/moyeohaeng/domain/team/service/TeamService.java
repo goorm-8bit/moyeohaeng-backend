@@ -1,7 +1,7 @@
 package eightbit.moyeohaeng.domain.team.service;
 
 import java.util.List;
-
+import eightbit.moyeohaeng.domain.member.dto.MemberDto;
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
 import eightbit.moyeohaeng.domain.team.dto.response.InviteMemberResponseDto;
 import eightbit.moyeohaeng.domain.team.dto.response.TeamMembersResponseDto;

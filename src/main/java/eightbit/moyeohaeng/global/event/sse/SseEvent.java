@@ -9,5 +9,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public abstract class SseEvent {
 
+	private final SseEmitterId id;
 	private final UUID uuid;
 }
