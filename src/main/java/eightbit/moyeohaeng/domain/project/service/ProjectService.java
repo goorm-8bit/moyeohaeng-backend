@@ -22,8 +22,8 @@ import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.team.entity.Team;
-import eightbit.moyeohaeng.domain.team.repository.TeamRepository;
 import eightbit.moyeohaeng.domain.team.repository.TeamMemberRepository;
+import eightbit.moyeohaeng.domain.team.repository.TeamRepository;
 import eightbit.moyeohaeng.global.event.sse.SseEmitterService;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -131,7 +131,8 @@ public class ProjectService {
 		// 내가 속한 팀에 프로젝트 조회
 		if (condition.hasTeamFilter()) {
 			// 팀 멤버십 확인 (활성 멤버만)
-			boolean isMember = teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(condition.teamId(), memberId);
+			boolean isMember = teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(condition.teamId(),
+				memberId);
 
 			if (isMember) {
 				projects = projectRepository.findActiveByTeamId(condition.teamId(), sort);

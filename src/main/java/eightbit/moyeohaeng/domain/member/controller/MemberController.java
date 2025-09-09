@@ -1,6 +1,5 @@
 package eightbit.moyeohaeng.domain.member.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,11 +17,11 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/v1/members")
 public class MemberController {
 
-    private final MemberService memberService;
+	private final MemberService memberService;
 
-    @GetMapping("/me")
-    public SuccessResponse<MemberInfoResponse> getMyInfo(@AuthenticationPrincipal CustomUserDetails user) {
-        MemberInfoResponse memberInfo = MemberInfoResponse.from(memberService.findById(user.getId()));
-        return SuccessResponse.of(CommonSuccessCode.SELECT_SUCCESS, memberInfo);
-    }
+	@GetMapping("/me")
+	public SuccessResponse<MemberInfoResponse> getMyInfo(@AuthenticationPrincipal CustomUserDetails user) {
+		MemberInfoResponse memberInfo = MemberInfoResponse.from(memberService.findById(user.getId()));
+		return SuccessResponse.of(CommonSuccessCode.SELECT_SUCCESS, memberInfo);
+	}
 }
