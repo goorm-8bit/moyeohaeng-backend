@@ -20,6 +20,12 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
+
+        // RFC 6750/7235에 따라 WWW-Authenticate 헤더 추가
+        String errorDescription = accessDeniedException != null ? accessDeniedException.getMessage() : "인증이 필요합니다";
+        String wwwAuthHeader = String.format("Bearer realm=\"api\", error=\"insufficient_scope\", error_description=\"%s\"", errorDescription);
+        response.setHeader("WWW-Authenticate", wwwAuthHeader);
+
         response.getWriter().write("{\"status\": 401, \"error\": {\"code\": \"UNAUTHORIZED\", \"message\": \"인증이 필요합니다.\"}}");
     }
 }
