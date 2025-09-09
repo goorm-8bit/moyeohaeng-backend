@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLSubQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentSummary;
@@ -21,6 +23,7 @@ import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockLikeSummary;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.QPlaceBlockLastComment;
 import eightbit.moyeohaeng.domain.selection.dto.response.QPlaceBlockResponse;
+import eightbit.moyeohaeng.domain.selection.entity.QPlaceBlockComment;
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -98,6 +101,8 @@ public class PlaceBlockRepositoryImpl implements PlaceBlockRepositoryCustom {
 
 	@Override
 	public Map<Long, PlaceBlockCommentSummary> findPlaceBlockComments(List<Long> placeBlockIds) {
+		QPlaceBlockComment latestComment = new QPlaceBlockComment("latestComment");
+
 		// 각 장소 블록의 댓글 개수 조회
 		Map<Long, Long> commentCountMap = queryFactory
 			.select(placeBlockComment.placeBlock.id, placeBlockComment.count())
@@ -114,16 +119,15 @@ public class PlaceBlockRepositoryImpl implements PlaceBlockRepositoryCustom {
 				tuple -> Objects.requireNonNull(tuple.get(placeBlockComment.count()))
 			));
 
-		// 각 장소 블록의 가장 최신 댓글 ID 조회
-		List<Long> latestCommentIds = queryFactory
-			.select(placeBlockComment.id.max())
-			.from(placeBlockComment)
+		// 각 장소 블록의 가장 최신 댓글 ID 조회 서브 쿼리
+		JPQLSubQuery<Long> latestCommentIds = JPAExpressions
+			.select(latestComment.id.max())
+			.from(latestComment)
 			.where(
-				placeBlockComment.deletedAt.isNull(),
-				placeBlockComment.placeBlock.id.in(placeBlockIds)
+				latestComment.deletedAt.isNull(),
+				latestComment.placeBlock.id.in(placeBlockIds)
 			)
-			.groupBy(placeBlockComment.placeBlock.id)
-			.fetch();
+			.groupBy(latestComment.placeBlock.id);
 
 		// 각 장소 블록의 마지막 댓글 조회
 		Map<Long, PlaceBlockLastComment> lastCommentMap = queryFactory
@@ -131,11 +135,10 @@ public class PlaceBlockRepositoryImpl implements PlaceBlockRepositoryCustom {
 				placeBlockComment.placeBlock.id,
 				new QPlaceBlockLastComment(
 					placeBlockComment.content,
-					member.email // TODO: author로 변경
+					placeBlockComment.content // TODO: author로 변경
 				)
 			)
 			.from(placeBlockComment)
-			.join(placeBlockComment.member, member)
 			.where(placeBlockComment.id.in(latestCommentIds))
 			.fetch()
 			.stream()
