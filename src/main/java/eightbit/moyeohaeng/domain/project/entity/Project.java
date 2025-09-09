@@ -80,6 +80,7 @@ public class Project extends BaseEntity {
 	private Member creator;
 
 	// 블록 개수
+	@Builder.Default
 	@Column(name = "block_count", nullable = false)
 	private int blockCount = 0;
 

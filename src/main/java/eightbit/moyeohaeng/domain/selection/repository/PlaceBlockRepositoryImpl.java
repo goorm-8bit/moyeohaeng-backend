@@ -1,6 +1,5 @@
 package eightbit.moyeohaeng.domain.selection.repository;
 
-import static eightbit.moyeohaeng.domain.member.entity.member.QMember.*;
 import static eightbit.moyeohaeng.domain.place.entity.QPlace.*;
 import static eightbit.moyeohaeng.domain.selection.entity.QPlaceBlock.*;
 import static eightbit.moyeohaeng.domain.selection.entity.QPlaceBlockComment.*;
@@ -63,10 +62,9 @@ public class PlaceBlockRepositoryImpl implements PlaceBlockRepositoryCustom {
 		Map<Long, List<String>> likedMemberMap = queryFactory
 			.select(
 				placeBlockLike.placeBlock.id,
-				member.email // TODO: author로 변경
+				placeBlockLike.author
 			)
 			.from(placeBlockLike)
-			.join(placeBlockLike.member, member)
 			.where(
 				placeBlockLike.deletedAt.isNull(),
 				placeBlockLike.placeBlock.id.in(placeBlockIds)
@@ -76,7 +74,7 @@ public class PlaceBlockRepositoryImpl implements PlaceBlockRepositoryCustom {
 			.collect(Collectors.groupingBy(
 				tuple -> Objects.requireNonNull(tuple.get(placeBlockLike.placeBlock.id)),
 				Collectors.mapping(
-					tuple -> tuple.get(member.email),
+					tuple -> tuple.get(placeBlockLike.author),
 					Collectors.toList()
 				)
 			));
@@ -135,7 +133,7 @@ public class PlaceBlockRepositoryImpl implements PlaceBlockRepositoryCustom {
 				placeBlockComment.placeBlock.id,
 				new QPlaceBlockLastComment(
 					placeBlockComment.content,
-					placeBlockComment.content // TODO: author로 변경
+					placeBlockComment.author
 				)
 			)
 			.from(placeBlockComment)
