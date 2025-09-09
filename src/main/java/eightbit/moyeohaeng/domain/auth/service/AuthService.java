@@ -1,5 +1,6 @@
 package eightbit.moyeohaeng.domain.auth.service;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +11,7 @@ import eightbit.moyeohaeng.domain.auth.dto.TokenResult;
 import eightbit.moyeohaeng.domain.auth.dto.request.LoginRequest;
 import eightbit.moyeohaeng.domain.auth.dto.request.SignUpRequest;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
+import eightbit.moyeohaeng.domain.member.event.MemberSignedUpEvent;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -26,6 +28,7 @@ public class AuthService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Transactional
 	public void signUp(SignUpRequest signUpRequest) {
@@ -40,6 +43,9 @@ public class AuthService {
 			.build();
 
 		memberRepository.save(member);
+
+        // 회원가입 트랜잭션이 완료된 후 실행 (AFTER_COMMIT)
+		eventPublisher.publishEvent(new MemberSignedUpEvent(member.getId()));
 	}
 
 	public TokenResult login(LoginRequest loginRequest) {

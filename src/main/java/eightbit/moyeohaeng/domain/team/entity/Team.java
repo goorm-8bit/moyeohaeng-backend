@@ -31,4 +31,9 @@ public class Team extends BaseEntity {
 	@Column(name = "team_name", nullable = false, length = 100)
 	private String name;
 
+	public static Team of(String teamName) {
+		return Team.builder()
+			.name(teamName)
+			.build();
+	}
 }

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import eightbit.moyeohaeng.domain.auth.common.exception.AuthErrorCode;
@@ -19,6 +20,7 @@ import eightbit.moyeohaeng.domain.auth.dto.TokenResult;
 import eightbit.moyeohaeng.domain.auth.dto.request.LoginRequest;
 import eightbit.moyeohaeng.domain.auth.dto.request.SignUpRequest;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
+import eightbit.moyeohaeng.domain.member.event.MemberSignedUpEvent;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -39,18 +41,33 @@ class AuthServiceTest {
 	@Mock
 	private JwtTokenProvider jwtTokenProvider;
 
+	@Mock
+	private ApplicationEventPublisher eventPublisher;
+
 	@DisplayName("회원가입 테스트 - 성공")
 	@Test
 	void signup_success() {
 		// given
 		String email = "test@eightbit.com";
-		SignUpRequest request = SignUpRequest.of(email, "@Test12345", "테스트1");
-		given(memberRepository.existsByEmail(email)).willReturn(false);
+		String name = "테스트1";
+		SignUpRequest request = SignUpRequest.of(email, "@Test12345", name);
 
-		// when & then
-		assertThatCode(() -> authService.signUp(request))
-			.doesNotThrowAnyException();
+		Member savedMember = Member.builder()
+			.id(1L)
+			.email(email)
+			.name(name)
+			.password("encodedPassword")
+			.build();
+
+		given(memberRepository.existsByEmail(email)).willReturn(false);
+		given(memberRepository.save(any(Member.class))).willReturn(savedMember);
+
+		// when
+		authService.signUp(request);
+
+		// then
 		verify(memberRepository).save(any(Member.class));
+		verify(eventPublisher).publishEvent(any(MemberSignedUpEvent.class));
 	}
 
 	@DisplayName("회원가입 테스트 - 실패 (이메일 중복)")
@@ -74,25 +91,25 @@ class AuthServiceTest {
 		String email = "test@eightbit.com";
 		String password = "@Test12345";
 		LoginRequest request = new LoginRequest(email, password);
-		
+
 		Member member = Member.builder()
 			.id(1L)
 			.email(email)
 			.password("encodedPassword")
 			.name("테스트1")
 			.build();
-		
+
 		String accessToken = "access.token.test";
 		String refreshToken = "refresh.token.test";
-		
+
 		given(memberRepository.findByEmail(email)).willReturn(Optional.of(member));
 		given(passwordEncoder.matches(password, member.getPassword())).willReturn(true);
 		given(jwtTokenProvider.createAccessToken(String.valueOf(member.getId()))).willReturn(accessToken);
 		given(jwtTokenProvider.createRefreshToken(String.valueOf(member.getId()))).willReturn(refreshToken);
-		
+
 		// when
 		TokenResult result = authService.login(request);
-		
+
 		// then
 		assertThat(result.accessToken()).isEqualTo(accessToken);
 		assertThat(result.refreshToken()).isEqualTo(refreshToken);
@@ -105,9 +122,9 @@ class AuthServiceTest {
 		String email = "nonexistent@eightbit.com";
 		String password = "@Test12345";
 		LoginRequest request = new LoginRequest(email, password);
-		
+
 		given(memberRepository.findByEmail(email)).willReturn(Optional.empty());
-		
+
 		// when & then
 		assertThatThrownBy(() -> authService.login(request))
 			.isInstanceOf(AuthException.class)
@@ -121,17 +138,17 @@ class AuthServiceTest {
 		String email = "test@eightbit.com";
 		String password = "wrongPassword";
 		LoginRequest request = new LoginRequest(email, password);
-		
+
 		Member member = Member.builder()
 			.id(1L)
 			.email(email)
 			.password("encodedPassword")
 			.name("테스트1")
 			.build();
-		
+
 		given(memberRepository.findByEmail(email)).willReturn(Optional.of(member));
 		given(passwordEncoder.matches(password, member.getPassword())).willReturn(false);
-		
+
 		// when & then
 		assertThatThrownBy(() -> authService.login(request))
 			.isInstanceOf(AuthException.class)
@@ -144,12 +161,12 @@ class AuthServiceTest {
 		// given
 		String refreshToken = "valid.refresh.token";
 		String newAccessToken = "new.access.token";
-		
+
 		given(jwtTokenProvider.reissueAccessToken(refreshToken)).willReturn(newAccessToken);
-		
+
 		// when
 		String result = authService.reissueToken(refreshToken);
-		
+
 		// then
 		assertThat(result).isEqualTo(newAccessToken);
 	}
@@ -159,9 +176,9 @@ class AuthServiceTest {
 	void reissueToken_fail_tokenExpired() {
 		// given
 		String expiredToken = "expired.refresh.token";
-		
+
 		given(jwtTokenProvider.reissueAccessToken(expiredToken)).willThrow(ExpiredJwtException.class);
-		
+
 		// when & then
 		assertThatThrownBy(() -> authService.reissueToken(expiredToken))
 			.isInstanceOf(AuthException.class)
@@ -173,9 +190,9 @@ class AuthServiceTest {
 	void reissueToken_fail_invalidToken() {
 		// given
 		String invalidToken = "invalid.refresh.token";
-		
+
 		given(jwtTokenProvider.reissueAccessToken(invalidToken)).willThrow(JwtException.class);
-		
+
 		// when & then
 		assertThatThrownBy(() -> authService.reissueToken(invalidToken))
 			.isInstanceOf(AuthException.class)

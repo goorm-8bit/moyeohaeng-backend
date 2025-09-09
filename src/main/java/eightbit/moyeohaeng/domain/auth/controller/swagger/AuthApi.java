@@ -21,12 +21,12 @@ public interface AuthApi {
 
 	@Operation(
 		summary = "회원 가입",
-		description = "사용자 정보를 받아 회원 가입을 처리합니다."
+		description = "사용자 정보를 받아 회원 가입을 처리합니다. 회원가입이 완료되면 자동으로 개인 팀이 생성되며 해당 회원이 팀의 소유자(OWNER)로 등록됩니다."
 	)
 	@ApiResponses({
 		@ApiResponse(
 			responseCode = "201",
-			description = "회원가입 성공",
+			description = "회원가입 성공. 개인 팀이 자동으로 생성되며 해당 회원이 팀의 소유자로 등록됩니다.",
 			content = @Content(schema = @Schema(implementation = SuccessResponse.class))
 		),
 		@ApiResponse(
