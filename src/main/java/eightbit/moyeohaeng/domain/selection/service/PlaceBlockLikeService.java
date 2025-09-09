@@ -26,6 +26,13 @@ public class PlaceBlockLikeService {
 	private final PlaceBlockLikeRepository placeBlockLikeRepository;
 	private final PlaceBlockRepository placeBlockRepository;
 
+	private String requireAuthor(CustomUserDetails user) {
+		if (user == null || user.getUsername() == null || user.getUsername().isBlank()) {
+			throw new PlaceBlockException(PlaceBlockErrorCode.FORBIDDEN);
+		}
+		return user.getUsername().trim();
+	}
+
 	/**
 	 * 장소 블록 좋아요 토글
 	 *
@@ -40,7 +47,8 @@ public class PlaceBlockLikeService {
 		Long placeBlockId,
 		CustomUserDetails currentUser
 	) {
-		String author = currentUser.getUsername(); // email
+		final String author = requireAuthor(currentUser); // email or uuid
+		
 		PlaceBlock placeBlock = placeBlockRepository.findByIdAndProjectIdAndDeletedAtIsNull(placeBlockId, projectId)
 			.orElseThrow(() -> new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND));
 
