@@ -57,9 +57,10 @@ public class TeamController implements TeamApi {
 		@RequestBody @Valid InviteMemberRequestDto requestDto
 	) {
 
-		// teamService.inviteMember();
+		InviteMemberResponseDto responseDto = teamService.inviteMember(requestDto.teamId(), user.getId(),
+			requestDto.memberId());
 
-		return null;
+		return ResponseEntity.ok(responseDto);
 	}
 
 	@Override
