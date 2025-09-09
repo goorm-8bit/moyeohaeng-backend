@@ -12,6 +12,7 @@ import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.domain.team.dto.MemberDto;
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
 import eightbit.moyeohaeng.domain.team.dto.response.InviteMemberResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.TeamMembersResponseDto;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.entity.TeamMember;
 import eightbit.moyeohaeng.domain.team.entity.TeamRole;
@@ -63,7 +64,7 @@ public class TeamServiceImpl implements TeamService {
 				.teamId(teamId)
 				.memberId(inviteeMemberId)
 				.build();
-			
+
 		} else {
 			throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
 		}
@@ -134,16 +135,19 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<MemberDto> getTeamMembers(Long teamId, Long memberId) {
+	public TeamMembersResponseDto getTeamMembers(Long teamId, Long memberId) {
 
 		boolean b = teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, memberId);
 
 		if (b == true) {
 			List<Member> members = teamMemberRepository.findMembersByTeamId(teamId);
 
-			return members.stream()
-				.map(member -> MemberDto.from(member))
-				.toList();
+			return TeamMembersResponseDto.builder()
+				.memberList(members.stream()
+					.map(member -> MemberDto.from(member))
+					.toList())
+				.build();
+
 		} else {
 			throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
 		}

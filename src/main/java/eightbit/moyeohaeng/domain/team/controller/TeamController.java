@@ -162,10 +162,11 @@ public class TeamController implements TeamApi {
 		@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable("teamId") Long teamId
 	) {
+		// find teamMember by teamId and userId
 
-		// find teamMember by teamId
+		TeamMembersResponseDto responseDto = teamService.getTeamMembers(teamId, user.getId());
 
-		return null;
+		return ResponseEntity.ok(responseDto);
 	}
 
 	@Override

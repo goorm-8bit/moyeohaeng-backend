@@ -2,9 +2,9 @@ package eightbit.moyeohaeng.domain.team.service;
 
 import java.util.List;
 
-import eightbit.moyeohaeng.domain.team.dto.MemberDto;
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
 import eightbit.moyeohaeng.domain.team.dto.response.InviteMemberResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.TeamMembersResponseDto;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.entity.TeamRole;
 
@@ -23,7 +23,12 @@ public interface TeamService {
 
 	List<TeamDto> getMyTeams(Long memberId);
 
-	List<MemberDto> getTeamMembers(Long teamId, Long memberId);
+	/**
+	 * @param teamId          멤버들을 조회할 팀 ID
+	 * @param memberId 조회하는 멤버의 ID (팀 소속이여야 조회 가능)
+	 * @return TeamMembersResponseDto 조회한 결과물을 Dto 에 담아서 반환
+	 */
+	TeamMembersResponseDto getTeamMembers(Long teamId, Long memberId);
 
 	TeamRole findMyRole(Long teamId, Long memberId);
 
