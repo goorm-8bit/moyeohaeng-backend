@@ -134,7 +134,7 @@ public class ProjectService {
 	public List<ProjectDto> searchMyProjects(CustomUserDetails currentUser, ProjectSearchCondition condition) {
 		Sort sort = getSortFromType(condition.sortType());
 		List<Project> projects;
-		Long memberId = currentUser.getMemberId();
+		Long memberId = currentUser.getId();
 
 		// 내가 속한 팀에 프로젝트 조회
 		if (condition.hasTeamFilter()) {
