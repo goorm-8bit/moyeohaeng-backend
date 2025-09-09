@@ -1,6 +1,7 @@
 package eightbit.moyeohaeng.domain.project.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -8,29 +9,36 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.entity.ProjectAccess;
+import eightbit.moyeohaeng.domain.team.entity.Team;
 import lombok.Builder;
 
 public record ProjectDto(
 	String externalId,
 	String title,
-	String location,
+	String color,
 	ProjectAccess projectAccess,
 	LocalDate startDate,
 	LocalDate endDate,
+	Integer travelDays,
 	@JsonProperty("isAllowGuest") boolean isAllowGuest,
-	@JsonProperty("isAllowViewer") boolean isAllowViewer
+	@JsonProperty("isAllowViewer") boolean isAllowViewer,
+	LocalDateTime modifiedAt,
+	Team team // TODO 직력화 방어 추가
 
 ) {
 	public static ProjectDto from(Project project) {
 		return ProjectDto.of(
 			project.getExternalId(),
 			project.getTitle(),
-			project.getLocation(),
+			project.getColor(),
 			project.getProjectAccess(),
 			project.getStartDate(),
 			project.getEndDate(),
+			project.getTravelDays(),
 			project.isAllowGuest(),
-			project.isAllowViewer()
+			project.isAllowViewer(),
+			project.getModifiedAt(),
+			project.getTeam()
 		);
 	}
 
@@ -44,15 +52,19 @@ public record ProjectDto(
 	public static ProjectDto of(
 		String externalId,
 		String title,
-		String location,
+		String color,
 		ProjectAccess projectAccess,
 		LocalDate startDate,
 		LocalDate endDate,
+		Integer travelDays,
 		boolean isAllowGuest,
-		boolean isAllowViewer
+		boolean isAllowViewer,
+		LocalDateTime updateAt,
+		Team team
 	) {
 		return new ProjectDto(
-			externalId, title, location, projectAccess, startDate, endDate, isAllowGuest, isAllowViewer
+			externalId, title, color, projectAccess, startDate, endDate, travelDays, isAllowGuest, isAllowViewer,
+			updateAt, team
 		);
 	}
 

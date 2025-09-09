@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -22,8 +23,14 @@ import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
 import eightbit.moyeohaeng.domain.project.common.success.ProjectSuccessCode;
 import eightbit.moyeohaeng.domain.project.controller.swagger.ProjectApi;
 import eightbit.moyeohaeng.domain.project.dto.ProjectDto;
+import eightbit.moyeohaeng.domain.project.dto.condition.ProjectSearchCondition;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
+import eightbit.moyeohaeng.domain.project.dto.request.ProjectSortType;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
+import eightbit.moyeohaeng.domain.project.dto.response.ProjectCreateResponse;
+import eightbit.moyeohaeng.domain.project.dto.response.ProjectGetResponse;
+import eightbit.moyeohaeng.domain.project.dto.response.ProjectSearchResponse;
+import eightbit.moyeohaeng.domain.project.dto.response.ProjectUpdateResponse;
 import eightbit.moyeohaeng.domain.project.service.ProjectService;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.CommonSuccessCode;
@@ -41,40 +48,51 @@ public class ProjectController implements ProjectApi {
 	@Override
 	@PostMapping
 	@RequiredAccessRole(UserRole.MEMBER)
-	public SuccessResponse<ProjectDto> create(@Valid @RequestBody ProjectCreateRequest request,
+	public SuccessResponse<ProjectCreateResponse> create(
+		@Valid @RequestBody ProjectCreateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
-		ProjectDto response = projectService.create(request, currentUser);
-		return SuccessResponse.of(ProjectSuccessCode.CREATE_PROJECT, response);
+		ProjectDto createdProject = projectService.create(request, currentUser);
+		return SuccessResponse.of(CommonSuccessCode.CREATE_SUCCESS, ProjectCreateResponse.from(createdProject));
 	}
 
 	@Override
 	@PutMapping("/{projectId}")
 	@RequiredAccessRole(UserRole.MEMBER)
-	public SuccessResponse<ProjectDto> update(
-		@PathVariable Long projectId,
+	public SuccessResponse<ProjectUpdateResponse> update(@PathVariable Long projectId,
 		@Valid @RequestBody ProjectUpdateRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		ProjectDto updatedProject = projectService.update(projectId, request, currentUser);
-		return SuccessResponse.of(CommonSuccessCode.UPDATE_SUCCESS, updatedProject);
+		return SuccessResponse.of(CommonSuccessCode.UPDATE_SUCCESS, ProjectUpdateResponse.from(updatedProject));
 	}
 
 	@Override
 	@GetMapping
-	public SuccessResponse<List<ProjectDto>> get(
-		@AuthenticationPrincipal CustomUserDetails currentUser) {
-		List<ProjectDto> projects = projectService.findWithMe(currentUser);
-		return SuccessResponse.of(CommonSuccessCode.SELECT_SUCCESS, projects);
+	@RequiredAccessRole(UserRole.MEMBER)
+	public SuccessResponse<ProjectSearchResponse> searchMyProjects(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
+		@RequestParam(required = false) Long teamId,
+		@RequestParam(required = false, defaultValue = "MODIFIED_AT_DESC") ProjectSortType sortType
+	) {
+		ProjectSearchCondition condition = ProjectSearchCondition.builder()
+			.teamId(teamId)
+			.sortType(sortType)
+			.build();
+
+		List<ProjectDto> projects = projectService.searchMyProjects(currentUser, condition);
+		return SuccessResponse.of(CommonSuccessCode.SELECT_SUCCESS, ProjectSearchResponse.from(projects));
 	}
 
 	@Override
 	@GetMapping("/{projectId}")
-	public SuccessResponse<ProjectDto> getById(@PathVariable Long projectId,
-		@AuthenticationPrincipal CustomUserDetails currentUser) {
-		if (currentUser == null) {
-			projectService.ensureShareAllowed(projectId);
-		}
-		ProjectDto project = projectService.findById(projectId);
-		return SuccessResponse.of(CommonSuccessCode.SELECT_SUCCESS, project);
+	public SuccessResponse<ProjectGetResponse> getById(
+		@PathVariable Long projectId,
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
+		ProjectDto projectDto = currentUser != null
+			? projectService.getById(projectId, currentUser)
+			: projectService.findById(projectId);
+
+		return SuccessResponse.of(CommonSuccessCode.SELECT_SUCCESS, ProjectGetResponse.from(projectDto));
 	}
 
 	/**

@@ -37,5 +37,4 @@ public interface TeamService {
 	 * @param inviteeMemberId 초대받는 회원(피초대자)의 ID
 	 */
 	InviteMemberResponseDto inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId);
-
 }

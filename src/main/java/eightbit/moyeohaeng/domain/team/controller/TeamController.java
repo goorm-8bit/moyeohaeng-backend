@@ -53,7 +53,6 @@ public class TeamController implements TeamApi {
 		@AuthenticationPrincipal CustomUserDetails user,
 		@RequestBody @Valid InviteMemberRequestDto requestDto
 	) {
-
 		InviteMemberResponseDto inviteMemberResponseDto = teamService.inviteMember(requestDto.teamId(), user.getId(),
 			requestDto.memberId());
 

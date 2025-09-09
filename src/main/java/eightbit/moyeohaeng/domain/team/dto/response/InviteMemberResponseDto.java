@@ -13,5 +13,5 @@ public record InviteMemberResponseDto(
 	@NotNull
 	Long teamId
 ) {
-
+	
 }
