@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "실시간 접속 상태 응답 DTO")
 public record PresenceResponse(
-	@Schema(description = "이메일", example = "test@test.com")
-	String email,
+	@Schema(description = "식별자")
+	String id,
 
 	@Schema(description = "이름", example = "모여행")
 	String name,
@@ -20,7 +20,7 @@ public record PresenceResponse(
 ) {
 	public static PresenceResponse of(UserInfo userInfo) {
 		return new PresenceResponse(
-			userInfo.email(),
+			userInfo.email(), // TODO: 이메일에서 식별자로 대체하기
 			userInfo.name(),
 			userInfo.profileImage(),
 			userInfo.userRole()

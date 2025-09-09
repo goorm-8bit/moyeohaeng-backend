@@ -60,12 +60,12 @@ public class CustomUserDetails implements UserDetails {
 	/**
 	 * Create a guest/viewer principal from share token context.
 	 */
-	public static CustomUserDetails guestOf(UserRole userRole) {
-		UserType type = UserRole.GUEST == userRole ? UserType.GUEST : UserType.VIEWER;
+	public static CustomUserDetails guestOf(String identifier, UserRole userRole) {
+		UserType userType = UserRole.GUEST == userRole ? UserType.GUEST : UserType.VIEWER;
 		return new CustomUserDetails(
-			UserInfo.guest(type.name()),
-			type,
-			Collections.singleton(new SimpleGrantedAuthority("ROLE_" + type.name()))
+			UserInfo.guest(identifier),
+			userType,
+			Collections.singleton(new SimpleGrantedAuthority("ROLE_" + userType.name()))
 		);
 	}
 
@@ -85,26 +85,6 @@ public class CustomUserDetails implements UserDetails {
 			return userType.name();
 		}
 		return userInfo.email();
-	}
-
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
-
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return true;
 	}
 
 	public Long getId() {

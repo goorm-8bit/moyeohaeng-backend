@@ -38,9 +38,16 @@ public class PresenceRepository {
 			.toList();
 	}
 
-	public void deletePresence(Long projectId, UUID uuid) {
+	public String deletePresence(Long projectId, UUID uuid) {
 		String key = getProjectKey(projectId);
+
+		// 삭제 전에 값 조회
+		Object value = redisTemplate.opsForHash().get(key, uuid.toString());
+		UserInfo userInfo = convertUserInfo(value);
+
+		// 삭제
 		redisTemplate.opsForHash().delete(key, uuid.toString());
+		return userInfo.email();
 	}
 
 	private UserInfo convertUserInfo(Object value) {

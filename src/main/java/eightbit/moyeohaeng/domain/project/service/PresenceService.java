@@ -29,8 +29,8 @@ public class PresenceService {
 
 	@ProjectEvent(eventType = EventType.PRESENCE, actionType = ActionType.DELETED)
 	public PresenceDeleteResponse unsubscribe(@ProjectId Long projectId, UUID uuid) {
-		presenceRepository.deletePresence(projectId, uuid);
-		return PresenceDeleteResponse.of(uuid);
+		String id = presenceRepository.deletePresence(projectId, uuid);
+		return PresenceDeleteResponse.of(id);
 	}
 
 	public List<PresenceResponse> getConnectedMembers(Long projectId) {
