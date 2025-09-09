@@ -1,10 +1,13 @@
 package eightbit.moyeohaeng.domain.auth.common.aop;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Map;
 
-import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
@@ -14,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerMapping;
 
 import eightbit.moyeohaeng.domain.auth.UserRole;
+import eightbit.moyeohaeng.domain.auth.common.annotation.CurrentUserRole;
 import eightbit.moyeohaeng.domain.auth.common.annotation.RequiredAccessRole;
 import eightbit.moyeohaeng.domain.auth.service.UserAuthorizationService;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
@@ -27,8 +31,8 @@ public class UserAuthorizationGuardAspect {
 
 	private final UserAuthorizationService accessService;
 
-	@Before("@annotation(required)")
-	public void checkAccess(JoinPoint jp, RequiredAccessRole required) {
+	@Around("@annotation(required)")
+	public Object checkAccess(ProceedingJoinPoint jp, RequiredAccessRole required) throws Throwable {
 		HttpServletRequest request = currentRequest();
 		if (request == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "요청 정보를 확인할 수 없습니다.");
@@ -53,6 +57,9 @@ public class UserAuthorizationGuardAspect {
 		if (!UserAuthorizationService.isAllowed(actual, required.value())) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다. 최소 요구 권한: " + required.value());
 		}
+
+		// 파라미터에 @CurrentUserRole 어노테이션이 있는 경우 주입
+		return jp.proceed(injectUserRoleArgs(jp, actual));
 	}
 
 	private HttpServletRequest currentRequest() {
@@ -110,5 +117,19 @@ public class UserAuthorizationGuardAspect {
 			}
 		}
 		return null;
+	}
+
+	public Object[] injectUserRoleArgs(ProceedingJoinPoint joinPoint, UserRole actual) {
+		MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+		Method method = signature.getMethod();
+		Parameter[] parameters = method.getParameters();
+		Object[] args = joinPoint.getArgs();
+
+		for (int i = 0; i < parameters.length; i++) {
+			if (parameters[i].isAnnotationPresent(CurrentUserRole.class)) {
+				args[i] = actual;
+			}
+		}
+		return args;
 	}
 }

@@ -8,7 +8,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import eightbit.moyeohaeng.domain.auth.UserRole;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
+import eightbit.moyeohaeng.global.dto.UserInfo;
 import lombok.Getter;
 
 /**
@@ -28,31 +30,15 @@ import lombok.Getter;
 @Getter
 public class CustomUserDetails implements UserDetails {
 
-	private final Long id;
-	private final String email;
+	private final UserInfo userInfo;
+	private final UserType userType;
 	private final Collection<? extends GrantedAuthority> authorities;
-	// 비로그인 context
-	private final boolean guest;                 // true when authenticated via share token
-	private final String guestType;              // "Guest" | "viewer"
-	private final String shareOwnerEmail;        // owner email encoded in share token
 
-	private CustomUserDetails(Long id, String email, Collection<? extends GrantedAuthority> authorities,
-		boolean guest, String guestType, String shareOwnerEmail) {
-		this.id = id;
-		this.email = email;
+	private CustomUserDetails(UserInfo userInfo, UserType userType,
+		Collection<? extends GrantedAuthority> authorities) {
+		this.userInfo = userInfo;
+		this.userType = userType;
 		this.authorities = authorities;
-		this.guest = guest;
-		this.guestType = guestType;
-		this.shareOwnerEmail = shareOwnerEmail;
-	}
-
-	private CustomUserDetails(Long id, String email, Collection<? extends GrantedAuthority> authorities) {
-		this.id = id;
-		this.email = email;
-		this.authorities = authorities;
-		this.guest = false;
-		this.guestType = null;
-		this.shareOwnerEmail = null;
 	}
 
 	/**
@@ -65,31 +51,21 @@ public class CustomUserDetails implements UserDetails {
 	public static CustomUserDetails from(Member member) {
 		Objects.requireNonNull(member, "Member는 null일 수 없습니다.");
 		return new CustomUserDetails(
-			member.getId(),
-			member.getEmail(),
-			Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-			false,
-			null,
-			null
+			UserInfo.member(member),
+			UserType.MEMBER,
+			Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"))
 		);
 	}
 
 	/**
 	 * Create a guest/viewer principal from share token context.
 	 */
-	public static CustomUserDetails guestOf(String userType, String ownerEmail) {
-		String normalized = userType == null ? "viewer" : userType.toLowerCase();
-		String role = switch (normalized) {
-			case "guest" -> "ROLE_GUEST";
-			default -> "ROLE_VIEWER";
-		};
+	public static CustomUserDetails guestOf(String identifier, UserRole userRole) {
+		UserType userType = UserRole.GUEST == userRole ? UserType.GUEST : UserType.VIEWER;
 		return new CustomUserDetails(
-			null,                    // no member id
-			null,                    // no email for anonymous user
-			Collections.singleton(new SimpleGrantedAuthority(role)),
-			true,
-			normalized,
-			ownerEmail
+			UserInfo.guest(identifier),
+			userType,
+			Collections.singleton(new SimpleGrantedAuthority("ROLE_" + userType.name()))
 		);
 	}
 
@@ -105,42 +81,29 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return email;
+		if (isGuest()) {
+			return userType.name();
+		}
+		return userInfo.email();
 	}
 
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
+	public Long getId() {
+		return userInfo.id();
 	}
 
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
+	public String getEmail() {
+		return userInfo.email();
 	}
 
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
+	public String getName() {
+		return userInfo.name();
 	}
 
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
-
-	public Long getMemberId() {
-		return id;
+	public String getProfileImage() {
+		return userInfo.profileImage();
 	}
 
 	public boolean isGuest() {
-		return guest;
-	}
-
-	public String getGuestType() {
-		return guestType;
-	}
-
-	public String getShareOwnerEmail() {
-		return shareOwnerEmail;
+		return UserType.MEMBER != userType;
 	}
 }

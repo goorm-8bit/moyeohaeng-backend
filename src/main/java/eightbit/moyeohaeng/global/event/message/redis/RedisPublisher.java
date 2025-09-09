@@ -17,7 +17,8 @@ public class RedisPublisher implements MessagePublisher {
 	@Override
 	public void convertAndSend(String channel, MessageBody body) {
 		try {
-			redisTemplate.convertAndSend(channel, body);
+			Long receivers = redisTemplate.convertAndSend(channel, body);
+			GlobalLogger.info("[REDIS] 메시지 발행: id =", body.getId(), ", receivers =", receivers);
 		} catch (Exception e) {
 			GlobalLogger.error("Redis 메시지 전송 실패", e);
 		}

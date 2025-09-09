@@ -11,6 +11,7 @@ import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.project.repository.TravelerRepository;
 import eightbit.moyeohaeng.domain.team.repository.TeamMemberRepository;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
+import eightbit.moyeohaeng.global.security.UserType;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,14 +38,14 @@ public class UserAuthorizationService {
 		if (auth != null && auth.getPrincipal() instanceof CustomUserDetails user) {
 			// Guest principal: decide role only by guestType
 			if (user.isGuest()) {
-				String type = user.getGuestType();
-				if ("guest".equalsIgnoreCase(type))
+				UserType userType = user.getUserType();
+				if (UserType.GUEST == userType)
 					return UserRole.GUEST;
 				return UserRole.VIEWER;
 			}
 
 			// Logged-in member
-			Long memberId = user.getMemberId();
+			Long memberId = user.getId();
 			// OWNER
 			if (project.getCreator() != null && project.getCreator().getId() != null
 				&& project.getCreator().getId().equals(memberId)) {
@@ -64,13 +65,13 @@ public class UserAuthorizationService {
 		}
 
 		// No authentication principal
-		return UserRole.VIEWER;
+		return UserRole.ANY;
 	}
 
 	public UserRole resolveTeamRole(Long teamId, HttpServletRequest request) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null && auth.getPrincipal() instanceof CustomUserDetails user) {
-			Long memberId = user.getMemberId();
+			Long memberId = user.getId();
 			boolean isTeamMember = teamMemberRepository.existsByTeam_IdAndMember_Id(teamId, memberId);
 			return isTeamMember ? UserRole.MEMBER : UserRole.VIEWER;
 		}

@@ -19,11 +19,13 @@ import eightbit.moyeohaeng.domain.project.dto.condition.ProjectSearchCondition;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectSortType;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
+import eightbit.moyeohaeng.domain.project.dto.response.PresenceResponse;
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.repository.TeamMemberRepository;
 import eightbit.moyeohaeng.domain.team.repository.TeamRepository;
+import eightbit.moyeohaeng.global.dto.UserInfo;
 import eightbit.moyeohaeng.global.event.sse.SseEmitterService;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class ProjectService {
 
 	private final MemberService memberService;
 	private final SseEmitterService sseEmitterService;
+	private final PresenceService presenceService;
 
 	private final ProjectRepository projectRepository;
 	private final TeamRepository teamRepository;
@@ -52,7 +55,7 @@ public class ProjectService {
 	 */
 	@Transactional
 	public ProjectDto create(ProjectCreateRequest request, CustomUserDetails currentUser) {
-		Member member = memberService.findById(currentUser.getMemberId());
+		Member member = memberService.findById(currentUser.getId());
 		Team team = teamRepository.findById(request.teamId())
 			.orElseThrow(() -> new ProjectException(ProjectErrorCode.TEAM_NOT_FOUND));
 
@@ -67,11 +70,16 @@ public class ProjectService {
 	 * SSE 연결
 	 *
 	 * @param projectId 프로젝트 Id
-	 * @param user 사용자 정보
+	 * @param lastEventId 클라이언트가 마지막으로 수신한 이벤트 Id
+	 * @param userInfo 사용자 정보
 	 * @return SseEmitter
 	 */
-	public SseEmitter connect(Long projectId, String lastEventId, String user) {
-		return sseEmitterService.subscribe(channelTopic, projectId, lastEventId, user);
+	public SseEmitter connect(Long projectId, String lastEventId, UserInfo userInfo) {
+		return sseEmitterService.subscribe(channelTopic, projectId, lastEventId, userInfo);
+	}
+
+	public List<PresenceResponse> getConnectedMembers(Long projectId) {
+		return presenceService.getConnectedMembers(projectId);
 	}
 
 	/**
@@ -126,7 +134,7 @@ public class ProjectService {
 	public List<ProjectDto> searchMyProjects(CustomUserDetails currentUser, ProjectSearchCondition condition) {
 		Sort sort = getSortFromType(condition.sortType());
 		List<Project> projects;
-		Long memberId = currentUser.getMemberId();
+		Long memberId = currentUser.getId();
 
 		// 내가 속한 팀에 프로젝트 조회
 		if (condition.hasTeamFilter()) {
@@ -206,7 +214,7 @@ public class ProjectService {
 	 * @throws ProjectException 프로젝트가 존재하지 않거나 접근 권한이 없는 경우
 	 */
 	protected Project findMyProjectById(Long projectId, CustomUserDetails currentUser) {
-		return projectRepository.findByIdWithAccessCheck(projectId, currentUser.getMemberId())
+		return projectRepository.findByIdWithAccessCheck(projectId, currentUser.getId())
 			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND, projectId));
 	}
 

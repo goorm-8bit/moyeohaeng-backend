@@ -22,13 +22,16 @@ public class SseHeartbeatScheduler {
 	@Scheduled(fixedDelayString = "${sse.scheduling.heartbeat.fixed-rate}")
 	public void sendHeartbeat() {
 		List<SseEmitter> emitters = sseEmitterRepository.findAll();
-		GlobalLogger.info("[SSE] 프로젝트에 접속하고 있는 유저 수:", emitters.size() + "명");
+		int unsubsribe = 0;
 
-		emitters.forEach(emitter -> {
+		for (SseEmitter emitter : emitters) {
 			try {
 				emitter.send(SseEmitter.event().comment("heartbeat"));
-			} catch (IOException ignored) {
+			} catch (IOException e) {
+				unsubsribe++;
 			}
-		});
+		}
+
+		GlobalLogger.info("[SSE] 프로젝트에 접속하고 있는 유저 수:", (emitters.size() - unsubsribe) + "명");
 	}
 }

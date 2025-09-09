@@ -1,6 +1,5 @@
 package eightbit.moyeohaeng.domain.project.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -18,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import eightbit.moyeohaeng.domain.auth.UserRole;
+import eightbit.moyeohaeng.domain.auth.common.annotation.CurrentUserRole;
 import eightbit.moyeohaeng.domain.auth.common.annotation.RequiredAccessRole;
-import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
 import eightbit.moyeohaeng.domain.project.common.success.ProjectSuccessCode;
 import eightbit.moyeohaeng.domain.project.controller.swagger.ProjectApi;
 import eightbit.moyeohaeng.domain.project.dto.ProjectDto;
@@ -27,11 +26,13 @@ import eightbit.moyeohaeng.domain.project.dto.condition.ProjectSearchCondition;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectSortType;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
+import eightbit.moyeohaeng.domain.project.dto.response.PresenceResponse;
 import eightbit.moyeohaeng.domain.project.dto.response.ProjectCreateResponse;
 import eightbit.moyeohaeng.domain.project.dto.response.ProjectGetResponse;
 import eightbit.moyeohaeng.domain.project.dto.response.ProjectSearchResponse;
 import eightbit.moyeohaeng.domain.project.dto.response.ProjectUpdateResponse;
 import eightbit.moyeohaeng.domain.project.service.ProjectService;
+import eightbit.moyeohaeng.global.dto.UserInfo;
 import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.CommonSuccessCode;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
@@ -40,7 +41,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping({"/v1/projects", "/sub/v1/projects"})
+@RequestMapping("/v1/projects")
 public class ProjectController implements ProjectApi {
 
 	private final ProjectService projectService;
@@ -104,23 +105,21 @@ public class ProjectController implements ProjectApi {
 	public SseEmitter connectProject(
 		@PathVariable Long projectId,
 		@RequestHeader(value = "Last-Event-ID", required = false) String lastEventId,
-		@AuthenticationPrincipal CustomUserDetails currentUser
+		@AuthenticationPrincipal CustomUserDetails currentUser,
+		@CurrentUserRole UserRole userRole
 	) {
-
-		// TODO: guest에 대한 처리 필요함
-		String user = currentUser.getEmail();
-		return projectService.connect(projectId, lastEventId, user);
+		UserInfo userInfo = currentUser.getUserInfo().withRole(userRole);
+		return projectService.connect(projectId, lastEventId, userInfo);
 	}
 
 	@Override
 	@GetMapping("/{projectId}/members")
-	@RequiredAccessRole(UserRole.MEMBER)
-	public SuccessResponse<List<MemberInfoResponse>> getConnectedMember(
+	@RequiredAccessRole(UserRole.VIEWER)
+	public SuccessResponse<List<PresenceResponse>> getConnectedMembers(
 		@PathVariable Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
-
-		List<MemberInfoResponse> responses = new ArrayList<>();
+		List<PresenceResponse> responses = projectService.getConnectedMembers(projectId);
 		return SuccessResponse.of(ProjectSuccessCode.CONNECTING_MEMBERS, responses);
 	}
 
