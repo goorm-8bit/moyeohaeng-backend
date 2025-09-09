@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -49,6 +50,7 @@ public class TeamMember extends BaseEntity {
 	@JoinColumn(name = "member_id", nullable = false)
 	private Member member;
 
+	@Setter
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role", nullable = false)
 	private TeamRole teamRole;

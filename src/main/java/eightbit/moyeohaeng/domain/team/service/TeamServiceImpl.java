@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.domain.team.service;
 
 import java.util.List;
 
+import org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import eightbit.moyeohaeng.domain.team.dto.MemberDto;
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
 import eightbit.moyeohaeng.domain.team.dto.response.InviteMemberResponseDto;
 import eightbit.moyeohaeng.domain.team.dto.response.TeamMembersResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.UpdateMemberRoleResponseDto;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.entity.TeamMember;
 import eightbit.moyeohaeng.domain.team.entity.TeamRole;
@@ -29,6 +31,7 @@ public class TeamServiceImpl implements TeamService {
 	private final TeamRepository teamRepository;
 	private final TeamMemberRepository teamMemberRepository;
 	private final MemberRepository memberRepository;
+	private final SpringApplicationAdminMXBeanRegistrar springApplicationAdminMXBeanRegistrar;
 
 	@Override
 	@Transactional
@@ -63,6 +66,39 @@ public class TeamServiceImpl implements TeamService {
 			return InviteMemberResponseDto.builder()
 				.teamId(teamId)
 				.memberId(inviteeMemberId)
+				.build();
+
+		} else {
+			throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
+		}
+	}
+
+	@Override
+	@Transactional
+	public UpdateMemberRoleResponseDto updateMemberRole(Long teamId, Long adminMemberId, Long targetMemberId,
+		TeamRole newRole) {
+
+		// 소속 멤버인지 검사
+		if (!teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, targetMemberId)) {
+			throw new TeamException(TeamErrorCode.YOU_NOT_TEAM_MEMBER);
+		}
+
+		TeamRole teamRole = teamMemberRepository.findRoleByTeamIdAndMemberId(teamId, adminMemberId)
+			.orElseThrow(() -> new TeamException(TeamErrorCode.YOU_NOT_TEAM_MEMBER));
+
+		if (teamRole == TeamRole.OWNER) {
+			TeamMember targetTeamMember = teamMemberRepository.findByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId,
+					targetMemberId)
+				.orElseThrow(() -> new TeamException(TeamErrorCode.YOU_NOT_TEAM_MEMBER));
+
+			targetTeamMember.setTeamRole(newRole);
+
+			Member targetMember = memberRepository.findById(targetMemberId)
+				.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+			return UpdateMemberRoleResponseDto.builder()
+				.targetMember(MemberDto.from(targetMember))
+				.newRole(newRole)
 				.build();
 
 		} else {

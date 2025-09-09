@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -98,20 +99,22 @@ public class TeamController implements TeamApi {
 	}
 
 	@Override
-	@PutMapping("/{teamId}/members/{memberId}")
+	@PatchMapping("/{teamId}/members/{memberId}/role")
 	public ResponseEntity<UpdateMemberRoleResponseDto> updateMemberRole(
 		@AuthenticationPrincipal CustomUserDetails user,
 		@RequestBody UpdateMemberRoleRequestDto requestDto,
-		@PathVariable("memberId") Long memberId
+		@PathVariable("memberId") Long memberId,
+		@PathVariable("teamId") Long teamId
 	) {
 
-		// memberId 는 팀 멤버 권한을 재설정 하는 사람 (ex : 관리자)
-		// 재설정을 받는 memberId 는 requestDto 에
-		if (Objects.equals(user.getId(), memberId)) {
+		// userId 가 변경 권한이 있는지 확인
+		// 재설정을 받는 memberId 는 PathVariable 에
+		// 재설정 하는 teamId 는 PathVariable 에
+		// 재설정 하는 권한이 뭔지는 requestDto 에
+		UpdateMemberRoleResponseDto responseDto = teamService.updateMemberRole(teamId, user.getId(),
+			memberId, requestDto.newRole());
 
-		}
-
-		return null;
+		return ResponseEntity.ok(responseDto);
 	}
 
 	@PutMapping("/{teamId}")

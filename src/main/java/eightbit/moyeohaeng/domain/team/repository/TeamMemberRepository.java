@@ -17,6 +17,8 @@ import eightbit.moyeohaeng.domain.team.entity.TeamRole;
 @Repository
 public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 
+	Optional<TeamMember> findByTeam_IdAndMember_IdAndDeletedAtIsNull(Long teamId, Long memberId);
+
 	List<TeamMember> findByMember_Id(Long memberId);
 
 	@Query("SELECT tm.team FROM TeamMember tm WHERE tm.member.id = :memberId")

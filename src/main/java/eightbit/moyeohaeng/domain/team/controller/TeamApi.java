@@ -70,27 +70,39 @@ public interface TeamApi {
 		@RequestBody InviteMemberRequestDto requestDto);
 
 	@Operation(
-		summary = "ONWER 가 MEMBER 를 강퇴할 수 있음"
+		summary = "ONWER 가 MEMBER 를 강퇴할 수 있음",
+		description = "현재 미구현된 기능"
 	)
 	ResponseEntity<RemoveMemberResponseDto> removeMember(@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable("memberId") Long memberId);
 
 	@Operation(
-		summary = "OWNER 가 MEMBER 의 권한을 재조정"
+		summary = "OWNER 가 MEMBER 의 권한을 재조정",
+		parameters = {
+			@Parameter(name = "teamId", in = ParameterIn.PATH, required = true,
+				description = "멤버의 role 이 바뀌는 팀 ID", example = "Long type"),
+			@Parameter(name = "memberId", in = ParameterIn.PATH, required = true,
+				description = "role 이 바뀔 멤버 ID", example = "Long type"),
+			@Parameter(name = "user", in = ParameterIn.PATH, hidden = true,
+				description = "스프링 시큐리티가 넣어주는 값")
+		}
 	)
 	ResponseEntity<UpdateMemberRoleResponseDto> updateMemberRole(@AuthenticationPrincipal CustomUserDetails user,
 		@RequestBody UpdateMemberRoleRequestDto requestDto,
-		@PathVariable("memberId") Long memberId);
+		@PathVariable("memberId") Long memberId,
+		@PathVariable("teamId") Long teamId);
 
 	@Operation(
-		summary = "user 권한을 확인해서 팀 세팅을 바꿈 (현재 teamName 만 바꿀 수 있음)"
+		summary = "user 권한을 확인해서 팀 세팅을 바꿈 ",
+		description = "현재 미구현된 기능"
 	)
 	ResponseEntity<UpdateTeamSettingsResponseDto> updateTeamSettings(@AuthenticationPrincipal CustomUserDetails user,
 		@RequestBody UpdateTeamSettingsRequestDto requestDto,
 		@PathVariable("teamId") Long teamId);
 
 	@Operation(
-		summary = "user 권한을 확인해서 팀을 삭제함"
+		summary = "user 권한을 확인해서 팀을 삭제함",
+		description = "현재 미구현된 기능"
 	)
 	ResponseEntity<DeleteTeamResponseDto> deleteTeam(@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable Long teamId);

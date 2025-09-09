@@ -5,6 +5,7 @@ import java.util.List;
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
 import eightbit.moyeohaeng.domain.team.dto.response.InviteMemberResponseDto;
 import eightbit.moyeohaeng.domain.team.dto.response.TeamMembersResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.UpdateMemberRoleResponseDto;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.entity.TeamRole;
 
@@ -42,4 +43,13 @@ public interface TeamService {
 	 * @param inviteeMemberId 초대받는 회원(피초대자)의 ID
 	 */
 	InviteMemberResponseDto inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId);
+
+	/**
+	 * @param teamId          작업이 이루어질 team ID
+	 * @param adminMemberId   관리자인지 확인할 ID
+	 * @param targetMemberId  변경 대상의 member ID
+	 * @param newRole         변경 대상의 새로운 Role
+	 */
+	UpdateMemberRoleResponseDto updateMemberRole(Long teamId, Long adminMemberId, Long targetMemberId,
+		TeamRole newRole);
 }
