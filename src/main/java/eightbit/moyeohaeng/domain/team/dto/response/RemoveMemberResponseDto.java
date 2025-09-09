@@ -1,6 +1,6 @@
 package eightbit.moyeohaeng.domain.team.dto.response;
 
-import eightbit.moyeohaeng.domain.team.dto.MemberDto;
+import eightbit.moyeohaeng.domain.member.dto.MemberDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;

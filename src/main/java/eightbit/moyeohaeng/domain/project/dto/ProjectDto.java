@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.entity.ProjectAccess;
-import eightbit.moyeohaeng.domain.team.entity.Team;
+import eightbit.moyeohaeng.domain.team.dto.TeamDto;
 import lombok.Builder;
 
 public record ProjectDto(
@@ -23,7 +23,7 @@ public record ProjectDto(
 	@JsonProperty("isAllowGuest") boolean isAllowGuest,
 	@JsonProperty("isAllowViewer") boolean isAllowViewer,
 	LocalDateTime modifiedAt,
-	Team team // TODO 직력화 방어 추가
+	TeamDto team
 
 ) {
 	public static ProjectDto from(Project project) {
@@ -38,7 +38,7 @@ public record ProjectDto(
 			project.isAllowGuest(),
 			project.isAllowViewer(),
 			project.getModifiedAt(),
-			project.getTeam()
+			TeamDto.from(project.getTeam()) // TODO N+1 문제 확인 
 		);
 	}
 
@@ -60,7 +60,7 @@ public record ProjectDto(
 		boolean isAllowGuest,
 		boolean isAllowViewer,
 		LocalDateTime updateAt,
-		Team team
+		TeamDto team
 	) {
 		return new ProjectDto(
 			externalId, title, color, projectAccess, startDate, endDate, travelDays, isAllowGuest, isAllowViewer,

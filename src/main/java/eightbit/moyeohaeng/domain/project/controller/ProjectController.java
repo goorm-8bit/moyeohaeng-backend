@@ -67,7 +67,7 @@ public class ProjectController implements ProjectApi {
 
 	@Override
 	@GetMapping
-	@RequiredAccessRole(UserRole.MEMBER)
+	// @RequiredAccessRole(UserRole.MEMBER) // TODO team또는 projectId가 필요함
 	public SuccessResponse<ProjectSearchResponse> searchMyProjects(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@RequestParam(required = false) Long teamId,
