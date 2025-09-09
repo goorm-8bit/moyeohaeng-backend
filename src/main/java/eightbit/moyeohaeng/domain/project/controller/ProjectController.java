@@ -1,6 +1,5 @@
 package eightbit.moyeohaeng.domain.project.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -20,7 +19,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import eightbit.moyeohaeng.domain.auth.UserRole;
 import eightbit.moyeohaeng.domain.auth.common.annotation.CurrentUserRole;
 import eightbit.moyeohaeng.domain.auth.common.annotation.RequiredAccessRole;
-import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
 import eightbit.moyeohaeng.domain.project.common.success.ProjectSuccessCode;
 import eightbit.moyeohaeng.domain.project.controller.swagger.ProjectApi;
 import eightbit.moyeohaeng.domain.project.dto.ProjectDto;
@@ -28,6 +26,7 @@ import eightbit.moyeohaeng.domain.project.dto.condition.ProjectSearchCondition;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectSortType;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
+import eightbit.moyeohaeng.domain.project.dto.response.PresenceResponse;
 import eightbit.moyeohaeng.domain.project.dto.response.ProjectCreateResponse;
 import eightbit.moyeohaeng.domain.project.dto.response.ProjectGetResponse;
 import eightbit.moyeohaeng.domain.project.dto.response.ProjectSearchResponse;
@@ -116,12 +115,11 @@ public class ProjectController implements ProjectApi {
 	@Override
 	@GetMapping("/{projectId}/members")
 	@RequiredAccessRole(UserRole.MEMBER)
-	public SuccessResponse<List<MemberInfoResponse>> getConnectedMember(
+	public SuccessResponse<List<PresenceResponse>> getConnectedMembers(
 		@PathVariable Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
-
-		List<MemberInfoResponse> responses = new ArrayList<>();
+		List<PresenceResponse> responses = projectService.getConnectedMembers(projectId);
 		return SuccessResponse.of(ProjectSuccessCode.CONNECTING_MEMBERS, responses);
 	}
 

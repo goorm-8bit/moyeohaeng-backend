@@ -13,6 +13,7 @@ import eightbit.moyeohaeng.domain.member.dto.response.MemberInfoResponse;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectSortType;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
+import eightbit.moyeohaeng.domain.project.dto.response.PresenceResponse;
 import eightbit.moyeohaeng.domain.project.dto.response.ProjectCreateResponse;
 import eightbit.moyeohaeng.domain.project.dto.response.ProjectGetResponse;
 import eightbit.moyeohaeng.domain.project.dto.response.ProjectSearchResponse;
@@ -153,7 +154,6 @@ public interface ProjectApi {
 			responseCode = "200",
 			description = "조회 성공",
 			content = @Content(array = @ArraySchema(schema = @Schema(implementation = MemberInfoResponse.class)))
-
 		),
 		@ApiResponse(responseCode = "401", description = "인증 실패",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -162,7 +162,7 @@ public interface ProjectApi {
 		@ApiResponse(responseCode = "404", description = "멤버 목록을 찾을 수 없습니다.",
 			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	SuccessResponse<List<MemberInfoResponse>> getConnectedMember(
+	SuccessResponse<List<PresenceResponse>> getConnectedMembers(
 		@Parameter(name = "projectId", description = "연결할 프로젝트 ID", in = ParameterIn.PATH, required = true)
 		Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser

@@ -34,6 +34,7 @@ public class PresenceRepository {
 
 		return entries.values().stream()
 			.map(this::convertUserInfo)
+			.distinct()
 			.toList();
 	}
 

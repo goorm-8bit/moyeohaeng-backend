@@ -1,5 +1,6 @@
 package eightbit.moyeohaeng.domain.project.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -23,12 +24,18 @@ public class PresenceService {
 	@ProjectEvent(eventType = EventType.PRESENCE, actionType = ActionType.CREATED)
 	public PresenceResponse subscribe(@ProjectId Long projectId, UUID uuid, UserInfo userInfo) {
 		presenceRepository.savePresence(projectId, uuid, userInfo);
-		return PresenceResponse.of(uuid, userInfo);
+		return PresenceResponse.of(userInfo);
 	}
 
 	@ProjectEvent(eventType = EventType.PRESENCE, actionType = ActionType.DELETED)
 	public PresenceDeleteResponse unsubscribe(@ProjectId Long projectId, UUID uuid) {
 		presenceRepository.deletePresence(projectId, uuid);
 		return PresenceDeleteResponse.of(uuid);
+	}
+
+	public List<PresenceResponse> getConnectedMembers(Long projectId) {
+		return presenceRepository.findAllPresence(projectId).stream()
+			.map(PresenceResponse::of)
+			.toList();
 	}
 }

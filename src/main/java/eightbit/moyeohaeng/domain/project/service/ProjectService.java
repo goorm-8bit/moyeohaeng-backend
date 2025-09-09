@@ -19,6 +19,7 @@ import eightbit.moyeohaeng.domain.project.dto.condition.ProjectSearchCondition;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectCreateRequest;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectSortType;
 import eightbit.moyeohaeng.domain.project.dto.request.ProjectUpdateRequest;
+import eightbit.moyeohaeng.domain.project.dto.response.PresenceResponse;
 import eightbit.moyeohaeng.domain.project.entity.Project;
 import eightbit.moyeohaeng.domain.project.repository.ProjectRepository;
 import eightbit.moyeohaeng.domain.team.entity.Team;
@@ -36,6 +37,7 @@ public class ProjectService {
 
 	private final MemberService memberService;
 	private final SseEmitterService sseEmitterService;
+	private final PresenceService presenceService;
 
 	private final ProjectRepository projectRepository;
 	private final TeamRepository teamRepository;
@@ -74,6 +76,10 @@ public class ProjectService {
 	 */
 	public SseEmitter connect(Long projectId, String lastEventId, UserInfo userInfo) {
 		return sseEmitterService.subscribe(channelTopic, projectId, lastEventId, userInfo);
+	}
+
+	public List<PresenceResponse> getConnectedMembers(Long projectId) {
+		return presenceService.getConnectedMembers(projectId);
 	}
 
 	/**
