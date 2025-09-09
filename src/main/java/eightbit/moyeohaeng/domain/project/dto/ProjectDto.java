@@ -13,6 +13,7 @@ import eightbit.moyeohaeng.domain.team.dto.TeamDto;
 import lombok.Builder;
 
 public record ProjectDto(
+	Long id,// TODO 삭제 예정 externalId 로대체
 	String externalId,
 	String title,
 	String color,
@@ -28,6 +29,7 @@ public record ProjectDto(
 ) {
 	public static ProjectDto from(Project project) {
 		return ProjectDto.of(
+			project.getId(),
 			project.getExternalId(),
 			project.getTitle(),
 			project.getColor(),
@@ -50,6 +52,7 @@ public record ProjectDto(
 
 	@Builder(builderMethodName = "builder")
 	public static ProjectDto of(
+		Long id,
 		String externalId,
 		String title,
 		String color,
@@ -63,7 +66,7 @@ public record ProjectDto(
 		TeamDto team
 	) {
 		return new ProjectDto(
-			externalId, title, color, projectAccess, startDate, endDate, travelDays, isAllowGuest, isAllowViewer,
+			id, externalId, title, color, projectAccess, startDate, endDate, travelDays, isAllowGuest, isAllowViewer,
 			updateAt, team
 		);
 	}
