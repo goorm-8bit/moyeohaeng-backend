@@ -3,6 +3,7 @@ package eightbit.moyeohaeng.domain.itinerary.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +21,7 @@ import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockResponse;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockUpdateResponse;
 import eightbit.moyeohaeng.domain.itinerary.service.TimeBlockService;
+import eightbit.moyeohaeng.global.success.CommonSuccessCode;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -71,5 +73,12 @@ public class TimeBlockController implements TimeBlockApi {
 	) {
 		List<TimeBlockResponse> responses = timeBlockService.getTimeBlocks(projectId, day);
 		return SuccessResponse.of(TimeBlockSuccessCode.GET_LIST, responses);
+	}
+
+	@Override
+	@DeleteMapping("/{timeBlockId}")
+	public SuccessResponse<Void> delete(@PathVariable Long projectId, @PathVariable Long timeBlockId) {
+		timeBlockService.delete(projectId, timeBlockId);
+		return SuccessResponse.from(CommonSuccessCode.DELETE_SUCCESS);
 	}
 }

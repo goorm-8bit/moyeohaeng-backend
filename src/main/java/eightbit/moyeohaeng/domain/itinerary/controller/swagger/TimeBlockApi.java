@@ -74,4 +74,17 @@ public interface TimeBlockApi {
 		@Parameter(description = "일차")
 		Integer day
 	);
+
+	@Operation(summary = "시간 블록 삭제", description = "시간 블록을 삭제합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "204", description = "시간 블록 삭제 성공"),
+		@ApiResponse(responseCode = "404", description = "시간 블록을 찾을 수 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	})
+	SuccessResponse<Void> delete(
+		@Parameter(description = "프로젝트 ID", required = true)
+		Long projectId,
+		@Parameter(description = "시간 블록 ID", required = true)
+		Long timeBlockId
+	);
 }
