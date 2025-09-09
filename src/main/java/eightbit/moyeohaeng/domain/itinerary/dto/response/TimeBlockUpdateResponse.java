@@ -2,15 +2,11 @@ package eightbit.moyeohaeng.domain.itinerary.dto.response;
 
 import java.time.LocalTime;
 
-import com.querydsl.core.annotations.QueryProjection;
-
 import eightbit.moyeohaeng.domain.itinerary.entity.TimeBlock;
-import eightbit.moyeohaeng.domain.place.dto.response.PlaceDetail;
-import eightbit.moyeohaeng.domain.place.entity.Place;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "시간 블록 응답 DTO")
-public record TimeBlockResponse(
+@Schema(description = "시간 블록 수정 응답 DTO")
+public record TimeBlockUpdateResponse(
 	@Schema(description = "시간 블록 ID", example = "1")
 	Long id,
 
@@ -24,23 +20,15 @@ public record TimeBlockResponse(
 	LocalTime endTime,
 
 	@Schema(description = "메모", example = "야경이 아름다운 곳")
-	String memo,
-
-	@Schema(description = "장소 정보")
-	PlaceDetail placeDetail
+	String memo
 ) {
-	@QueryProjection
-	public TimeBlockResponse {
-	}
-
-	public static TimeBlockResponse of(TimeBlock timeBlock, Place place) {
-		return new TimeBlockResponse(
+	public static TimeBlockUpdateResponse of(TimeBlock timeBlock) {
+		return new TimeBlockUpdateResponse(
 			timeBlock.getId(),
 			timeBlock.getDay(),
 			timeBlock.getStartTime(),
 			timeBlock.getEndTime(),
-			timeBlock.getMemo(),
-			PlaceDetail.from(place)
+			timeBlock.getMemo()
 		);
 	}
 }

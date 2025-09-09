@@ -18,6 +18,7 @@ import eightbit.moyeohaeng.domain.itinerary.common.exception.TimeBlockException;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockCreateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.request.TimeBlockUpdateRequest;
 import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockResponse;
+import eightbit.moyeohaeng.domain.itinerary.dto.response.TimeBlockUpdateResponse;
 import eightbit.moyeohaeng.domain.itinerary.entity.TimeBlock;
 import eightbit.moyeohaeng.domain.itinerary.repository.TimeBlockRepository;
 import eightbit.moyeohaeng.domain.place.entity.Place;
@@ -109,7 +110,7 @@ class TimeBlockServiceTest {
 		)));
 
 		// when
-		TimeBlockResponse response = timeBlockService.update(projectId, timeBlockId, request);
+		TimeBlockUpdateResponse response = timeBlockService.update(projectId, timeBlockId, request);
 
 		// then
 		assertThat(response.day()).isEqualTo(request.day());

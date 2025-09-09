@@ -1,10 +1,12 @@
 package eightbit.moyeohaeng.domain.place.dto.response;
 
+import com.querydsl.core.annotations.QueryProjection;
+
 import eightbit.moyeohaeng.domain.place.entity.Place;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "장소 상세 응답 DTO")
-public record PlaceDetailResponse(
+public record PlaceDetail(
 
 	@Schema(description = "장소 ID", example = "1")
 	Long id,
@@ -27,8 +29,12 @@ public record PlaceDetailResponse(
 	@Schema(description = "카테고리", example = "해변")
 	String category
 ) {
-	public static PlaceDetailResponse from(Place place) {
-		return new PlaceDetailResponse(
+	@QueryProjection
+	public PlaceDetail {
+	}
+
+	public static PlaceDetail from(Place place) {
+		return new PlaceDetail(
 			place.getId(),
 			place.getName(),
 			place.getAddress(),
@@ -39,4 +45,3 @@ public record PlaceDetailResponse(
 		);
 	}
 }
-
