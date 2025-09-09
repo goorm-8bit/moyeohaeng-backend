@@ -32,5 +32,7 @@ public interface PlaceBlockRepository extends JpaRepository<PlaceBlock, Long> {
 
 	Optional<PlaceBlock> findByIdAndProjectId(Long id, Long projectId);
 
+	Optional<PlaceBlock> findByIdAndProjectIdAndDeletedAtIsNull(Long id, Long projectId);
+
 	List<PlaceBlock> findByIdInAndProjectId(Collection<Long> ids, Long projectId);
 }
