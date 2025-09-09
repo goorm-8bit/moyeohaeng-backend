@@ -38,7 +38,7 @@ public record ProjectDto(
 			project.isAllowGuest(),
 			project.isAllowViewer(),
 			project.getModifiedAt(),
-			TeamDto.from(project.getTeam())
+			TeamDto.from(project.getTeam()) // TODO N+1 문제 확인 
 		);
 	}
 
