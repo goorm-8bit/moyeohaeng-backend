@@ -2,7 +2,6 @@ package eightbit.moyeohaeng.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -16,6 +15,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import eightbit.moyeohaeng.global.domain.auth.JwtTokenProvider;
 import eightbit.moyeohaeng.global.security.JwtAuthenticationFilter;
 import eightbit.moyeohaeng.global.security.ShareGuestAuthenticationFilter;
+import eightbit.moyeohaeng.global.security.handler.CustomAccessDeniedHandler;
+import eightbit.moyeohaeng.global.security.handler.CustomAuthenticationEntryPoint;
 import eightbit.moyeohaeng.domain.member.service.MemberService;
 import eightbit.moyeohaeng.domain.project.service.ProjectService;
 
@@ -56,16 +57,8 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated())
             .exceptionHandling(handler -> handler
-                .authenticationEntryPoint((request, response, e) -> {
-                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    response.setContentType("application/json;charset=UTF-8");
-                    response.getWriter().write("{\"status\": 401, \"error\": {\"code\": \"UNAUTHORIZED\", \"message\": \"인증이 필요합니다.\"}}");
-                })
-                .accessDeniedHandler((request, response, e) -> {
-                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    response.setContentType("application/json;charset=UTF-8");
-                    response.getWriter().write("{\"status\": 401, \"error\": {\"code\": \"UNAUTHORIZED\", \"message\": \"인증이 필요합니다.\"}}");
-                }))
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                .accessDeniedHandler(new CustomAccessDeniedHandler()))
             // 공유가 허용된 경우 /sub/** 요청에 대해 게스트 Principal을 설정
             .addFilterBefore(shareGuestAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
