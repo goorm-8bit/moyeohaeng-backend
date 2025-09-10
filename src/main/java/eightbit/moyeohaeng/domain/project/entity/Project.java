@@ -99,6 +99,7 @@ public class Project extends BaseEntity {
 	public static Project create(Team team,
 		Member creator,
 		String title,
+		String color,
 		LocalDate startDate,
 		LocalDate endDate) {
 
@@ -110,7 +111,7 @@ public class Project extends BaseEntity {
 			.endDate(endDate)
 			.projectAccess(ProjectAccess.PRIVATE)
 			.externalId(UUID.randomUUID().toString())
-			.color("#ffffff")
+			.color(color)
 			.travelDays(TimeUtils.calculateTravelDays(startDate, endDate))
 			.build();
 	}
