@@ -2,6 +2,8 @@ package eightbit.moyeohaeng.domain.project.dto.request;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
@@ -30,6 +32,7 @@ public record ProjectCreateRequest(
 	LocalDate endDate
 ) {
 
+	@JsonIgnore
 	@AssertTrue(message = "종료일은 시작일과 같거나 이후여야 합니다.")
 	public boolean isValidDateRange() {
 		return startDate == null || endDate == null || !endDate.isBefore(startDate);
