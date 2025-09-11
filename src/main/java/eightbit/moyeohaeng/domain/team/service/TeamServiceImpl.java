@@ -2,7 +2,6 @@ package eightbit.moyeohaeng.domain.team.service;
 
 import java.util.List;
 
-import org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +30,6 @@ public class TeamServiceImpl implements TeamService {
 	private final TeamRepository teamRepository;
 	private final TeamMemberRepository teamMemberRepository;
 	private final MemberRepository memberRepository;
-	private final SpringApplicationAdminMXBeanRegistrar springApplicationAdminMXBeanRegistrar;
 
 	@Override
 	@Transactional
@@ -54,6 +52,16 @@ public class TeamServiceImpl implements TeamService {
 
 		// 권한이 있으면 초대 가능 없으면 예외 발생
 		if (teamRole == TeamRole.OWNER) {
+
+			// 자기 자신 초대 방지
+			if (inviterMemberId.equals(inviteeMemberId)) {
+				throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
+			}
+
+			// 이미 멤버인지 확인
+			if (teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, inviteeMemberId)) {
+				throw new TeamException(TeamErrorCode.ALREADY_TEAM_MEMBER);
+			}
 
 			TeamMember teamMember = TeamMember.builder()
 				.member(invitee)
@@ -223,6 +231,6 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public Boolean checkTeamMember(Long teamId, Long memberId) {
 
-		return teamMemberRepository.existsByTeam_IdAndMember_Id(teamId, memberId);
+		return teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, memberId);
 	}
 }

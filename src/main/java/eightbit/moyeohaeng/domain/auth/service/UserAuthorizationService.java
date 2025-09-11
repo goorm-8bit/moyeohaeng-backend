@@ -52,7 +52,8 @@ public class UserAuthorizationService {
 				return UserRole.OWNER;
 			}
 			// MEMBER (같은 팀)
-			boolean isTeamMember = teamMemberRepository.existsByTeam_IdAndMember_Id(project.getTeam().getId(),
+			boolean isTeamMember = teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(
+				project.getTeam().getId(),
 				memberId);
 			if (isTeamMember)
 				return UserRole.MEMBER;
@@ -72,7 +73,7 @@ public class UserAuthorizationService {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null && auth.getPrincipal() instanceof CustomUserDetails user) {
 			Long memberId = user.getId();
-			boolean isTeamMember = teamMemberRepository.existsByTeam_IdAndMember_Id(teamId, memberId);
+			boolean isTeamMember = teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, memberId);
 			return isTeamMember ? UserRole.MEMBER : UserRole.VIEWER;
 		}
 		return UserRole.ANY;

@@ -31,7 +31,6 @@ import lombok.Setter;
 		@UniqueConstraint(name = "uk_team_member", columnNames = {"team_id", "member_id"})
 	}
 )
-
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE team_members SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
