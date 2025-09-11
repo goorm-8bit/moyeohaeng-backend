@@ -50,34 +50,35 @@ public class TeamServiceImpl implements TeamService {
 		TeamRole teamRole = teamMemberRepository.findRoleByTeamIdAndMemberId(teamId, inviterMemberId)
 			.orElseThrow(() -> new TeamException(TeamErrorCode.NOT_HAVE_RIGHT));
 
-		// 권한이 있으면 초대 가능 없으면 예외 발생
-		if (teamRole == TeamRole.OWNER) {
+		// 이미 멤버인지 확인
+		if (teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, inviteeMemberId)) {
+			throw new TeamException(TeamErrorCode.ALREADY_TEAM_MEMBER);
+		} else {
 
-			// 자기 자신 초대 방지
-			if (inviterMemberId.equals(inviteeMemberId)) {
+			// 권한이 있으면 초대 가능 없으면 예외 발생
+			if (teamRole == TeamRole.OWNER) {
+
+				// 자기 자신 초대 방지
+				if (inviterMemberId.equals(inviteeMemberId)) {
+					throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
+				}
+
+				TeamMember teamMember = TeamMember.builder()
+					.member(invitee)
+					.team(team)
+					.teamRole(TeamRole.MEMBER)
+					.build();
+
+				TeamMember saved = teamMemberRepository.save(teamMember);
+
+				return InviteMemberResponseDto.builder()
+					.teamId(teamId)
+					.memberId(inviteeMemberId)
+					.build();
+
+			} else {
 				throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
 			}
-
-			// 이미 멤버인지 확인
-			if (teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, inviteeMemberId)) {
-				throw new TeamException(TeamErrorCode.ALREADY_TEAM_MEMBER);
-			}
-
-			TeamMember teamMember = TeamMember.builder()
-				.member(invitee)
-				.team(team)
-				.teamRole(TeamRole.MEMBER)
-				.build();
-
-			TeamMember saved = teamMemberRepository.save(teamMember);
-
-			return InviteMemberResponseDto.builder()
-				.teamId(teamId)
-				.memberId(inviteeMemberId)
-				.build();
-
-		} else {
-			throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
 		}
 	}
 
