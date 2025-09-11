@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import eightbit.moyeohaeng.domain.auth.UserRole;
+import eightbit.moyeohaeng.domain.auth.common.annotation.RequiredAccessRole;
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
 import eightbit.moyeohaeng.domain.team.dto.request.CreateTeamRequestDto;
 import eightbit.moyeohaeng.domain.team.dto.request.InviteMemberRequestDto;
@@ -50,6 +52,7 @@ public class TeamController implements TeamApi {
 
 	@Override
 	@PostMapping("/members/invite/send")
+	@RequiredAccessRole(UserRole.MEMBER)
 	public ResponseEntity<InviteMemberResponseDto> inviteMember(
 		@AuthenticationPrincipal CustomUserDetails user,
 		@RequestBody @Valid InviteMemberRequestDto requestDto
@@ -84,6 +87,7 @@ public class TeamController implements TeamApi {
 
 	@Override
 	@DeleteMapping("/{teamId}/members/{memberId}")
+	@RequiredAccessRole(UserRole.OWNER)
 	public ResponseEntity<RemoveMemberResponseDto> removeMember(
 		@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable("memberId") Long memberId
@@ -99,7 +103,8 @@ public class TeamController implements TeamApi {
 	}
 
 	@Override
-	@PatchMapping("/{teamId}/members/{memberId}/role")
+	@PutMapping("/{teamId}/members/{memberId}")
+	@RequiredAccessRole(UserRole.OWNER)
 	public ResponseEntity<UpdateMemberRoleResponseDto> updateMemberRole(
 		@AuthenticationPrincipal CustomUserDetails user,
 		@RequestBody @Valid UpdateMemberRoleRequestDto requestDto,
@@ -118,6 +123,7 @@ public class TeamController implements TeamApi {
 	}
 
 	@PutMapping("/{teamId}")
+	@RequiredAccessRole(UserRole.MEMBER)
 	public ResponseEntity<UpdateTeamSettingsResponseDto> updateTeamSettings(
 		@AuthenticationPrincipal CustomUserDetails user,
 		@RequestBody @Valid UpdateTeamSettingsRequestDto requestDto,
@@ -130,6 +136,7 @@ public class TeamController implements TeamApi {
 	}
 
 	@DeleteMapping("/{teamId}")
+	@RequiredAccessRole(UserRole.OWNER)
 	public ResponseEntity<DeleteTeamResponseDto> deleteTeam(
 		@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable Long teamId
@@ -160,6 +167,7 @@ public class TeamController implements TeamApi {
 	}
 
 	@GetMapping("{teamId}/members")
+	@RequiredAccessRole(UserRole.MEMBER)
 	public ResponseEntity<TeamMembersResponseDto> getTeamMembers(
 		@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable("teamId") Long teamId
@@ -173,6 +181,7 @@ public class TeamController implements TeamApi {
 
 	@Override
 	@GetMapping("/{teamId}")
+	@RequiredAccessRole(UserRole.MEMBER)
 	public ResponseEntity<TeamDto> getTeam(@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable("teamId") Long teamId) {
 

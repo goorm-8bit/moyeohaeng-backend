@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import eightbit.moyeohaeng.domain.auth.UserRole;
+import eightbit.moyeohaeng.domain.auth.common.annotation.RequiredAccessRole;
 import eightbit.moyeohaeng.domain.map.common.success.PinSuccessCode;
 import eightbit.moyeohaeng.domain.map.controller.swagger.PinApi;
 import eightbit.moyeohaeng.domain.map.dto.request.PinCreateRequest;
@@ -30,6 +32,7 @@ public class PinController implements PinApi {
 
 	@PostMapping
 	@Override
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<PinResponse> create(
 		@PathVariable Long projectId,
 		@Valid @RequestBody PinCreateRequest request,
@@ -42,6 +45,7 @@ public class PinController implements PinApi {
 
 	@GetMapping
 	@Override
+	@RequiredAccessRole(UserRole.VIEWER)
 	public SuccessResponse<List<PinResponse>> getPins(@PathVariable Long projectId) {
 		List<PinResponse> responses = pinService.getPins(projectId);
 		return SuccessResponse.of(PinSuccessCode.GET_PIN_LIST, responses);
@@ -49,6 +53,7 @@ public class PinController implements PinApi {
 
 	@DeleteMapping("/{pinId}")
 	@Override
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<Void> delete(
 		@PathVariable Long projectId,
 		@PathVariable Long pinId
