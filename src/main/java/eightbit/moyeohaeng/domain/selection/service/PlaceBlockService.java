@@ -11,6 +11,9 @@ import eightbit.moyeohaeng.domain.place.common.exception.PlaceErrorCode;
 import eightbit.moyeohaeng.domain.place.common.exception.PlaceException;
 import eightbit.moyeohaeng.domain.place.entity.Place;
 import eightbit.moyeohaeng.domain.place.repository.PlaceRepository;
+import eightbit.moyeohaeng.domain.project.common.annotation.ActionType;
+import eightbit.moyeohaeng.domain.project.common.annotation.EventType;
+import eightbit.moyeohaeng.domain.project.common.annotation.ProjectEvent;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectErrorCode;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectException;
 import eightbit.moyeohaeng.domain.project.entity.Project;
@@ -42,6 +45,7 @@ public class PlaceBlockService {
 	private final PlaceRepository placeRepository;
 
 	@Transactional
+	@ProjectEvent(eventType = EventType.PLACE_BLOCK, actionType = ActionType.CREATED)
 	public PlaceBlockCreateResponse create(Long projectId, PlaceBlockCreateRequest request) {
 		Project project = projectRepository.findById(projectId)
 			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND));
@@ -62,12 +66,12 @@ public class PlaceBlockService {
 	}
 
 	@Transactional
+	@ProjectEvent(eventType = EventType.PLACE_BLOCK, actionType = ActionType.UPDATED)
 	public PlaceBlockUpdateMemoResponse updateMemo(Long projectId, Long placeBlockId,
 		PlaceBlockUpdateMemoRequest request) {
 		// 장소 블록 조회 및 프로젝트에 속해있는지 검증
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
 		placeBlock.updateMemo(request.memo());
-
 		return PlaceBlockUpdateMemoResponse.of(placeBlockId, request.memo());
 	}
 
@@ -98,6 +102,7 @@ public class PlaceBlockService {
 	}
 
 	@Transactional
+	@ProjectEvent(eventType = EventType.PLACE_BLOCK, actionType = ActionType.UPDATED)
 	public PlaceBlockDeleteResponse delete(Long projectId, Long placeBlockId) {
 		// 장소 블록 조회 및 프로젝트에 속해있는지 검증
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);

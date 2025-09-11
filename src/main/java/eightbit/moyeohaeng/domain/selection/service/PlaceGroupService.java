@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import eightbit.moyeohaeng.domain.project.common.annotation.ActionType;
+import eightbit.moyeohaeng.domain.project.common.annotation.EventType;
+import eightbit.moyeohaeng.domain.project.common.annotation.ProjectEvent;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectErrorCode;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectException;
 import eightbit.moyeohaeng.domain.project.entity.Project;
@@ -49,6 +52,7 @@ public class PlaceGroupService {
 	private final ProjectRepository projectRepository;
 
 	@Transactional
+	@ProjectEvent(eventType = EventType.PLACE_BLOCK, actionType = ActionType.CREATED)
 	public PlaceGroupResponse create(Long projectId, PlaceGroupRequest request) {
 		Project project = projectRepository.findById(projectId)
 			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND, projectId));
@@ -69,6 +73,7 @@ public class PlaceGroupService {
 	}
 
 	@Transactional
+	@ProjectEvent(eventType = EventType.PLACE_GROUP, actionType = ActionType.UPDATED)
 	public PlaceGroupBlockResponse savePlaceBlockToGroups(Long projectId, Long placeBlockId,
 		PlaceBlockToGroupsRequest request) {
 		// 장소 블록 조회 및 프로젝트에 속해있는지 검증
@@ -98,6 +103,7 @@ public class PlaceGroupService {
 	}
 
 	@Transactional
+	@ProjectEvent(eventType = EventType.PLACE_GROUP, actionType = ActionType.UPDATED)
 	public PlaceGroupResponse update(Long projectId, Long placeGroupId, PlaceGroupRequest request) {
 		// 장소 그룹 조회 및 프로젝트에 속해있는지 검증
 		PlaceGroup placeGroup = getPlaceGroup(projectId, placeGroupId);
