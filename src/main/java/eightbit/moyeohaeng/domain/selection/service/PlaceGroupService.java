@@ -3,7 +3,6 @@ package eightbit.moyeohaeng.domain.selection.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -13,6 +12,7 @@ import org.springframework.util.ObjectUtils;
 import eightbit.moyeohaeng.domain.project.common.annotation.ActionType;
 import eightbit.moyeohaeng.domain.project.common.annotation.EventType;
 import eightbit.moyeohaeng.domain.project.common.annotation.ProjectEvent;
+import eightbit.moyeohaeng.domain.project.common.annotation.ProjectId;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectErrorCode;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectException;
 import eightbit.moyeohaeng.domain.project.entity.Project;
@@ -53,7 +53,7 @@ public class PlaceGroupService {
 
 	@Transactional
 	@ProjectEvent(eventType = EventType.PLACE_BLOCK, actionType = ActionType.CREATED)
-	public PlaceGroupResponse create(Long projectId, PlaceGroupRequest request) {
+	public PlaceGroupResponse create(@ProjectId Long projectId, PlaceGroupRequest request) {
 		Project project = projectRepository.findById(projectId)
 			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND, projectId));
 
@@ -74,7 +74,7 @@ public class PlaceGroupService {
 
 	@Transactional
 	@ProjectEvent(eventType = EventType.PLACE_GROUP, actionType = ActionType.UPDATED)
-	public PlaceGroupBlockResponse savePlaceBlockToGroups(Long projectId, Long placeBlockId,
+	public PlaceGroupBlockResponse savePlaceBlockToGroups(@ProjectId Long projectId, Long placeBlockId,
 		PlaceBlockToGroupsRequest request) {
 		// 장소 블록 조회 및 프로젝트에 속해있는지 검증
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);
@@ -104,7 +104,7 @@ public class PlaceGroupService {
 
 	@Transactional
 	@ProjectEvent(eventType = EventType.PLACE_GROUP, actionType = ActionType.UPDATED)
-	public PlaceGroupResponse update(Long projectId, Long placeGroupId, PlaceGroupRequest request) {
+	public PlaceGroupResponse update(@ProjectId Long projectId, Long placeGroupId, PlaceGroupRequest request) {
 		// 장소 그룹 조회 및 프로젝트에 속해있는지 검증
 		PlaceGroup placeGroup = getPlaceGroup(projectId, placeGroupId);
 		placeGroup.update(request.name(), request.color());
@@ -133,7 +133,7 @@ public class PlaceGroupService {
 	}
 
 	@Transactional
-	public PlaceGroupUpdateMemoResponse updateMemo(Long projectId, Long placeGroupId,
+	public PlaceGroupUpdateMemoResponse updateMemo(@ProjectId Long projectId, Long placeGroupId,
 		PlaceGroupUpdateMemoRequest request) {
 		// 장소 그룹 조회 및 프로젝트에 속해있는지 검증
 		PlaceGroup placeGroup = getPlaceGroup(projectId, placeGroupId);
@@ -142,7 +142,7 @@ public class PlaceGroupService {
 		return PlaceGroupUpdateMemoResponse.of(placeGroupId, request.memo());
 	}
 
-	public PlaceGroupDetailResponse getPlaceGroupDetail(Long projectId, Long placeGroupId, String username) {
+	public PlaceGroupDetailResponse getPlaceGroupDetail(@ProjectId Long projectId, Long placeGroupId, String username) {
 		// 장소 그룹 조회 및 프로젝트에 속해있는지 검증
 		PlaceGroup placeGroup = getPlaceGroup(projectId, placeGroupId);
 		List<PlaceBlockResponse> placeBlocks = placeGroupRepository.findPlaceBlocksByGroupId(projectId, placeGroupId);
@@ -176,7 +176,7 @@ public class PlaceGroupService {
 	}
 
 	@Transactional
-	public PlaceGroupDeleteResponse delete(Long projectId, Long placeGroupId) {
+	public PlaceGroupDeleteResponse delete(@ProjectId Long projectId, Long placeGroupId) {
 		// 장소 그룹 조회 및 프로젝트에 속해있는지 검증
 		PlaceGroup placeGroup = getPlaceGroup(projectId, placeGroupId);
 		placeGroupRepository.delete(placeGroup);
@@ -191,7 +191,7 @@ public class PlaceGroupService {
 	 * @param placeBlockId 장소 블록 ID
 	 * @return 장소 블록
 	 */
-	private PlaceBlock getPlaceBlock(Long projectId, Long placeBlockId) {
+	private PlaceBlock getPlaceBlock(@ProjectId Long projectId, Long placeBlockId) {
 		return getPlaceBlocks(projectId, List.of(placeBlockId)).getFirst();
 	}
 
@@ -202,7 +202,7 @@ public class PlaceGroupService {
 	 * @param placeBlockIds 장소 블록 ID
 	 * @return 장소 블록 목록
 	 */
-	private List<PlaceBlock> getPlaceBlocks(Long projectId, Collection<Long> placeBlockIds) {
+	private List<PlaceBlock> getPlaceBlocks(@ProjectId Long projectId, Collection<Long> placeBlockIds) {
 		List<PlaceBlock> placeBlocks = placeBlockRepository.findByIdInAndProjectId(placeBlockIds, projectId);
 		if (placeBlocks.size() != placeBlockIds.size()) {
 			throw new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND);
@@ -217,7 +217,7 @@ public class PlaceGroupService {
 	 * @param placeGroupId 장소 그룹 ID
 	 * @return 장소 그룹
 	 */
-	private PlaceGroup getPlaceGroup(Long projectId, Long placeGroupId) {
+	private PlaceGroup getPlaceGroup(@ProjectId Long projectId, Long placeGroupId) {
 		return getPlaceGroups(projectId, List.of(placeGroupId)).getFirst();
 	}
 
@@ -228,7 +228,7 @@ public class PlaceGroupService {
 	 * @param placeGroupIds 장소 그룹 ID
 	 * @return 장소 그룹 목록
 	 */
-	private List<PlaceGroup> getPlaceGroups(Long projectId, Collection<Long> placeGroupIds) {
+	private List<PlaceGroup> getPlaceGroups(@ProjectId Long projectId, Collection<Long> placeGroupIds) {
 		List<PlaceGroup> placeGroups = placeGroupRepository.findByIdInAndProjectId(placeGroupIds, projectId);
 		if (placeGroups.size() != placeGroupIds.size()) {
 			throw new PlaceGroupException(PlaceGroupErrorCode.PLACE_GROUP_NOT_FOUND);
