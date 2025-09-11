@@ -102,7 +102,7 @@ public class TeamController implements TeamApi {
 	@PatchMapping("/{teamId}/members/{memberId}/role")
 	public ResponseEntity<UpdateMemberRoleResponseDto> updateMemberRole(
 		@AuthenticationPrincipal CustomUserDetails user,
-		@RequestBody UpdateMemberRoleRequestDto requestDto,
+		@RequestBody @Valid UpdateMemberRoleRequestDto requestDto,
 		@PathVariable("memberId") Long memberId,
 		@PathVariable("teamId") Long teamId
 	) {
@@ -120,7 +120,7 @@ public class TeamController implements TeamApi {
 	@PutMapping("/{teamId}")
 	public ResponseEntity<UpdateTeamSettingsResponseDto> updateTeamSettings(
 		@AuthenticationPrincipal CustomUserDetails user,
-		@RequestBody UpdateTeamSettingsRequestDto requestDto,
+		@RequestBody @Valid UpdateTeamSettingsRequestDto requestDto,
 		@PathVariable("teamId") Long teamId
 	) {
 

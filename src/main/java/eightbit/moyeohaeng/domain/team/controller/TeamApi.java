@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
+import jakarta.validation.Valid;
 
 @Tags({
 	@Tag(name = "Team API", description = "Team 관련 조작에 쓰이는 API"),
@@ -83,12 +84,12 @@ public interface TeamApi {
 				description = "멤버의 role 이 바뀌는 팀 ID", example = "Long type"),
 			@Parameter(name = "memberId", in = ParameterIn.PATH, required = true,
 				description = "role 이 바뀔 멤버 ID", example = "Long type"),
-			@Parameter(name = "user", in = ParameterIn.PATH, hidden = true,
+			@Parameter(name = "user", hidden = true,
 				description = "스프링 시큐리티가 넣어주는 값")
 		}
 	)
 	ResponseEntity<UpdateMemberRoleResponseDto> updateMemberRole(@AuthenticationPrincipal CustomUserDetails user,
-		@RequestBody UpdateMemberRoleRequestDto requestDto,
+		@RequestBody @Valid UpdateMemberRoleRequestDto requestDto,
 		@PathVariable("memberId") Long memberId,
 		@PathVariable("teamId") Long teamId);
 
