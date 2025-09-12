@@ -23,14 +23,27 @@ public class CorsConfig {
 
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration config = new CorsConfiguration();
+		CorsConfiguration sseConfig = new CorsConfiguration();
+		sseConfig.setAllowedOrigins(List.of(allowedOrigins));
+		sseConfig.setAllowedMethods(List.of("GET")); // SSE는 GET만 필요
+		sseConfig.setAllowedHeaders(List.of(
+			"Authorization",
+			"Accept",
+			"Cache-Control",
+			"Last-Event-ID",
+			"Connection"
+		));
+		sseConfig.setExposedHeaders(List.of("Last-Event-ID"));
+		sseConfig.setAllowCredentials(true);
 
+		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowedOrigins(List.of(allowedOrigins));
 		config.setAllowedMethods(List.of(allowedMethods));
 		config.setAllowedHeaders(List.of(allowedHeaders));
 		config.setAllowCredentials(true);
-
+		
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/v1/projects/*/connect", sseConfig);
 		source.registerCorsConfiguration("/**", config);
 		return source;
 	}
