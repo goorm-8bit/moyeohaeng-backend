@@ -69,7 +69,7 @@ public class PlaceBlockService {
 	}
 
 	@Transactional
-	@ProjectEvent(eventType = EventType.PLACE_BLOCK, actionType = ActionType.UPDATED)
+	@ProjectEvent(eventType = EventType.PLACE_BLOCK, actionType = ActionType.MEMO_UPDATED)
 	public PlaceBlockUpdateMemoResponse updateMemo(@ProjectId Long projectId, Long placeBlockId,
 		PlaceBlockUpdateMemoRequest request) {
 		// 장소 블록 조회 및 프로젝트에 속해있는지 검증
@@ -105,7 +105,7 @@ public class PlaceBlockService {
 	}
 
 	@Transactional
-	@ProjectEvent(eventType = EventType.PLACE_BLOCK, actionType = ActionType.UPDATED)
+	@ProjectEvent(eventType = EventType.PLACE_BLOCK, actionType = ActionType.DELETED)
 	public PlaceBlockDeleteResponse delete(@ProjectId Long projectId, Long placeBlockId) {
 		// 장소 블록 조회 및 프로젝트에 속해있는지 검증
 		PlaceBlock placeBlock = getPlaceBlock(projectId, placeBlockId);

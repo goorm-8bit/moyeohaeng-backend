@@ -133,6 +133,7 @@ public class PlaceGroupService {
 	}
 
 	@Transactional
+	@ProjectEvent(eventType = EventType.PLACE_GROUP, actionType = ActionType.MEMO_UPDATED)
 	public PlaceGroupUpdateMemoResponse updateMemo(@ProjectId Long projectId, Long placeGroupId,
 		PlaceGroupUpdateMemoRequest request) {
 		// 장소 그룹 조회 및 프로젝트에 속해있는지 검증
@@ -176,6 +177,7 @@ public class PlaceGroupService {
 	}
 
 	@Transactional
+	@ProjectEvent(eventType = EventType.PLACE_GROUP, actionType = ActionType.DELETED)
 	public PlaceGroupDeleteResponse delete(@ProjectId Long projectId, Long placeGroupId) {
 		// 장소 그룹 조회 및 프로젝트에 속해있는지 검증
 		PlaceGroup placeGroup = getPlaceGroup(projectId, placeGroupId);

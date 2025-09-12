@@ -21,6 +21,9 @@ import eightbit.moyeohaeng.domain.place.common.exception.PlaceErrorCode;
 import eightbit.moyeohaeng.domain.place.common.exception.PlaceException;
 import eightbit.moyeohaeng.domain.place.entity.Place;
 import eightbit.moyeohaeng.domain.place.repository.PlaceRepository;
+import eightbit.moyeohaeng.domain.project.common.annotation.ActionType;
+import eightbit.moyeohaeng.domain.project.common.annotation.EventType;
+import eightbit.moyeohaeng.domain.project.common.annotation.ProjectEvent;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectErrorCode;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectException;
 import eightbit.moyeohaeng.domain.project.entity.Project;
@@ -37,6 +40,7 @@ public class TimeBlockService {
 	private final PlaceRepository placeRepository;
 
 	@Transactional
+	@ProjectEvent(eventType = EventType.TIME_BLOCK, actionType = ActionType.CREATED)
 	public TimeBlockResponse create(Long projectId, TimeBlockCreateRequest request) {
 		// 다른 시간 블록과 겹치는 시간이 있는지 확인
 		validateTimeBlockExists(projectId, request.day(), request.startTime(), request.endTime());
@@ -63,6 +67,7 @@ public class TimeBlockService {
 	}
 
 	@Transactional
+	@ProjectEvent(eventType = EventType.TIME_BLOCK, actionType = ActionType.UPDATED)
 	public TimeBlockUpdateResponse update(Long projectId, Long targetTimeBlockId, TimeBlockUpdateRequest request) {
 		// 시간 블록 조회 및 프로젝트에 속해있는지 검증
 		TimeBlock timeBlock = getTimeBlock(projectId, targetTimeBlockId);
@@ -76,6 +81,7 @@ public class TimeBlockService {
 	}
 
 	@Transactional
+	@ProjectEvent(eventType = EventType.TIME_BLOCK, actionType = ActionType.MEMO_UPDATED)
 	public TimeBlockUpdateMemoResponse updateMemo(Long projectId, Long timeBlockId,
 		TimeBlockUpdateMemoRequest request) {
 		// 시간 블록 조회 및 프로젝트에 속해있는지 검증
@@ -93,6 +99,7 @@ public class TimeBlockService {
 	}
 
 	@Transactional
+	@ProjectEvent(eventType = EventType.TIME_BLOCK, actionType = ActionType.DELETED)
 	public TimeBlockDeleteResponse delete(Long projectId, Long timeBlockId) {
 		// 시간 블록 조회 및 프로젝트에 속해있는지 검증
 		TimeBlock timeBlock = getTimeBlock(projectId, timeBlockId);
