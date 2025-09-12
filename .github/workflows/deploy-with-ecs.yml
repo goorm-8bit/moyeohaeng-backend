@@ -7,11 +7,11 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2
-  ECR_REPOSITORY: moyeohaeng
-  ECS_SERVICE: moyeohaeng-service
-  ECS_CLUSTER: moyeohaeng-cluster
-  ECS_TASK_DEFINITION_FAMILY: moyeohaeng-td
-  CONTAINER_NAME: moyeohaeng
+  ECR_REPOSITORY: moyeohaeng-prod
+  ECS_SERVICE: moyeohaeng-prod-service
+  ECS_CLUSTER: moyeohaeng-prod-cluster
+  ECS_TASK_DEFINITION_FAMILY: moyeohaeng-prod-td
+  CONTAINER_NAME: moyeohaeng-prod
 
 permissions:
   contents: read
