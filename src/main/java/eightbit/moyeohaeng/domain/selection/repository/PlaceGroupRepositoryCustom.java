@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.domain.selection.repository;
 
 import java.util.List;
 
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
 
 public interface PlaceGroupRepositoryCustom {
@@ -13,4 +14,6 @@ public interface PlaceGroupRepositoryCustom {
 	 * @return 장소 그룹 목록
 	 */
 	List<PlaceGroupResponse> findPlaceGroups(Long projectId);
+
+	List<PlaceBlockResponse> findPlaceBlocksByGroupId(Long projectId, Long placeGroupId);
 }

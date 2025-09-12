@@ -60,7 +60,8 @@ public class ProjectService {
 			.orElseThrow(() -> new ProjectException(ProjectErrorCode.TEAM_NOT_FOUND));
 
 		// 프로젝트 생성 및 소유자 설정
-		Project project = Project.create(team, member, request.title(), request.startDate(), request.endDate());
+		Project project = Project.create(team, member, request.title(), request.color(), request.startDate(),
+			request.endDate());
 		Project savedProject = projectRepository.save(project);
 
 		return ProjectDto.from(savedProject);

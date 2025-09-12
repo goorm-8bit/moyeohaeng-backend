@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import eightbit.moyeohaeng.domain.auth.UserRole;
+import eightbit.moyeohaeng.domain.auth.common.annotation.RequiredAccessRole;
 import eightbit.moyeohaeng.domain.selection.common.success.PlaceBlockSuccessCode;
 import eightbit.moyeohaeng.domain.selection.controller.swagger.PlaceBlockApi;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockCreateRequest;
@@ -35,6 +37,7 @@ public class PlaceBlockController implements PlaceBlockApi {
 
 	@Override
 	@PostMapping
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<PlaceBlockCreateResponse> create(
 		@PathVariable Long projectId,
 		@Valid @RequestBody PlaceBlockCreateRequest request
@@ -45,6 +48,7 @@ public class PlaceBlockController implements PlaceBlockApi {
 
 	@Override
 	@PutMapping("/{placeBlockId}/memo")
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<PlaceBlockUpdateMemoResponse> updateMemo(
 		@PathVariable Long projectId,
 		@PathVariable Long placeBlockId,
@@ -56,6 +60,7 @@ public class PlaceBlockController implements PlaceBlockApi {
 
 	@Override
 	@GetMapping
+	@RequiredAccessRole(UserRole.VIEWER)
 	public SuccessResponse<List<PlaceBlockSearchResponse>> searchPlaceBlocks(
 		@PathVariable Long projectId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
@@ -67,6 +72,7 @@ public class PlaceBlockController implements PlaceBlockApi {
 
 	@Override
 	@DeleteMapping("/{placeBlockId}")
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<Void> delete(@PathVariable Long projectId, @PathVariable Long placeBlockId) {
 		placeBlockService.delete(projectId, placeBlockId);
 		return SuccessResponse.from(CommonSuccessCode.DELETE_SUCCESS);

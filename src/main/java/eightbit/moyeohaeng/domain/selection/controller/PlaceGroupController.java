@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.domain.selection.controller;
 
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,15 +12,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import eightbit.moyeohaeng.domain.auth.UserRole;
+import eightbit.moyeohaeng.domain.auth.common.annotation.RequiredAccessRole;
 import eightbit.moyeohaeng.domain.selection.common.success.PlaceGroupSuccessCode;
 import eightbit.moyeohaeng.domain.selection.controller.swagger.PlaceGroupApi;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupDetailResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.selection.service.PlaceGroupService;
+import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.CommonSuccessCode;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
@@ -34,6 +39,7 @@ public class PlaceGroupController implements PlaceGroupApi {
 
 	@Override
 	@PostMapping("/place-groups")
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<PlaceGroupResponse> create(
 		@PathVariable Long projectId,
 		@Valid @RequestBody PlaceGroupRequest request
@@ -44,6 +50,7 @@ public class PlaceGroupController implements PlaceGroupApi {
 
 	@Override
 	@PostMapping("/place-blocks/{placeBlockId}/place-groups")
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<PlaceGroupBlockResponse> savePlaceBlockToGroups(
 		@PathVariable Long projectId,
 		@PathVariable Long placeBlockId,
@@ -55,6 +62,7 @@ public class PlaceGroupController implements PlaceGroupApi {
 
 	@Override
 	@PutMapping("/place-groups/{placeGroupId}")
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<PlaceGroupResponse> update(
 		@PathVariable Long projectId,
 		@PathVariable Long placeGroupId,
@@ -66,6 +74,7 @@ public class PlaceGroupController implements PlaceGroupApi {
 
 	@Override
 	@PutMapping("/place-groups/{placeGroupId}/memo")
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<PlaceGroupUpdateMemoResponse> updateMemo(
 		@PathVariable Long projectId,
 		@PathVariable Long placeGroupId,
@@ -76,7 +85,21 @@ public class PlaceGroupController implements PlaceGroupApi {
 	}
 
 	@Override
+	@GetMapping("/place-groups/{placeGroupId}")
+	@RequiredAccessRole(UserRole.VIEWER)
+	public SuccessResponse<PlaceGroupDetailResponse> getPlaceGroupDetail(
+		@PathVariable Long projectId,
+		@PathVariable Long placeGroupId,
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
+		String username = currentUser.getUsername();
+		PlaceGroupDetailResponse response = placeGroupService.getPlaceGroupDetail(projectId, placeGroupId, username);
+		return SuccessResponse.of(PlaceGroupSuccessCode.GET, response);
+	}
+
+	@Override
 	@GetMapping("/place-groups")
+	@RequiredAccessRole(UserRole.VIEWER)
 	public SuccessResponse<List<PlaceGroupResponse>> getPlaceGroups(@PathVariable Long projectId) {
 		List<PlaceGroupResponse> responses = placeGroupService.getPlaceGroups(projectId);
 		return SuccessResponse.of(PlaceGroupSuccessCode.GET_LIST, responses);
@@ -84,6 +107,7 @@ public class PlaceGroupController implements PlaceGroupApi {
 
 	@Override
 	@DeleteMapping("/place-groups/{placeGroupId}")
+	@RequiredAccessRole(UserRole.GUEST)
 	public SuccessResponse<Void> delete(@PathVariable Long projectId, @PathVariable Long placeGroupId) {
 		placeGroupService.delete(projectId, placeGroupId);
 		return SuccessResponse.from(CommonSuccessCode.DELETE_SUCCESS);
