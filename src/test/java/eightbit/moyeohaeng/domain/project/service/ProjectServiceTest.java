@@ -65,7 +65,7 @@ class ProjectServiceTest {
 			.name("testTeam")
 			.build();
 
-		project = Project.create(team, member, "testProject", LocalDate.now(), LocalDate.now().plusDays(7));
+		project = Project.create(team, member, "testProject", "#fff", LocalDate.now(), LocalDate.now().plusDays(7));
 
 		userDetails = CustomUserDetails.from(member);
 	}

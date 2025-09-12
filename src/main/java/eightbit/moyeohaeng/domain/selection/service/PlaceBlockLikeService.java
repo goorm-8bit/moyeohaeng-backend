@@ -41,14 +41,14 @@ public class PlaceBlockLikeService {
 	 * @return 최신 좋아요 요약 응답 DTO
 	 */
 	@Transactional
-	@ProjectEvent(eventType = EventType.PLACE_BLOCK_LIKE, actionType = ActionType.UPDATED)
+	@ProjectEvent(eventType = EventType.PLACE_BLOCK_LIKE, actionType = ActionType.LIKE_UPDATED)
 	public PlaceBlockLikeResponse toggleLike(
 		@ProjectId Long projectId,
 		Long placeBlockId,
 		CustomUserDetails currentUser
 	) {
 		final String author = requireAuthor(currentUser); // email or uuid
-		
+
 		PlaceBlock placeBlock = placeBlockRepository.findByIdAndProjectIdAndDeletedAtIsNull(placeBlockId, projectId)
 			.orElseThrow(() -> new PlaceBlockException(PlaceBlockErrorCode.PLACE_BLOCK_NOT_FOUND));
 
