@@ -53,7 +53,7 @@ public class PlaceGroupService {
 	private final ProjectRepository projectRepository;
 
 	@Transactional
-	@ProjectEvent(eventType = EventType.PLACE_BLOCK, actionType = ActionType.CREATED)
+	@ProjectEvent(eventType = EventType.PLACE_GROUP, actionType = ActionType.CREATED)
 	public PlaceGroupResponse create(@ProjectId Long projectId, PlaceGroupRequest request) {
 		Project project = projectRepository.findById(projectId)
 			.orElseThrow(() -> new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND, projectId));
