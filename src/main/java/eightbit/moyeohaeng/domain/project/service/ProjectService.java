@@ -185,6 +185,7 @@ public class ProjectService {
 			throw new ProjectException(ProjectErrorCode.NOT_PROJECT_OWNER);
 		}
 		project.update(request.title(), request.color(), request.startDate(), request.endDate());
+		projectRepository.save(project);
 		return ProjectDto.from(project);
 	}
 
