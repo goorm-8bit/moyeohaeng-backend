@@ -2,6 +2,7 @@ package eightbit.moyeohaeng.domain.selection.controller;
 
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,9 +20,11 @@ import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsReques
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupDetailResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.selection.service.PlaceGroupService;
+import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.CommonSuccessCode;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import jakarta.validation.Valid;
@@ -79,6 +82,19 @@ public class PlaceGroupController implements PlaceGroupApi {
 	) {
 		PlaceGroupUpdateMemoResponse response = placeGroupService.updateMemo(projectId, placeGroupId, request);
 		return SuccessResponse.of(PlaceGroupSuccessCode.UPDATE_MEMO, response);
+	}
+
+	@Override
+	@GetMapping("/place-groups/{placeGroupId}")
+	@RequiredAccessRole(UserRole.VIEWER)
+	public SuccessResponse<PlaceGroupDetailResponse> getPlaceGroupDetail(
+		@PathVariable Long projectId,
+		@PathVariable Long placeGroupId,
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
+		String username = currentUser.getUsername();
+		PlaceGroupDetailResponse response = placeGroupService.getPlaceGroupDetail(projectId, placeGroupId, username);
+		return SuccessResponse.of(PlaceGroupSuccessCode.GET, response);
 	}
 
 	@Override

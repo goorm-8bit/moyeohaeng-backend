@@ -6,9 +6,11 @@ import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsReques
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupUpdateMemoRequest;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupDetailResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupUpdateMemoResponse;
 import eightbit.moyeohaeng.global.exception.ErrorResponse;
+import eightbit.moyeohaeng.global.security.CustomUserDetails;
 import eightbit.moyeohaeng.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -73,6 +75,20 @@ public interface PlaceGroupApi {
 		@Parameter(description = "장소 그룹 ID", required = true)
 		Long placeGroupId,
 		PlaceGroupUpdateMemoRequest request
+	);
+
+	@Operation(summary = "장소 그룹 조회", description = "장소 그룹을 조회합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "장소 그룹 조회 성공"),
+		@ApiResponse(responseCode = "404", description = "장소 그룹을 찾을 수 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	})
+	SuccessResponse<PlaceGroupDetailResponse> getPlaceGroupDetail(
+		@Parameter(description = "프로젝트 ID", required = true)
+		Long projectId,
+		@Parameter(description = "장소 그룹 ID", required = true)
+		Long placeGroupId,
+		CustomUserDetails currentUser
 	);
 
 	@Operation(summary = "장소 그룹 목록 조회", description = "장소 그룹 목록을 조회합니다.")

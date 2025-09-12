@@ -3,10 +3,12 @@ package eightbit.moyeohaeng.domain.selection.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectErrorCode;
 import eightbit.moyeohaeng.domain.project.common.exception.ProjectException;
@@ -19,8 +21,13 @@ import eightbit.moyeohaeng.domain.selection.common.exception.PlaceGroupException
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceBlockToGroupsRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupRequest;
 import eightbit.moyeohaeng.domain.selection.dto.request.PlaceGroupUpdateMemoRequest;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockCommentSummary;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockLikeSummary;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceBlockSearchResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupBlockResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupDeleteResponse;
+import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupDetailResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupResponse;
 import eightbit.moyeohaeng.domain.selection.dto.response.PlaceGroupUpdateMemoResponse;
 import eightbit.moyeohaeng.domain.selection.entity.PlaceBlock;
@@ -127,6 +134,35 @@ public class PlaceGroupService {
 		placeGroup.updateMemo(request.memo());
 
 		return PlaceGroupUpdateMemoResponse.of(placeGroupId, request.memo());
+	}
+
+	public PlaceGroupDetailResponse getPlaceGroupDetail(Long projectId, Long placeGroupId, String username) {
+		// 장소 그룹 조회 및 프로젝트에 속해있는지 검증
+		PlaceGroup placeGroup = getPlaceGroup(projectId, placeGroupId);
+		List<PlaceBlockResponse> placeBlocks = placeGroupRepository.findPlaceBlocksByGroupId(projectId, placeGroupId);
+		List<Long> placeBlockIds = placeBlocks.stream()
+			.map(PlaceBlockResponse::id)
+			.toList();
+
+		if (ObjectUtils.isEmpty(placeBlockIds)) {
+			return PlaceGroupDetailResponse.empty(placeGroup);
+		}
+
+		// 좋아요 조회
+		Map<Long, PlaceBlockLikeSummary> likes = placeBlockRepository.findPlaceBlockLikes(placeBlockIds, username);
+
+		// 댓글 요약 조회
+		Map<Long, PlaceBlockCommentSummary> comments = placeBlockRepository.findPlaceBlockComments(placeBlockIds);
+
+		List<PlaceBlockSearchResponse> responses = placeBlocks.stream()
+			.map(placeBlock -> PlaceBlockSearchResponse.of(
+				placeBlock,
+				likes.getOrDefault(placeBlock.id(), PlaceBlockLikeSummary.empty()),
+				comments.getOrDefault(placeBlock.id(), PlaceBlockCommentSummary.empty())
+			))
+			.toList();
+
+		return PlaceGroupDetailResponse.of(placeGroup, responses);
 	}
 
 	public List<PlaceGroupResponse> getPlaceGroups(Long projectId) {
