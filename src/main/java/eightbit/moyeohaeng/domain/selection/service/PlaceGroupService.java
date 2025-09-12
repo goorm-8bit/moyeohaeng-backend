@@ -3,6 +3,7 @@ package eightbit.moyeohaeng.domain.selection.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -72,6 +73,7 @@ public class PlaceGroupService {
 		return PlaceGroupResponse.of(placeGroup, request.placeBlockIds());
 	}
 
+	// TODO PlaceBlock으로 API 이동 예정
 	@Transactional
 	@ProjectEvent(eventType = EventType.PLACE_GROUP, actionType = ActionType.UPDATED)
 	public PlaceGroupBlockResponse savePlaceBlockToGroups(@ProjectId Long projectId, Long placeBlockId,
