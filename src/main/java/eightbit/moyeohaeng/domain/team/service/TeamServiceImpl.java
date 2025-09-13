@@ -11,6 +11,7 @@ import eightbit.moyeohaeng.domain.member.dto.MemberDto;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
+import eightbit.moyeohaeng.domain.team.dto.response.InviteMemberResponseDto;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.entity.TeamMember;
 import eightbit.moyeohaeng.domain.team.entity.TeamRole;
@@ -30,7 +31,7 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public void inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId) {
+	public InviteMemberResponseDto inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId) {
 
 		// 1) 팀 존재 여부
 		Team team = teamRepository.findById(teamId)
@@ -47,6 +48,25 @@ public class TeamServiceImpl implements TeamService {
 		TeamRole teamRole = teamMemberRepository.findRoleByTeamIdAndMemberId(teamId, inviterMemberId)
 			.orElseThrow(() -> new TeamException(TeamErrorCode.NOT_HAVE_RIGHT));
 
+		// 권한이 있으면 초대 가능 없으면 예외 발생
+		if (teamRole == TeamRole.OWNER) {
+
+			TeamMember teamMember = TeamMember.builder()
+				.member(invitee)
+				.team(team)
+				.teamRole(TeamRole.MEMBER)
+				.build();
+
+			TeamMember saved = teamMemberRepository.save(teamMember);
+
+			return InviteMemberResponseDto.builder()
+				.teamId(teamId)
+				.memberId(inviteeMemberId)
+				.build();
+			
+		} else {
+			throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
+		}
 	}
 
 	// 멤버를 찾아서 teamName 으로 팀 이름을 만들고 만든 사람을 teamMember 이자 OWNER 권한으로 생성

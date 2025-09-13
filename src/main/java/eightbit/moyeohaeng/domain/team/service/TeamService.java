@@ -4,6 +4,7 @@ import java.util.List;
 
 import eightbit.moyeohaeng.domain.member.dto.MemberDto;
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
+import eightbit.moyeohaeng.domain.team.dto.response.InviteMemberResponseDto;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.entity.TeamRole;
 
@@ -35,6 +36,5 @@ public interface TeamService {
 	 * @param inviterMemberId 초대하는 회원(초대자)의 ID
 	 * @param inviteeMemberId 초대받는 회원(피초대자)의 ID
 	 */
-	void inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId);
-
+	InviteMemberResponseDto inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId);
 }
