@@ -59,7 +59,7 @@ public class MemberSignupListener {
 	 */
 	private void createPersonalTeamWithOwner(Member member) {
 		// 1. 이미 다른 팀의 소유자인지 확인
-		boolean isAlreadyOwner = teamMemberRepository.findByMember_Id(member.getId()).stream()
+		boolean isAlreadyOwner = teamMemberRepository.findByMember_IdAndDeletedAtIsNull(member.getId()).stream()
 			.anyMatch(tm -> tm.getTeamRole() == TeamRole.OWNER);
 
 		if (isAlreadyOwner) {

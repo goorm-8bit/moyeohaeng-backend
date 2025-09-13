@@ -57,9 +57,10 @@ public class TeamController implements TeamApi {
 		@RequestBody @Valid InviteMemberRequestDto requestDto
 	) {
 
-		// teamService.inviteMember();
+		InviteMemberResponseDto responseDto = teamService.inviteMember(requestDto.teamId(), user.getId(),
+			requestDto.memberId());
 
-		return null;
+		return ResponseEntity.ok(responseDto);
 	}
 
 	@Override
@@ -105,24 +106,26 @@ public class TeamController implements TeamApi {
 	@RequiredAccessRole(UserRole.OWNER)
 	public ResponseEntity<UpdateMemberRoleResponseDto> updateMemberRole(
 		@AuthenticationPrincipal CustomUserDetails user,
-		@RequestBody UpdateMemberRoleRequestDto requestDto,
-		@PathVariable("memberId") Long memberId
+		@RequestBody @Valid UpdateMemberRoleRequestDto requestDto,
+		@PathVariable("memberId") Long memberId,
+		@PathVariable("teamId") Long teamId
 	) {
 
-		// memberId 는 팀 멤버 권한을 재설정 하는 사람 (ex : 관리자)
-		// 재설정을 받는 memberId 는 requestDto 에
-		if (Objects.equals(user.getId(), memberId)) {
+		// userId 가 변경 권한이 있는지 확인
+		// 재설정을 받는 memberId 는 PathVariable 에
+		// 재설정 하는 teamId 는 PathVariable 에
+		// 재설정 하는 권한이 뭔지는 requestDto 에
+		UpdateMemberRoleResponseDto responseDto = teamService.updateMemberRole(teamId, user.getId(),
+			memberId, requestDto.newRole());
 
-		}
-
-		return null;
+		return ResponseEntity.ok(responseDto);
 	}
 
 	@PutMapping("/{teamId}")
 	@RequiredAccessRole(UserRole.MEMBER)
 	public ResponseEntity<UpdateTeamSettingsResponseDto> updateTeamSettings(
 		@AuthenticationPrincipal CustomUserDetails user,
-		@RequestBody UpdateTeamSettingsRequestDto requestDto,
+		@RequestBody @Valid UpdateTeamSettingsRequestDto requestDto,
 		@PathVariable("teamId") Long teamId
 	) {
 
@@ -168,10 +171,11 @@ public class TeamController implements TeamApi {
 		@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable("teamId") Long teamId
 	) {
+		// find teamMember by teamId and userId
 
-		// find teamMember by teamId
+		TeamMembersResponseDto responseDto = teamService.getTeamMembers(teamId, user.getId());
 
-		return null;
+		return ResponseEntity.ok(responseDto);
 	}
 
 	@Override

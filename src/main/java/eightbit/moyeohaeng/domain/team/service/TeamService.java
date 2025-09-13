@@ -1,9 +1,11 @@
 package eightbit.moyeohaeng.domain.team.service;
 
 import java.util.List;
-
 import eightbit.moyeohaeng.domain.member.dto.MemberDto;
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
+import eightbit.moyeohaeng.domain.team.dto.response.InviteMemberResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.TeamMembersResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.UpdateMemberRoleResponseDto;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.entity.TeamRole;
 
@@ -22,7 +24,12 @@ public interface TeamService {
 
 	List<TeamDto> getMyTeams(Long memberId);
 
-	List<MemberDto> getTeamMembers(Long teamId, Long memberId);
+	/**
+	 * @param teamId          멤버들을 조회할 팀 ID
+	 * @param memberId 조회하는 멤버의 ID (팀 소속이여야 조회 가능)
+	 * @return TeamMembersResponseDto 조회한 결과물을 Dto 에 담아서 반환
+	 */
+	TeamMembersResponseDto getTeamMembers(Long teamId, Long memberId);
 
 	TeamRole findMyRole(Long teamId, Long memberId);
 
@@ -35,6 +42,14 @@ public interface TeamService {
 	 * @param inviterMemberId 초대하는 회원(초대자)의 ID
 	 * @param inviteeMemberId 초대받는 회원(피초대자)의 ID
 	 */
-	void inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId);
+	InviteMemberResponseDto inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId);
 
+	/**
+	 * @param teamId          작업이 이루어질 team ID
+	 * @param adminMemberId   관리자인지 확인할 ID
+	 * @param targetMemberId  변경 대상의 member ID
+	 * @param newRole         변경 대상의 새로운 Role
+	 */
+	UpdateMemberRoleResponseDto updateMemberRole(Long teamId, Long adminMemberId, Long targetMemberId,
+		TeamRole newRole);
 }
