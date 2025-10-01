@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -30,7 +31,6 @@ import lombok.NoArgsConstructor;
 		@UniqueConstraint(name = "uk_team_member", columnNames = {"team_id", "member_id"})
 	}
 )
-
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE team_members SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
@@ -49,6 +49,7 @@ public class TeamMember extends BaseEntity {
 	@JoinColumn(name = "member_id", nullable = false)
 	private Member member;
 
+	@Setter
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role", nullable = false)
 	private TeamRole teamRole;

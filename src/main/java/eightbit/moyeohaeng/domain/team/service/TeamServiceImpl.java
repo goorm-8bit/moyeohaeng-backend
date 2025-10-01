@@ -11,6 +11,9 @@ import eightbit.moyeohaeng.domain.member.dto.MemberDto;
 import eightbit.moyeohaeng.domain.member.entity.member.Member;
 import eightbit.moyeohaeng.domain.member.repository.MemberRepository;
 import eightbit.moyeohaeng.domain.team.dto.TeamDto;
+import eightbit.moyeohaeng.domain.team.dto.response.InviteMemberResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.TeamMembersResponseDto;
+import eightbit.moyeohaeng.domain.team.dto.response.UpdateMemberRoleResponseDto;
 import eightbit.moyeohaeng.domain.team.entity.Team;
 import eightbit.moyeohaeng.domain.team.entity.TeamMember;
 import eightbit.moyeohaeng.domain.team.entity.TeamRole;
@@ -30,7 +33,7 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public void inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId) {
+	public InviteMemberResponseDto inviteMember(Long teamId, Long inviterMemberId, Long inviteeMemberId) {
 
 		// 1) 팀 존재 여부
 		Team team = teamRepository.findById(teamId)
@@ -47,6 +50,69 @@ public class TeamServiceImpl implements TeamService {
 		TeamRole teamRole = teamMemberRepository.findRoleByTeamIdAndMemberId(teamId, inviterMemberId)
 			.orElseThrow(() -> new TeamException(TeamErrorCode.NOT_HAVE_RIGHT));
 
+		// 이미 멤버인지 확인
+		if (teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, inviteeMemberId)) {
+			throw new TeamException(TeamErrorCode.ALREADY_TEAM_MEMBER);
+		} else {
+
+			// 권한이 있으면 초대 가능 없으면 예외 발생
+			if (teamRole == TeamRole.OWNER) {
+
+				// 자기 자신 초대 방지
+				if (inviterMemberId.equals(inviteeMemberId)) {
+					throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
+				}
+
+				TeamMember teamMember = TeamMember.builder()
+					.member(invitee)
+					.team(team)
+					.teamRole(TeamRole.MEMBER)
+					.build();
+
+				TeamMember saved = teamMemberRepository.save(teamMember);
+
+				return InviteMemberResponseDto.builder()
+					.teamId(teamId)
+					.memberId(inviteeMemberId)
+					.build();
+
+			} else {
+				throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
+			}
+		}
+	}
+
+	@Override
+	@Transactional
+	public UpdateMemberRoleResponseDto updateMemberRole(Long teamId, Long adminMemberId, Long targetMemberId,
+		TeamRole newRole) {
+
+		// 소속 멤버인지 검사
+		if (!teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, targetMemberId)) {
+			throw new TeamException(TeamErrorCode.YOU_NOT_TEAM_MEMBER);
+		}
+
+		TeamRole teamRole = teamMemberRepository.findRoleByTeamIdAndMemberId(teamId, adminMemberId)
+			.orElseThrow(() -> new TeamException(TeamErrorCode.YOU_NOT_TEAM_MEMBER));
+
+		if (teamRole == TeamRole.OWNER) {
+			TeamMember targetTeamMember = teamMemberRepository.findByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId,
+					targetMemberId)
+				.orElseThrow(() -> new TeamException(TeamErrorCode.YOU_NOT_TEAM_MEMBER));
+
+			targetTeamMember.setTeamRole(newRole);
+
+			Member targetMember = memberRepository.findById(targetMemberId)
+				.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+			return UpdateMemberRoleResponseDto.builder()
+				.targetMember(MemberDto.from(targetMember))
+				.newRole(newRole)
+				.build();
+
+		} else {
+			throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
+		}
 	}
 
 	// 멤버를 찾아서 teamName 으로 팀 이름을 만들고 만든 사람을 teamMember 이자 OWNER 권한으로 생성
@@ -114,16 +180,19 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<MemberDto> getTeamMembers(Long teamId, Long memberId) {
+	public TeamMembersResponseDto getTeamMembers(Long teamId, Long memberId) {
 
 		boolean b = teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, memberId);
 
 		if (b == true) {
 			List<Member> members = teamMemberRepository.findMembersByTeamId(teamId);
 
-			return members.stream()
-				.map(member -> MemberDto.from(member))
-				.toList();
+			return TeamMembersResponseDto.builder()
+				.memberList(members.stream()
+					.map(member -> MemberDto.from(member))
+					.toList())
+				.build();
+
 		} else {
 			throw new TeamException(TeamErrorCode.NOT_HAVE_RIGHT);
 		}
@@ -163,6 +232,6 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public Boolean checkTeamMember(Long teamId, Long memberId) {
 
-		return teamMemberRepository.existsByTeam_IdAndMember_Id(teamId, memberId);
+		return teamMemberRepository.existsByTeam_IdAndMember_IdAndDeletedAtIsNull(teamId, memberId);
 	}
 }

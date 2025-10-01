@@ -6,9 +6,12 @@ import lombok.Builder;
 
 @Builder
 public record InviteMemberRequestDto(
-	@Schema(description = "초대할 멤버의 ID", example = "123")
+	@Schema(description = "초대할 멤버 ID", example = "123")
 	@NotNull
-	Long memberId
+	Long memberId,
+	@Schema(description = "초대 하는 팀 ID", example = "123")
+	@NotNull
+	Long teamId
 ) {
 
 }

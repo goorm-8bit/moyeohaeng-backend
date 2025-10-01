@@ -1,16 +1,15 @@
 package eightbit.moyeohaeng.domain.team.dto.request;
 
 import eightbit.moyeohaeng.domain.team.entity.TeamRole;
-import jakarta.validation.constraints.NotBlank;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record UpdateMemberRoleRequestDto(
-	@NotBlank
-	TeamRole updateRole,
+	@Schema(description = "변경 요청할 TeamRole", example = "OWNER or MEMBER 그 외 값은 오류")
 	@NotNull
-	Long targetMemberId
+	TeamRole newRole
 ) {
 
 }
